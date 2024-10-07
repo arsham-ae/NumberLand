@@ -1,69 +1,69 @@
 ﻿using AutoMapper;
-using Azure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NumberLand.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NumberController : ControllerBase
+    public class OperatorController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        public NumberController(IUnitOfWork unitOfWork, IMapper mapper)
+        public OperatorController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var getall = _mapper.Map<List<NumberDTO>>(_unitOfWork.number.GetAll(includeProp: "category,nOperator"));
+            var getall = _unitOfWork.nOperator.GetAll();
             return Ok(getall);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var get = _unitOfWork.number.Get(n => n.id == id, includeProp: "category,nOperator");
+            if (id == null || id == 0)
+            {
+                return BadRequest();
+            }
+            var get = _unitOfWork.nOperator.Get(o => o.id == id);
             return Ok(get);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateNumberDTO number)
+        public async Task<IActionResult> Create(OperatorModel operatorModel)
         {
-            if (number == null || number.id != 0)
+            if (operatorModel == null || operatorModel.id != 0)
             {
                 return BadRequest();
             }
-            var mappedNum = _mapper.Map<NumberModel>(number);
-            _unitOfWork.number.Add(mappedNum);
+            _unitOfWork.nOperator.Add(operatorModel);
             _unitOfWork.Save();
-            return Ok(number);
+            return Ok(operatorModel);
+
         }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, CreateNumberDTO number)
+        public async Task<IActionResult> Edit(int id, OperatorModel operatorModel)
         {
-            if (number == null || id == 0)
+            if (operatorModel == null || operatorModel.id == 0)
             {
-                BadRequest();
+                return BadRequest();
             }
-            var mappedNum = _mapper.Map<NumberModel>(number);
-            _unitOfWork.number.Update(mappedNum);
-            return Ok(number);
+            _unitOfWork.nOperator.Update(operatorModel);
+            return Ok(operatorModel);
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<NumberModel> patchDoc)
+        public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<OperatorModel> patchDoc)
         {
-            _unitOfWork.number.Patch(id, patchDoc);
+            _unitOfWork.nOperator.Patch(id, patchDoc);
             return Ok(patchDoc);
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Remove(int id)
         {
@@ -71,8 +71,8 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.number.Get(o => o.id == id);
-            _unitOfWork.number.Delete(get);
+            var get = _unitOfWork.nOperator.Get(o => o.id == id);
+            _unitOfWork.nOperator.Delete(get);
             _unitOfWork.Save();
             return Ok(get);
         }
@@ -84,8 +84,8 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.number.GetAll().Where(p => ids.Contains(p.id)).ToList();
-            _unitOfWork.number.DeleteRange(get);
+            var get = _unitOfWork.nOperator.GetAll().Where(p => ids.Contains(p.id)).ToList();
+            _unitOfWork.nOperator.DeleteRange(get);
             _unitOfWork.Save();
             return Ok(get);
         }
