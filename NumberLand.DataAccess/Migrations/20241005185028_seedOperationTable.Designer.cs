@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NumberLand.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using NumberLand.DataAccess.Data;
 namespace NumberLand.DataAccess.Migrations
 {
     [DbContext(typeof(myDbContext))]
-    partial class myDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241005185028_seedOperationTable")]
+    partial class seedOperationTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,23 +40,6 @@ namespace NumberLand.DataAccess.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Category");
-
-                    b.HasData(
-                        new
-                        {
-                            id = 1,
-                            name = "Regular"
-                        },
-                        new
-                        {
-                            id = 2,
-                            name = "Rental"
-                        },
-                        new
-                        {
-                            id = 3,
-                            name = "Permanent"
-                        });
                 });
 
             modelBuilder.Entity("NumberLand.Models.NumberModel", b =>

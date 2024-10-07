@@ -22,7 +22,38 @@ namespace NumberLand.DataAccess.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<OperatorModel>().HasData(
+                new OperatorModel
+                {
+                    id = 1,
+                    operatorCode = "43",
+                    country = "UK",
+                    quantity = 20
+                },
+                new OperatorModel
+                {
+                    id = 2,
+                    operatorCode = "53",
+                    country = "US",
+                    quantity = 10
+                });
 
+            modelBuilder.Entity<CategoryModel>().HasData(
+                new CategoryModel
+                {
+                    id = 1,
+                    name = "Regular"
+                },
+                new CategoryModel
+                {
+                    id = 2,
+                    name = "Rental"
+                },
+                new CategoryModel
+                {
+                    id = 3,
+                    name = "Permanent"
+                });
         }
     }
 }

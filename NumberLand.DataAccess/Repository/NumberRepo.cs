@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
+using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models;
 using System;
@@ -20,6 +21,7 @@ namespace NumberLand.DataAccess.Repository
         {
             _context = context;
         }
+
         public void Patch(int id, [FromBody] JsonPatchDocument<NumberModel> patchDoc)
         {
             var number = _context.Numbers.FirstOrDefault(p => p.id == id);
