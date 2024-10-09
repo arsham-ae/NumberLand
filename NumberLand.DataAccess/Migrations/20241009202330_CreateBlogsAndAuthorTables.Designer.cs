@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NumberLand.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using NumberLand.DataAccess.Data;
 namespace NumberLand.DataAccess.Migrations
 {
     [DbContext(typeof(myDbContext))]
-    partial class myDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241009202330_CreateBlogsAndAuthorTables")]
+    partial class CreateBlogsAndAuthorTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,21 +85,6 @@ namespace NumberLand.DataAccess.Migrations
                     b.HasKey("id");
 
                     b.ToTable("BlogCategory");
-                });
-
-            modelBuilder.Entity("NumberLand.Models.Blogs.BlogImageModel", b =>
-                {
-                    b.Property<int>("blogId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("imageId")
-                        .HasColumnType("int");
-
-                    b.HasKey("blogId", "imageId");
-
-                    b.HasIndex("imageId");
-
-                    b.ToTable("BlogImage");
                 });
 
             modelBuilder.Entity("NumberLand.Models.Blogs.BlogModel", b =>
@@ -366,25 +354,6 @@ namespace NumberLand.DataAccess.Migrations
                     b.Navigation("category");
                 });
 
-            modelBuilder.Entity("NumberLand.Models.Blogs.BlogImageModel", b =>
-                {
-                    b.HasOne("NumberLand.Models.Blogs.BlogModel", "blog")
-                        .WithMany("blogImage")
-                        .HasForeignKey("blogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NumberLand.Models.Images.ImageModel", "image")
-                        .WithMany("blogImage")
-                        .HasForeignKey("imageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("blog");
-
-                    b.Navigation("image");
-                });
-
             modelBuilder.Entity("NumberLand.Models.Blogs.BlogModel", b =>
                 {
                     b.HasOne("NumberLand.Models.Blogs.AuthorModel", "author")
@@ -462,14 +431,10 @@ namespace NumberLand.DataAccess.Migrations
             modelBuilder.Entity("NumberLand.Models.Blogs.BlogModel", b =>
                 {
                     b.Navigation("blogCategories");
-
-                    b.Navigation("blogImage");
                 });
 
             modelBuilder.Entity("NumberLand.Models.Images.ImageModel", b =>
                 {
-                    b.Navigation("blogImage");
-
                     b.Navigation("pageImage");
                 });
 

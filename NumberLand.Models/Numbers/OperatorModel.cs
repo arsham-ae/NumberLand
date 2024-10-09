@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NumberLand.Models
+namespace NumberLand.Models.Numbers
 {
     public class OperatorModel
     {

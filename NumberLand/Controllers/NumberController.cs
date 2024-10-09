@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models;
+using NumberLand.Models.Numbers;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NumberLand.Controllers

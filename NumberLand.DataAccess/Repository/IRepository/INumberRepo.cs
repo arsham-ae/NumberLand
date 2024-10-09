@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using NumberLand.DataAccess.DTOs;
-using NumberLand.Models;
+using NumberLand.Models.Numbers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

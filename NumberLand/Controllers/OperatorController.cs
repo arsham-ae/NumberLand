@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models;
+using NumberLand.Models.Numbers;
 
 namespace NumberLand.Controllers
 {
