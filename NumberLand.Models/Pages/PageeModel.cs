@@ -1,5 +1,4 @@
-﻿using NumberLand.Models.Images;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,7 +17,6 @@ namespace NumberLand.Models.Pages
         public int categoryId { get; set; }
         [ForeignKey("categoryId")]
         public PageCategoryModel category { get; set; }
-        public ICollection<PageImageModel> pageImage { get; set; }
         public bool isVisible { get; set; }
     }
 }

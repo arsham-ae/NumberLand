@@ -18,10 +18,10 @@ namespace NumberLand.Models.Blogs
         [ForeignKey("authorId")]
         public AuthorModel author { get; set; }
         public ICollection<BlogCategoryJoinModel> blogCategories { get; set; }
+        public string featuredImagePath { get; set; }
         public DateTime createAt { get; set; } = DateTime.Now;
         public DateTime updateAt { get; set; }
         public DateTime publishedAt { get; set; }
-        public ICollection<BlogImageModel> blogImage { get; set; }
         public bool isPublished { get; set; }
 
     }

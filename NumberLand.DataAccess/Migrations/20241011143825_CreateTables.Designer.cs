@@ -12,8 +12,8 @@ using NumberLand.DataAccess.Data;
 namespace NumberLand.DataAccess.Migrations
 {
     [DbContext(typeof(myDbContext))]
-    [Migration("20241009202330_CreateBlogsAndAuthorTables")]
-    partial class CreateBlogsAndAuthorTables
+    [Migration("20241011143825_CreateTables")]
+    partial class CreateTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,16 +37,15 @@ namespace NumberLand.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("imageId")
-                        .HasColumnType("int");
+                    b.Property<string>("imagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
-
-                    b.HasIndex("imageId");
 
                     b.ToTable("Author");
                 });
@@ -105,6 +104,10 @@ namespace NumberLand.DataAccess.Migrations
                     b.Property<DateTime>("createAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("featuredImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("isPublished")
                         .HasColumnType("bit");
 
@@ -123,27 +126,6 @@ namespace NumberLand.DataAccess.Migrations
                     b.HasIndex("authorId");
 
                     b.ToTable("Blog");
-                });
-
-            modelBuilder.Entity("NumberLand.Models.Images.ImageModel", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<string>("imagePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
-
-                    b.ToTable("Image");
                 });
 
             modelBuilder.Entity("NumberLand.Models.Numbers.CategoryModel", b =>
@@ -280,21 +262,6 @@ namespace NumberLand.DataAccess.Migrations
                     b.ToTable("PageCategory");
                 });
 
-            modelBuilder.Entity("NumberLand.Models.Pages.PageImageModel", b =>
-                {
-                    b.Property<int>("pageId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("imageId")
-                        .HasColumnType("int");
-
-                    b.HasKey("pageId", "imageId");
-
-                    b.HasIndex("imageId");
-
-                    b.ToTable("PageImage");
-                });
-
             modelBuilder.Entity("NumberLand.Models.Pages.PageeModel", b =>
                 {
                     b.Property<int>("id")
@@ -322,17 +289,6 @@ namespace NumberLand.DataAccess.Migrations
                     b.HasIndex("categoryId");
 
                     b.ToTable("Page");
-                });
-
-            modelBuilder.Entity("NumberLand.Models.Blogs.AuthorModel", b =>
-                {
-                    b.HasOne("NumberLand.Models.Images.ImageModel", "image")
-                        .WithMany()
-                        .HasForeignKey("imageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("image");
                 });
 
             modelBuilder.Entity("NumberLand.Models.Blogs.BlogCategoryJoinModel", b =>
@@ -393,25 +349,6 @@ namespace NumberLand.DataAccess.Migrations
                     b.Navigation("parentCategory");
                 });
 
-            modelBuilder.Entity("NumberLand.Models.Pages.PageImageModel", b =>
-                {
-                    b.HasOne("NumberLand.Models.Images.ImageModel", "image")
-                        .WithMany("pageImage")
-                        .HasForeignKey("imageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NumberLand.Models.Pages.PageeModel", "page")
-                        .WithMany("pageImage")
-                        .HasForeignKey("pageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("image");
-
-                    b.Navigation("page");
-                });
-
             modelBuilder.Entity("NumberLand.Models.Pages.PageeModel", b =>
                 {
                     b.HasOne("NumberLand.Models.Pages.PageCategoryModel", "category")
@@ -431,16 +368,6 @@ namespace NumberLand.DataAccess.Migrations
             modelBuilder.Entity("NumberLand.Models.Blogs.BlogModel", b =>
                 {
                     b.Navigation("blogCategories");
-                });
-
-            modelBuilder.Entity("NumberLand.Models.Images.ImageModel", b =>
-                {
-                    b.Navigation("pageImage");
-                });
-
-            modelBuilder.Entity("NumberLand.Models.Pages.PageeModel", b =>
-                {
-                    b.Navigation("pageImage");
                 });
 #pragma warning restore 612, 618
         }

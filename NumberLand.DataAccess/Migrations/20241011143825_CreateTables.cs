@@ -8,11 +8,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NumberLand.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateBlogsAndAuthorTables : Migration
+    public partial class CreateTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Author",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    imagePath = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Author", x => x.id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "BlogCategory",
                 columns: table => new
@@ -38,20 +53,6 @@ namespace NumberLand.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Category", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Image",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    imagePath = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Image", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,22 +90,27 @@ namespace NumberLand.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Author",
+                name: "Blog",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    imageId = table.Column<int>(type: "int", nullable: false)
+                    title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    authorId = table.Column<int>(type: "int", nullable: false),
+                    featuredImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    createAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    updateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    publishedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    isPublished = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Author", x => x.id);
+                    table.PrimaryKey("PK_Blog", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Author_Image_imageId",
-                        column: x => x.imageId,
-                        principalTable: "Image",
+                        name: "FK_Blog_Author_authorId",
+                        column: x => x.authorId,
+                        principalTable: "Author",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -162,55 +168,6 @@ namespace NumberLand.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Blog",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    authorId = table.Column<int>(type: "int", nullable: false),
-                    createAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    updateAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    publishedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    isPublished = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Blog", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_Blog_Author_authorId",
-                        column: x => x.authorId,
-                        principalTable: "Author",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PageImage",
-                columns: table => new
-                {
-                    pageId = table.Column<int>(type: "int", nullable: false),
-                    imageId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PageImage", x => new { x.pageId, x.imageId });
-                    table.ForeignKey(
-                        name: "FK_PageImage_Image_imageId",
-                        column: x => x.imageId,
-                        principalTable: "Image",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PageImage_Page_pageId",
-                        column: x => x.pageId,
-                        principalTable: "Page",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "BlogCategoryJoin",
                 columns: table => new
                 {
@@ -254,11 +211,6 @@ namespace NumberLand.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Author_imageId",
-                table: "Author",
-                column: "imageId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Blog_authorId",
                 table: "Blog",
                 column: "authorId");
@@ -287,11 +239,6 @@ namespace NumberLand.DataAccess.Migrations
                 name: "IX_PageCategory_parentCategoryId",
                 table: "PageCategory",
                 column: "parentCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PageImage_imageId",
-                table: "PageImage",
-                column: "imageId");
         }
 
         /// <inheritdoc />
@@ -304,7 +251,7 @@ namespace NumberLand.DataAccess.Migrations
                 name: "Numbers");
 
             migrationBuilder.DropTable(
-                name: "PageImage");
+                name: "Page");
 
             migrationBuilder.DropTable(
                 name: "BlogCategory");
@@ -319,16 +266,10 @@ namespace NumberLand.DataAccess.Migrations
                 name: "Operator");
 
             migrationBuilder.DropTable(
-                name: "Page");
-
-            migrationBuilder.DropTable(
-                name: "Author");
-
-            migrationBuilder.DropTable(
                 name: "PageCategory");
 
             migrationBuilder.DropTable(
-                name: "Image");
+                name: "Author");
         }
     }
 }

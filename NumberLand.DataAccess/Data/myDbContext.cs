@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using NumberLand.Models.Blogs;
-using NumberLand.Models.Images;
 using NumberLand.Models.Numbers;
 using NumberLand.Models.Pages;
 using System;
@@ -23,46 +22,15 @@ namespace NumberLand.DataAccess.Data
         public DbSet<OperatorModel> Operator { get; set; }
         public DbSet<PageeModel> Page { get; set; }
         public DbSet<PageCategoryModel> PageCategory { get; set; }
-        public DbSet<ImageModel> Image { get; set; }
-        public DbSet<PageImageModel> PageImage { get; set; }
         public DbSet<BlogModel> Blog { get; set; }
         public DbSet<BlogCategoryModel> BlogCategory { get; set; }
         public DbSet<BlogCategoryJoinModel> BlogCategoryJoin { get; set; }
-        public DbSet<BlogImageModel> BlogImage { get; set; }
         public DbSet<AuthorModel> Author { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<PageImageModel>()
-                .HasKey(pi => new { pi.pageId, pi.imageId });
-
-            modelBuilder.Entity<PageImageModel>()
-                .HasOne(pi => pi.page)
-                .WithMany(p => p.pageImage)
-                .HasForeignKey(pi => pi.pageId);
-
-            modelBuilder.Entity<PageImageModel>()
-                .HasOne(pi => pi.image)
-                .WithMany(i => i.pageImage)
-                .HasForeignKey(pi => pi.imageId);
-
-
-            modelBuilder.Entity<BlogImageModel>()
-                .HasKey(bi => new { bi.blogId, bi.imageId });
-
-            modelBuilder.Entity<BlogImageModel>()
-                .HasOne(bi => bi.blog)
-                .WithMany(b => b.blogImage)
-                .HasForeignKey(bi => bi.blogId);
-
-            modelBuilder.Entity<BlogImageModel>()
-                .HasOne(bi => bi.image)
-                .WithMany(i => i.blogImage)
-                .HasForeignKey(bi => bi.imageId);
-
 
             modelBuilder.Entity<BlogCategoryJoinModel>()
                 .HasKey(bc => new { bc.blogId, bc.categoryId });

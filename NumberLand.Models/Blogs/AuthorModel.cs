@@ -1,5 +1,4 @@
-﻿using NumberLand.Models.Images;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,8 +14,6 @@ namespace NumberLand.Models.Blogs
         public int id { get; set; }
         public string name { get; set; }
         public string description { get; set; }
-        public int imageId { get; set; }
-        [ForeignKey("imageId")]
-        public ImageModel image { get; set; }
+        public string imagePath { get; set; }
     }
 }
