@@ -10,6 +10,12 @@ namespace NumberLand.DataAccess.Repository.IRepository
     {
         INumberRepo number { get; }
         IOperatorRepo nOperator { get; }
+        IAuthorRepo author { get; }
+        IBlogRepo blog { get; }
+        ICategoryRepo category { get; }
+        IPageCategoryRepo pageCategory { get; }
+        IPageRepo page { get; }
+
         void Save();
     }
 }
