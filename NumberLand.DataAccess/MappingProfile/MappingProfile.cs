@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using NumberLand.DataAccess.DTOs;
+using NumberLand.Models.Blogs;
 using NumberLand.Models.Numbers;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,9 @@ namespace NumberLand.DataAccess.MappingProfile
         {
             CreateMap<CreateNumberDTO, NumberModel>();
             CreateMap<NumberModel, NumberDTO>();
+            CreateMap<CreateBlogDTO, BlogModel>()
+                .ForMember(dest => dest.blogCategories, opt => opt.Ignore());
+            CreateMap<BlogModel, BlogDTO>();
         }
     }
 }

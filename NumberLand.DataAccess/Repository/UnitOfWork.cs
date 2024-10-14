@@ -24,6 +24,7 @@ namespace NumberLand.DataAccess.Repository
         public IPageCategoryRepo pageCategory { get; private set; }
 
         public IPageRepo page { get; private set; }
+        public IBlogCategoryRepo blogCategory { get; private set; }
 
         public UnitOfWork(myDbContext context)
         {
@@ -35,7 +36,7 @@ namespace NumberLand.DataAccess.Repository
             category = new CategoryRepo(_context);
             pageCategory = new PageCategoryRepo(_context);
             page = new PageRepo(_context);
-
+            blogCategory = new BlogCategoryRepo(_context);
         }
         public void Save()
         {

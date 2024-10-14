@@ -15,6 +15,7 @@ namespace NumberLand.DataAccess.Repository.IRepository
         ICategoryRepo category { get; }
         IPageCategoryRepo pageCategory { get; }
         IPageRepo page { get; }
+        IBlogCategoryRepo blogCategory { get; }
 
         void Save();
     }

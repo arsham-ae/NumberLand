@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NumberLand.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using NumberLand.DataAccess.Data;
 namespace NumberLand.DataAccess.Migrations
 {
     [DbContext(typeof(myDbContext))]
-    partial class myDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241013183029_addDescriptionToCategory")]
+    partial class addDescriptionToCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,14 +84,6 @@ namespace NumberLand.DataAccess.Migrations
                     b.HasKey("id");
 
                     b.ToTable("BlogCategory");
-
-                    b.HasData(
-                        new
-                        {
-                            id = 1,
-                            description = "Heloooo",
-                            name = "tech"
-                        });
                 });
 
             modelBuilder.Entity("NumberLand.Models.Blogs.BlogModel", b =>

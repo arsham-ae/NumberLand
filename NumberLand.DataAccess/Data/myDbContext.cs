@@ -71,17 +71,28 @@ namespace NumberLand.DataAccess.Data
                 new CategoryModel
                 {
                     id = 1,
-                    name = "Regular"
+                    name = "Regular",
+                    description = ""
                 },
                 new CategoryModel
                 {
                     id = 2,
-                    name = "Rental"
+                    name = "Rental",
+                    description = ""
                 },
                 new CategoryModel
                 {
                     id = 3,
-                    name = "Permanent"
+                    name = "Permanent",
+                    description = ""
+                });
+
+            modelBuilder.Entity<BlogCategoryModel>().HasData(
+                new BlogCategoryModel
+                {
+                    id = 1,
+                    name = "tech",
+                    description = "Heloooo"
                 });
 
         }
