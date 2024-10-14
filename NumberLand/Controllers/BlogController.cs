@@ -24,7 +24,7 @@ namespace NumberLand.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var getall = _mapper.Map<List<BlogDTO>>(_unitOfWork.blog.GetAll(includeProp: "author"));
+            var getall = _mapper.Map<List<BlogDTO>>(_unitOfWork.blog.GetAll(includeProp: "author, blogCategories.category"));
             return Ok(getall);
         }
         [HttpGet("{id}")]
@@ -34,7 +34,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.blog.Get(o => o.id == id, includeProp: "");
+            var get = _mapper.Map<BlogDTO>(_unitOfWork.blog.Get(o => o.id == id, includeProp: "author, blogCategories.category"));
             return Ok(get);
         }
 
@@ -72,6 +72,7 @@ namespace NumberLand.Controllers
             }
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             blog.content = Markdown.ToHtml(blog.content, pipeLine);
+            blog.blogCategories.Clear();
             var mappedBlog = _mapper.Map<BlogModel>(blog);
             mappedBlog.blogCategories = new List<BlogCategoryJoinModel>();
             foreach (var categoryId in blog.blogCategories)

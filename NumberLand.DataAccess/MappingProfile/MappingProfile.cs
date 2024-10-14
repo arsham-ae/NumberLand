@@ -18,7 +18,14 @@ namespace NumberLand.DataAccess.MappingProfile
             CreateMap<NumberModel, NumberDTO>();
             CreateMap<CreateBlogDTO, BlogModel>()
                 .ForMember(dest => dest.blogCategories, opt => opt.Ignore());
-            CreateMap<BlogModel, BlogDTO>();
+            CreateMap<BlogModel, BlogDTO>()
+                .ForMember(dest => dest.blogCategories, opt => opt.MapFrom(src => src.blogCategories));
+            CreateMap<BlogCategoryJoinModel, BlogCategoryDTO>()
+                .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.categoryId))
+                .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.category.name))
+                .ForMember(dest => dest.description, opt => opt.MapFrom(src => src.category.description));
+            CreateMap<BlogCategoryDTO, BlogCategoryModel>();
+            CreateMap<BlogCategoryModel, BlogCategoryDTO>();
         }
     }
 }

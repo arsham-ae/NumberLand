@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
+using System.Collections.Generic;
 
 namespace NumberLand.Controllers
 {
@@ -11,14 +14,16 @@ namespace NumberLand.Controllers
     public class BlogCategoryController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public BlogCategoryController(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public BlogCategoryController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var getall = _unitOfWork.blogCategory.GetAll();
+            var getall = _mapper.Map<List<BlogCategoryDTO>>(_unitOfWork.blogCategory.GetAll());
             return Ok(getall);
         }
         [HttpGet("{id}")]
@@ -28,31 +33,33 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.blogCategory.Get(o => o.id == id);
+            var get = _mapper.Map<BlogCategoryDTO>(_unitOfWork.blogCategory.Get(o => o.id == id));
             return Ok(get);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(BlogCategoryModel blogCategory)
+        public async Task<IActionResult> Create(BlogCategoryDTO blogCategory)
         {
             if (blogCategory == null || blogCategory.id != 0)
             {
                 return BadRequest();
             }
-            _unitOfWork.blogCategory.Add(blogCategory);
+            var mappedCat = _mapper.Map<BlogCategoryModel>(blogCategory);
+            _unitOfWork.blogCategory.Add(mappedCat);
             _unitOfWork.Save();
             return Ok(blogCategory);
 
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, BlogCategoryModel blogCategory)
+        public async Task<IActionResult> Edit(int id, BlogCategoryDTO blogCategory)
         {
             if (blogCategory == null || blogCategory.id == 0)
             {
                 return BadRequest();
             }
-            _unitOfWork.blogCategory.Update(blogCategory);
+            var mappedCat = _mapper.Map<BlogCategoryModel>(blogCategory);
+            _unitOfWork.blogCategory.Update(mappedCat);
             return Ok(blogCategory);
         }
 

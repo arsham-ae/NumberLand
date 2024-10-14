@@ -13,11 +13,11 @@ namespace NumberLand.DataAccess.DTOs
         public string name { get; set; }
         public string description { get; set; }
 
-        public BlogCategoryDTO(BlogCategoryModel blogCategory)
-        {
-            id = blogCategory.id;
-            name = blogCategory.name;
-            description = blogCategory.description;
-        }
+        //public BlogCategoryDTO(BlogCategoryModel blogCategory)
+        //{
+        //    id = blogCategory.id;
+        //    name = blogCategory.name;
+        //    description = blogCategory.description;
+        //}
     }
 }
