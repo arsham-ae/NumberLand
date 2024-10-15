@@ -12,7 +12,5 @@ namespace NumberLand.Models.Blogs
         public BlogModel blog { get; set; }
         public int categoryId { get; set; }
         public BlogCategoryModel category { get; set; }
-
-        //search  by cat should be add
     }
 }

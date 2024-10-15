@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using Markdig;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
@@ -20,10 +21,12 @@ namespace NumberLand.DataAccess.Repository
         }
         public void Patch(int id, [FromBody] JsonPatchDocument<PageeModel> patchDoc)
         {
+            var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             var page = _context.Page.FirstOrDefault(p => p.id == id);
             if (page != null && patchDoc != null)
             {
                 patchDoc.ApplyTo(page);
+                page.content = Markdown.ToHtml(page.content, pipeLine);
                 _context.SaveChanges();
             }
         }
