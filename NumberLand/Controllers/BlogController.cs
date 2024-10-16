@@ -17,10 +17,12 @@ namespace NumberLand.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public BlogController(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly ILogger<BlogController> _logger;
+        public BlogController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<BlogController> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -83,8 +85,6 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            blog.content = Markdown.ToHtml(blog.content, pipeLine);
             var mappedBlog = _mapper.Map<BlogModel>(blog);
             mappedBlog.blogCategories = new List<BlogCategoryJoinModel>();
             foreach (var categoryId in blog.blogCategories)

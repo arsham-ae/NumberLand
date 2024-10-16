@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
@@ -35,7 +36,40 @@ namespace NumberLand.DataAccess.Repository
 
         public void Update(BlogModel blog)
         {
-            _context.Update(blog);
+            var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+            var existingBlog = _context.Blog
+            .Include(b => b.blogCategories)
+            .FirstOrDefault(b => b.id == blog.id);
+
+            if (existingBlog == null)
+            {
+                throw new KeyNotFoundException("Not Found!");
+            }
+
+            existingBlog.title = blog.title;
+            blog.content = Markdown.ToHtml(blog.content, pipeLine);
+            existingBlog.content = blog.content;
+            existingBlog.featuredImagePath = blog.featuredImagePath;
+            existingBlog.updateAt = DateTime.Now;
+            existingBlog.authorId = blog.authorId;
+            existingBlog.isPublished = blog.isPublished;
+
+            existingBlog.blogCategories.Clear();
+
+            if (blog.blogCategories != null && blog.blogCategories.Any())
+            {
+                // Step 5: Add the updated BlogCategories
+                foreach (var category in blog.blogCategories)
+                {
+                    existingBlog.blogCategories.Add(new BlogCategoryJoinModel
+                    {
+                        blogId = blog.id,
+                        categoryId = category.categoryId
+                    });
+                }
+            }
+
+            _context.Update(existingBlog);
             _context.SaveChanges();
         }
     }
