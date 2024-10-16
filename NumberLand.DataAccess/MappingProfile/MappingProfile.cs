@@ -2,6 +2,7 @@
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Blogs;
 using NumberLand.Models.Numbers;
+using NumberLand.Models.Pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,12 @@ namespace NumberLand.DataAccess.MappingProfile
                 .ForMember(dest => dest.description, opt => opt.MapFrom(src => src.category.description));
             CreateMap<BlogCategoryDTO, BlogCategoryModel>();
             CreateMap<BlogCategoryModel, BlogCategoryDTO>();
+            CreateMap<PageDTO, PageeModel>();
+            CreateMap<PageeModel, PageDTO>();
+            CreateMap<CreatePageDTO, PageeModel>();
+            CreateMap<PageCategoryDTO, PageCategoryModel>();
+            CreateMap<PageCategoryModel, PageCategoryDTO>();
+            CreateMap<CreatePageCategoryDTO, PageCategoryModel>();
         }
     }
 }

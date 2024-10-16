@@ -1,8 +1,10 @@
-﻿using Markdig;
+﻿using AutoMapper;
+using Markdig;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
 using NumberLand.Models.Pages;
@@ -16,14 +18,16 @@ namespace NumberLand.Controllers
     public class PageController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public PageController(IUnitOfWork unitOfWork)
+        private readonly IMapper    _mapper;
+        public PageController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var getall = _unitOfWork.page.GetAll(includeProp: "category");
+            var getall = _mapper.Map<List<PageDTO>>(_unitOfWork.page.GetAll(includeProp: "category"));
             return Ok(getall);
         }
         [HttpGet("{id}")]
@@ -33,37 +37,39 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.page.Get(o => o.id == id, includeProp: "category");
+            var get = _mapper.Map<PageDTO>(_unitOfWork.page.Get(o => o.id == id, includeProp: "category"));
             return Ok(get);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(PageeModel page)
+        public async Task<IActionResult> Create(CreatePageDTO page)
         {
             if (page == null || page.id != 0)
             {
                 return BadRequest();
             }
+            var mappedPage = _mapper.Map<PageeModel>(page);
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            page.content = Markdown.ToHtml(page.content, pipeLine);
-            page.slug = SlugHelper.GenerateSlug(page.title);
-            _unitOfWork.page.Add(page);
+            mappedPage.content = Markdown.ToHtml(mappedPage.content, pipeLine);
+            mappedPage.slug = SlugHelper.GenerateSlug(mappedPage.title);
+            _unitOfWork.page.Add(mappedPage);
             _unitOfWork.Save();
             return Ok(page);
 
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, PageeModel page)
+        public async Task<IActionResult> Edit(int id, CreatePageDTO page)
         {
             if (page == null || page.id == 0)
             {
                 return BadRequest();
             }
+            var mappedPage = _mapper.Map<PageeModel>(page);
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            page.content = Markdown.ToHtml(page.content, pipeLine);
-            page.slug = SlugHelper.GenerateSlug(page.title);
-            _unitOfWork.page.Update(page);
+            mappedPage.content = Markdown.ToHtml(mappedPage.content, pipeLine);
+            mappedPage.slug = SlugHelper.GenerateSlug(mappedPage.title);
+            _unitOfWork.page.Update(mappedPage);
             return Ok(page);
         }
 
@@ -105,7 +111,7 @@ namespace NumberLand.Controllers
         [HttpGet("Category")]
         public async Task<IActionResult> CatGetAll()
         {
-            var getall = _unitOfWork.pageCategory.GetAll(includeProp: "parentCategory");
+            var getall = _mapper.Map<List<PageCategoryDTO>>(_unitOfWork.pageCategory.GetAll(includeProp: "parentCategory"));
             return Ok(getall);
         }
         [HttpGet("Category/{id}")]
@@ -115,31 +121,33 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.pageCategory.Get(o => o.id == id, includeProp: "parentCategory");
+            var get = _mapper.Map<PageCategoryDTO>(_unitOfWork.pageCategory.Get(o => o.id == id, includeProp: "parentCategory"));
             return Ok(get);
         }
 
         [HttpPost("Category")]
-        public async Task<IActionResult> CatCreate(PageCategoryModel pageCategory)
+        public async Task<IActionResult> CatCreate(CreatePageCategoryDTO pageCategory)
         {
             if (pageCategory == null || pageCategory.id != 0)
             {
                 return BadRequest();
             }
-            _unitOfWork.pageCategory.Add(pageCategory);
+            var mappedCat = _mapper.Map<PageCategoryModel>(pageCategory);
+            _unitOfWork.pageCategory.Add(mappedCat);
             _unitOfWork.Save();
             return Ok(pageCategory);
 
         }
 
         [HttpPut("Category/{id}")]
-        public async Task<IActionResult> CatEdit(int id, PageCategoryModel pageCategory)
+        public async Task<IActionResult> CatEdit(int id, CreatePageCategoryDTO pageCategory)
         {
             if (pageCategory == null || pageCategory.id == 0)
             {
                 return BadRequest();
             }
-            _unitOfWork.pageCategory.Update(pageCategory);
+            var mappedCat = _mapper.Map<PageCategoryModel>(pageCategory);
+            _unitOfWork.pageCategory.Update(mappedCat);
             return Ok(pageCategory);
         }
 
