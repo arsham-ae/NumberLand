@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
 using NumberLand.Models.Pages;
+using NumberLand.Utility;
 
 namespace NumberLand.Controllers
 {
@@ -40,6 +41,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
+            author.slug = SlugHelper.GenerateSlug(author.name);
             _unitOfWork.author.Add(author);
             _unitOfWork.Save();
             return Ok(author);
@@ -53,6 +55,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
+            author.slug = SlugHelper.GenerateSlug(author.name);
             _unitOfWork.author.Update(author);
             return Ok(author);
         }

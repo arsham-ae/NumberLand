@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
+using NumberLand.Utility;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NumberLand.Controllers
@@ -42,6 +43,7 @@ namespace NumberLand.Controllers
                 return BadRequest();
             }
             var mappedNum = _mapper.Map<NumberModel>(number);
+            mappedNum.slug = SlugHelper.GenerateSlug(number.number);
             _unitOfWork.number.Add(mappedNum);
             _unitOfWork.Save();
             return Ok(number);
@@ -54,6 +56,7 @@ namespace NumberLand.Controllers
                 BadRequest();
             }
             var mappedNum = _mapper.Map<NumberModel>(number);
+            mappedNum.slug = SlugHelper.GenerateSlug(number.number);
             _unitOfWork.number.Update(mappedNum);
             return Ok(number);
         }

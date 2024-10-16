@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
 using NumberLand.Models.Pages;
+using NumberLand.Utility;
 using System.Reflection.Metadata;
 
 namespace NumberLand.Controllers
@@ -45,6 +46,7 @@ namespace NumberLand.Controllers
             }
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             page.content = Markdown.ToHtml(page.content, pipeLine);
+            page.slug = SlugHelper.GenerateSlug(page.title);
             _unitOfWork.page.Add(page);
             _unitOfWork.Save();
             return Ok(page);
@@ -60,6 +62,7 @@ namespace NumberLand.Controllers
             }
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             page.content = Markdown.ToHtml(page.content, pipeLine);
+            page.slug = SlugHelper.GenerateSlug(page.title);
             _unitOfWork.page.Update(page);
             return Ok(page);
         }

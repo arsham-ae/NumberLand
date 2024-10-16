@@ -12,6 +12,7 @@ namespace NumberLand.Models.Numbers
     {
         [Key]
         public int id { get; set; }
+        public string slug { get; set; }
         public string number { get; set; }
         public string application { get; set; }
         public int categoryId { get; set; }

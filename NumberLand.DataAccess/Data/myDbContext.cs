@@ -57,14 +57,16 @@ namespace NumberLand.DataAccess.Data
                     id = 1,
                     operatorCode = "43",
                     country = "UK",
-                    quantity = 20
+                    quantity = 20,
+                    slug = "eg"
                 },
                 new OperatorModel
                 {
                     id = 2,
                     operatorCode = "53",
                     country = "US",
-                    quantity = 10
+                    quantity = 10,
+                    slug = "asd"
                 });
 
             modelBuilder.Entity<CategoryModel>().HasData(
@@ -72,19 +74,22 @@ namespace NumberLand.DataAccess.Data
                 {
                     id = 1,
                     name = "Regular",
-                    description = ""
+                    description = "",
+                    slug = "ed"
                 },
                 new CategoryModel
                 {
                     id = 2,
                     name = "Rental",
-                    description = ""
+                    description = "",
+                    slug = "ss"
                 },
                 new CategoryModel
                 {
                     id = 3,
                     name = "Permanent",
-                    description = ""
+                    description = "",
+                    slug = "sf"
                 });
 
             modelBuilder.Entity<BlogCategoryModel>().HasData(
@@ -92,7 +97,8 @@ namespace NumberLand.DataAccess.Data
                 {
                     id = 1,
                     name = "tech",
-                    description = "Heloooo"
+                    description = "Heloooo",
+                    slug = "a"
                 });
 
         }

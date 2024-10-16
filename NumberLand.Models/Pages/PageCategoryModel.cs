@@ -12,6 +12,7 @@ namespace NumberLand.Models.Pages
     {
         [Key]
         public int id { get; set; }
+        public string slug { get; set; }
         public string name { get; set; }
         public int? parentCategoryId { get; set; }
         [ForeignKey("parentCategoryId")]

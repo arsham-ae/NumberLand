@@ -12,6 +12,7 @@ namespace NumberLand.Models.Pages
     {
         [Key]
         public int id { get; set; }
+        public string slug { get; set; }
         public string title { get; set; }
         public string content { get; set; }
         public int categoryId { get; set; }

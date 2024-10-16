@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NumberLand.DataAccess\NumberLand.DataAccess.csproj" />
+    <ProjectReference Include="..\NumberLand.Utility\NumberLand.Utility.csproj" />
   </ItemGroup>
 
 </Project>

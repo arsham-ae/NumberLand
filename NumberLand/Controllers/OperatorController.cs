@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
+using NumberLand.Utility;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NumberLand.Controllers
 {
@@ -40,6 +42,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
+            operatorModel.slug = SlugHelper.GenerateSlug(operatorModel.operatorCode);
             _unitOfWork.nOperator.Add(operatorModel);
             _unitOfWork.Save();
             return Ok(operatorModel);
@@ -53,6 +56,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
+            operatorModel.slug = SlugHelper.GenerateSlug(operatorModel.operatorCode);
             _unitOfWork.nOperator.Update(operatorModel);
             return Ok(operatorModel);
         }

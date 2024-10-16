@@ -8,6 +8,8 @@ using NumberLand.DataAccess.Repository;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
 using NumberLand.Models.Pages;
+using NumberLand.Utility;
+using System.Reflection.Metadata;
 
 namespace NumberLand.Controllers
 {
@@ -63,6 +65,7 @@ namespace NumberLand.Controllers
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             blog.content = Markdown.ToHtml(blog.content, pipeLine);
             var mappedBlog = _mapper.Map<BlogModel>(blog);
+            mappedBlog.slug = SlugHelper.GenerateSlug(blog.title);
             mappedBlog.blogCategories = new List<BlogCategoryJoinModel>();
             foreach (var categoryId in blog.blogCategories)
             {
@@ -71,6 +74,7 @@ namespace NumberLand.Controllers
                     categoryId = categoryId
                 });
             }
+
 
             _unitOfWork.blog.Add(mappedBlog);
             _unitOfWork.Save();
@@ -86,6 +90,7 @@ namespace NumberLand.Controllers
                 return BadRequest();
             }
             var mappedBlog = _mapper.Map<BlogModel>(blog);
+            mappedBlog.slug = SlugHelper.GenerateSlug(blog.title);
             mappedBlog.blogCategories = new List<BlogCategoryJoinModel>();
             foreach (var categoryId in blog.blogCategories)
             {
@@ -157,6 +162,7 @@ namespace NumberLand.Controllers
                 return BadRequest();
             }
             var mappedCat = _mapper.Map<BlogCategoryModel>(blogCategory);
+            mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.name);
             _unitOfWork.blogCategory.Add(mappedCat);
             _unitOfWork.Save();
             return Ok(blogCategory);
@@ -171,6 +177,7 @@ namespace NumberLand.Controllers
                 return BadRequest();
             }
             var mappedCat = _mapper.Map<BlogCategoryModel>(blogCategory);
+            mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.name);
             _unitOfWork.blogCategory.Update(mappedCat);
             return Ok(blogCategory);
         }
