@@ -27,7 +27,6 @@ namespace NumberLand.DataAccess.DTOs
         public string content { get; set; }
         public int authorId { get; set; }
         public List<int> blogCategories { get; set; }
-        public string featuredImagePath { get; set; }
         public DateTime createAt { get; set; } = DateTime.Now;
         public DateTime updateAt { get; set; }
         public DateTime publishedAt { get; set; }

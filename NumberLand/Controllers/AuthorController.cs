@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
 using NumberLand.Models.Pages;
 using NumberLand.Utility;
+using System.Reflection.Metadata;
 
 namespace NumberLand.Controllers
 {
@@ -13,9 +16,13 @@ namespace NumberLand.Controllers
     public class AuthorController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public AuthorController(IUnitOfWork unitOfWork)
+        private readonly IWebHostEnvironment _environment;
+        private readonly IMapper _mapper;
+        public AuthorController(IUnitOfWork unitOfWork, IWebHostEnvironment environment, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _environment = environment;
+            _mapper = mapper;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -35,28 +42,70 @@ namespace NumberLand.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(AuthorModel author)
+        public async Task<IActionResult> Create(AuthorDTO author, IFormFile file)
         {
             if (author == null || author.id != 0)
             {
                 return BadRequest();
             }
-            author.slug = SlugHelper.GenerateSlug(author.name);
-            _unitOfWork.author.Add(author);
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file was uploaded.");
+            }
+
+            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "authors");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            var image = Path.Combine("images/authors", uniqueFileName);
+            var mappedAuthor = _mapper.Map<AuthorModel>(author);
+            mappedAuthor.imagePath = image.Replace("\\", "/");
+            mappedAuthor.slug = SlugHelper.GenerateSlug(author.name);
+            _unitOfWork.author.Add(mappedAuthor);
             _unitOfWork.Save();
-            return Ok(author);
+            return Ok(mappedAuthor);
 
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, AuthorModel author)
+        public async Task<IActionResult> Edit(int id, AuthorDTO author, IFormFile file)
         {
             if (author == null || author.id == 0)
             {
                 return BadRequest();
             }
-            author.slug = SlugHelper.GenerateSlug(author.name);
-            _unitOfWork.author.Update(author);
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file was uploaded.");
+            }
+
+            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "authors");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            var image = Path.Combine("images/authors", uniqueFileName);
+            var mappedAuthor = _mapper.Map<AuthorModel>(author);
+            mappedAuthor.imagePath = image.Replace("\\", "/");
+            mappedAuthor.slug = SlugHelper.GenerateSlug(author.name);
+            _unitOfWork.author.Update(mappedAuthor);
             return Ok(author);
         }
 

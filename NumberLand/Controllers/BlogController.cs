@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Markdig;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository;
 using NumberLand.DataAccess.Repository.IRepository;
@@ -20,11 +22,13 @@ namespace NumberLand.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<BlogController> _logger;
-        public BlogController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<BlogController> logger)
+        private readonly IWebHostEnvironment _environment;
+        public BlogController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<BlogController> logger, IWebHostEnvironment environment)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
+            _environment = environment;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -56,15 +60,36 @@ namespace NumberLand.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateBlogDTO blog)
+        public async Task<IActionResult> Create(CreateBlogDTO blog, IFormFile file)
         {
             if (blog == null || blog.id != 0)
             {
                 return BadRequest();
             }
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file was uploaded.");
+            }
+
+            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "blogs");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            var image = Path.Combine("images/blogs", uniqueFileName);
+
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             blog.content = Markdown.ToHtml(blog.content, pipeLine);
             var mappedBlog = _mapper.Map<BlogModel>(blog);
+            mappedBlog.featuredImagePath = image.Replace("\\", "/");
             mappedBlog.slug = SlugHelper.GenerateSlug(blog.title);
             mappedBlog.blogCategories = new List<BlogCategoryJoinModel>();
             foreach (var categoryId in blog.blogCategories)
@@ -79,17 +104,40 @@ namespace NumberLand.Controllers
             _unitOfWork.blog.Add(mappedBlog);
             _unitOfWork.Save();
             return Ok(blog);
-
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, CreateBlogDTO blog)
+        public async Task<IActionResult> Edit(int id, CreateBlogDTO blog, IFormFile file)
         {
             if (blog == null || blog.id == 0)
             {
                 return BadRequest();
             }
+            if (blog == null || blog.id != 0)
+            {
+                return BadRequest();
+            }
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file was uploaded.");
+            }
+
+            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "uploads");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            var image = Path.Combine("images/uploads", uniqueFileName);
             var mappedBlog = _mapper.Map<BlogModel>(blog);
+            mappedBlog.featuredImagePath = image.Replace("\\", "/");
             mappedBlog.slug = SlugHelper.GenerateSlug(blog.title);
             mappedBlog.blogCategories = new List<BlogCategoryJoinModel>();
             foreach (var categoryId in blog.blogCategories)
@@ -135,6 +183,43 @@ namespace NumberLand.Controllers
             _unitOfWork.Save();
             return Ok(get);
         }
+
+        //[HttpPost("UploadImage")]
+        //public async Task<IActionResult> UploadImage(IFormFile file, int blogId)
+        //{
+        //    if (file == null || file.Length == 0)
+        //    {
+        //        return BadRequest("No file was uploaded.");
+        //    }
+
+        //    var blog = _unitOfWork.blog.Get(b => b.id == blogId);
+        //    if (blog == null)
+        //    {
+        //        return NotFound("Blog not found.");
+        //    }
+
+        //    var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "uploads");
+        //    if (!Directory.Exists(uploadsFolder))
+        //    {
+        //        Directory.CreateDirectory(uploadsFolder);
+        //    }
+        //    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+        //    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        //    using (var fileStream = new FileStream(filePath, FileMode.Create))
+        //    {
+        //        await file.CopyToAsync(fileStream);
+        //    }
+
+        //    var image = Path.Combine("images/uploads", uniqueFileName);
+        //    blog.featuredImagePath = image.Replace("\\", "/");
+        //    //blog.featuredImagePath = $"{Request.Scheme}://{Request.Host}/{image}";
+
+        //    _unitOfWork.blog.Update(blog);
+        //    _unitOfWork.Save();
+
+        //    return Ok(blog.featuredImagePath);
+        //}
 
 
         [HttpGet("Category")]

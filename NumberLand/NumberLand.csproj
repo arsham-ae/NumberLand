@@ -26,4 +26,8 @@
     <ProjectReference Include="..\NumberLand.Utility\NumberLand.Utility.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Images\" />
+  </ItemGroup>
+
 </Project>

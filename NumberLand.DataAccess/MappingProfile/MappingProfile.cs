@@ -33,6 +33,7 @@ namespace NumberLand.DataAccess.MappingProfile
             CreateMap<PageCategoryDTO, PageCategoryModel>();
             CreateMap<PageCategoryModel, PageCategoryDTO>();
             CreateMap<CreatePageCategoryDTO, PageCategoryModel>();
+            CreateMap<AuthorDTO, AuthorModel>();
         }
     }
 }
