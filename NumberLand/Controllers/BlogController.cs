@@ -1,17 +1,11 @@
 ﻿using AutoMapper;
 using Markdig;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.DTOs;
-using NumberLand.DataAccess.Repository;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
-using NumberLand.Models.Pages;
 using NumberLand.Utility;
-using System.Reflection.Metadata;
 
 namespace NumberLand.Controllers
 {

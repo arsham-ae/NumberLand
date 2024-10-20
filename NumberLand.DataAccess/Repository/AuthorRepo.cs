@@ -3,11 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NumberLand.DataAccess.Repository
 {

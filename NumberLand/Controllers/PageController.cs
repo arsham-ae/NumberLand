@@ -1,15 +1,11 @@
 ﻿using AutoMapper;
 using Markdig;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models.Numbers;
 using NumberLand.Models.Pages;
 using NumberLand.Utility;
-using System.Reflection.Metadata;
 
 namespace NumberLand.Controllers
 {
@@ -18,7 +14,7 @@ namespace NumberLand.Controllers
     public class PageController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper    _mapper;
+        private readonly IMapper _mapper;
         public PageController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
