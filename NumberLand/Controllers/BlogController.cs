@@ -54,11 +54,11 @@ namespace NumberLand.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateBlogDTO blog, IFormFile file)
+        public async Task<IActionResult> Create([FromForm] CreateBlogDTO blog, [FromForm] IFormFile file)
         {
             if (blog == null || blog.id != 0)
             {
-                return BadRequest();
+                return BadRequest("Blog Id Should Be 0!");
             }
             if (file == null || file.Length == 0)
             {
@@ -85,6 +85,9 @@ namespace NumberLand.Controllers
             var mappedBlog = _mapper.Map<BlogModel>(blog);
             mappedBlog.featuredImagePath = image.Replace("\\", "/");
             mappedBlog.slug = SlugHelper.GenerateSlug(blog.title);
+            mappedBlog.createAt = DateTime.Now;
+            mappedBlog.updateAt = DateTime.Now;
+            mappedBlog.publishedAt = DateTime.Now;
             mappedBlog.blogCategories = new List<BlogCategoryJoinModel>();
             foreach (var categoryId in blog.blogCategories)
             {
@@ -101,7 +104,7 @@ namespace NumberLand.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, CreateBlogDTO blog, IFormFile file)
+        public async Task<IActionResult> Edit(int id, [FromForm] CreateBlogDTO blog, [FromForm] IFormFile file)
         {
             if (blog == null || blog.id == 0)
             {

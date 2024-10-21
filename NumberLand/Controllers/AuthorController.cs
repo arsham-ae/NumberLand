@@ -39,7 +39,7 @@ namespace NumberLand.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(AuthorDTO author, IFormFile file)
+        public async Task<IActionResult> Create([FromForm] AuthorDTO author, [FromForm] IFormFile file)
         {
             if (author == null || author.id != 0)
             {
@@ -74,7 +74,7 @@ namespace NumberLand.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, AuthorDTO author, IFormFile file)
+        public async Task<IActionResult> Edit(int id, [FromForm] AuthorDTO author, [FromForm] IFormFile file)
         {
             if (author == null || author.id == 0)
             {
