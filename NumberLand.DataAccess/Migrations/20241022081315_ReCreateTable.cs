@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -7,7 +8,7 @@
 namespace NumberLand.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateTables : Migration
+    public partial class ReCreateTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,6 +19,7 @@ namespace NumberLand.DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     imagePath = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -33,6 +35,7 @@ namespace NumberLand.DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -47,7 +50,9 @@ namespace NumberLand.DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -60,6 +65,7 @@ namespace NumberLand.DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     operatorCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     country = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false)
@@ -75,6 +81,7 @@ namespace NumberLand.DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     parentCategoryId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -94,6 +101,7 @@ namespace NumberLand.DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     authorId = table.Column<int>(type: "int", nullable: false),
@@ -120,12 +128,13 @@ namespace NumberLand.DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     number = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     application = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     categoryId = table.Column<int>(type: "int", nullable: false),
                     operatorId = table.Column<int>(type: "int", nullable: false),
                     expireTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    price = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -150,6 +159,7 @@ namespace NumberLand.DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     categoryId = table.Column<int>(type: "int", nullable: false),
@@ -191,22 +201,27 @@ namespace NumberLand.DataAccess.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "BlogCategory",
+                columns: new[] { "id", "description", "name", "slug" },
+                values: new object[] { 1, "Heloooo", "tech", "a" });
+
+            migrationBuilder.InsertData(
                 table: "Category",
-                columns: new[] { "id", "name" },
+                columns: new[] { "id", "description", "name", "slug" },
                 values: new object[,]
                 {
-                    { 1, "Regular" },
-                    { 2, "Rental" },
-                    { 3, "Permanent" }
+                    { 1, "", "Regular", "ed" },
+                    { 2, "", "Rental", "ss" },
+                    { 3, "", "Permanent", "sf" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Operator",
-                columns: new[] { "id", "country", "operatorCode", "quantity" },
+                columns: new[] { "id", "country", "operatorCode", "quantity", "slug" },
                 values: new object[,]
                 {
-                    { 1, "UK", "43", 20 },
-                    { 2, "US", "53", 10 }
+                    { 1, "UK", "43", 20, "eg" },
+                    { 2, "US", "53", 10, "asd" }
                 });
 
             migrationBuilder.CreateIndex(

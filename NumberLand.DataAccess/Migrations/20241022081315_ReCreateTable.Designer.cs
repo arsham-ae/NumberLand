@@ -12,8 +12,8 @@ using NumberLand.DataAccess.Data;
 namespace NumberLand.DataAccess.Migrations
 {
     [DbContext(typeof(myDbContext))]
-    [Migration("20241013183029_addDescriptionToCategory")]
-    partial class addDescriptionToCategory
+    [Migration("20241022081315_ReCreateTable")]
+    partial class ReCreateTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,10 @@ namespace NumberLand.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("slug")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -81,9 +85,22 @@ namespace NumberLand.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("id");
 
                     b.ToTable("BlogCategory");
+
+                    b.HasData(
+                        new
+                        {
+                            id = 1,
+                            description = "Heloooo",
+                            name = "tech",
+                            slug = "a"
+                        });
                 });
 
             modelBuilder.Entity("NumberLand.Models.Blogs.BlogModel", b =>
@@ -113,6 +130,10 @@ namespace NumberLand.DataAccess.Migrations
 
                     b.Property<DateTime>("publishedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("title")
                         .IsRequired()
@@ -144,6 +165,10 @@ namespace NumberLand.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("id");
 
                     b.ToTable("Category");
@@ -153,19 +178,22 @@ namespace NumberLand.DataAccess.Migrations
                         {
                             id = 1,
                             description = "",
-                            name = "Regular"
+                            name = "Regular",
+                            slug = "ed"
                         },
                         new
                         {
                             id = 2,
                             description = "",
-                            name = "Rental"
+                            name = "Rental",
+                            slug = "ss"
                         },
                         new
                         {
                             id = 3,
                             description = "",
-                            name = "Permanent"
+                            name = "Permanent",
+                            slug = "sf"
                         });
                 });
 
@@ -194,7 +222,10 @@ namespace NumberLand.DataAccess.Migrations
                     b.Property<int>("operatorId")
                         .HasColumnType("int");
 
-                    b.Property<string>("price")
+                    b.Property<decimal>("price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("slug")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -226,6 +257,10 @@ namespace NumberLand.DataAccess.Migrations
                     b.Property<int>("quantity")
                         .HasColumnType("int");
 
+                    b.Property<string>("slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("id");
 
                     b.ToTable("Operator");
@@ -236,14 +271,16 @@ namespace NumberLand.DataAccess.Migrations
                             id = 1,
                             country = "UK",
                             operatorCode = "43",
-                            quantity = 20
+                            quantity = 20,
+                            slug = "eg"
                         },
                         new
                         {
                             id = 2,
                             country = "US",
                             operatorCode = "53",
-                            quantity = 10
+                            quantity = 10,
+                            slug = "asd"
                         });
                 });
 
@@ -261,6 +298,10 @@ namespace NumberLand.DataAccess.Migrations
 
                     b.Property<int?>("parentCategoryId")
                         .HasColumnType("int");
+
+                    b.Property<string>("slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
@@ -286,6 +327,10 @@ namespace NumberLand.DataAccess.Migrations
 
                     b.Property<bool>("isVisible")
                         .HasColumnType("bit");
+
+                    b.Property<string>("slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("title")
                         .IsRequired()

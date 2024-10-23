@@ -1,10 +1,16 @@
 ﻿using AutoMapper;
+using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using NumberLand.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
+using NumberLand.Query;
 using NumberLand.Utility;
+using System.ComponentModel.DataAnnotations;
 
 namespace NumberLand.Controllers
 {
@@ -12,69 +18,71 @@ namespace NumberLand.Controllers
     [ApiController]
     public class NumberController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        public NumberController(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IMediator _mediator;
+        public NumberController(IMediator mediator)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            _mediator = mediator;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var getall = _mapper.Map<List<NumberDTO>>(_unitOfWork.number.GetAll(includeProp: "category,nOperator"));
-            return Ok(getall);
+            var query = new GetAllNumbersQuery();
+            var result = await _mediator.Send(query);
+            if (result.IsNullOrEmpty())
+            {
+                return NotFound("There Isn't Any Number To Show");
+            }
+            return Ok(result);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var get = _unitOfWork.number.Get(n => n.id == id, includeProp: "category,nOperator");
-            return Ok(get);
+            var query = new GetNumberByIdQuery(id);
+            var result = await _mediator.Send(query);
+            if (result == null)
+            {
+                return NotFound($"Number With Id {id} Not Found!");
+            }
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateNumberDTO number)
+        public async Task<IActionResult> Create(CreateNumberCommand number)
         {
-            if (number == null || number.id != 0)
-            {
-                return BadRequest();
-            }
-            var mappedNum = _mapper.Map<NumberModel>(number);
-            mappedNum.slug = SlugHelper.GenerateSlug(number.number);
-            _unitOfWork.number.Add(mappedNum);
-            _unitOfWork.Save();
-            return Ok(number);
+            var result = await _mediator.Send(number);
+            return Ok(result);
         }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, CreateNumberDTO number)
+        public async Task<IActionResult> Edit(int id, UpdateNumberCommand number)
         {
-            if (number == null || id == 0)
+            if (number == null)
             {
-                BadRequest();
+                return BadRequest("Invalid Number Data!");
             }
-            var mappedNum = _mapper.Map<NumberModel>(number);
-            mappedNum.slug = SlugHelper.GenerateSlug(number.number);
-            _unitOfWork.number.Update(mappedNum);
-            return Ok(number);
+            var result = await _mediator.Send(number);
+            return Ok(result);
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<NumberModel> patchDoc)
         {
-            _unitOfWork.number.Patch(id, patchDoc);
-            return Ok(patchDoc);
+            var result = await _mediator.Send(new PatchNumberCommand(id, patchDoc));
+            if (result == null)
+            {
+                return BadRequest("Invalid Data!");
+            }
+            return Ok(result);
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Remove(int id)
         {
             if (id == null || id == 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Id!");
             }
-            var get = _unitOfWork.number.Get(o => o.id == id);
-            _unitOfWork.number.Delete(get);
-            _unitOfWork.Save();
-            return Ok(get);
+            var result = await _mediator.Send(new DeleteNumberCommand(id));
+            return Ok(result);
         }
 
         [HttpDelete]
@@ -82,12 +90,10 @@ namespace NumberLand.Controllers
         {
             if (ids == null || !ids.Any())
             {
-                return BadRequest();
+                return BadRequest("Invalid Data!");
             }
-            var get = _unitOfWork.number.GetAll().Where(p => ids.Contains(p.id)).ToList();
-            _unitOfWork.number.DeleteRange(get);
-            _unitOfWork.Save();
-            return Ok(get);
+            var result = await _mediator.Send(new DeleteRangeNumberCommand(ids));
+            return Ok(result);
         }
     }
 }

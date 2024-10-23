@@ -219,9 +219,8 @@ namespace NumberLand.DataAccess.Migrations
                     b.Property<int>("operatorId")
                         .HasColumnType("int");
 
-                    b.Property<string>("price")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("slug")
                         .IsRequired()

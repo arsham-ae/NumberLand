@@ -18,6 +18,6 @@ namespace NumberLand.Models.Numbers
         [DisplayName("Operator")]
         public OperatorModel nOperator { get; set; }
         public DateTime expireTime { get; set; }
-        public string price { get; set; }
+        public decimal price { get; set; }
     }
 }

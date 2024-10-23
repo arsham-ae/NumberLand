@@ -1,0 +1,21 @@
+﻿using AutoMapper;
+using MediatR;
+using NumberLand.DataAccess.Repository.IRepository;
+
+namespace NumberLand.Command.Handler
+{
+    public class PatchNumberHandler : IRequestHandler<PatchNumberCommand, string>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+
+        public PatchNumberHandler(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+        public async Task<string> Handle(PatchNumberCommand request, CancellationToken cancellationToken)
+        {
+            _unitOfWork.number.Patch(request.Id, request.PatchDoc);
+            return $"Number With Id {request.Id} Updated SuccessFully!";
+        }
+    }
+}
