@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
+using NumberLand.Command.Number;
 using NumberLand.DataAccess.Repository.IRepository;
 
-namespace NumberLand.Command.Handler
+namespace NumberLand.Command.Handler.Number
 {
     public class PatchNumberHandler : IRequestHandler<PatchNumberCommand, string>
     {

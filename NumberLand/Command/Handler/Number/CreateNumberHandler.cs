@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using MediatR;
+using NumberLand.Command.Number;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
 using NumberLand.Utility;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace NumberLand.Command.Handler
+namespace NumberLand.Command.Handler.Number
 {
     public class CreateNumberHandler : IRequestHandler<CreateNumberCommand, string>
     {

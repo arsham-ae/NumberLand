@@ -1,8 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
+using NumberLand.Command.Number;
 using NumberLand.DataAccess.Repository.IRepository;
 
-namespace NumberLand.Command.Handler
+namespace NumberLand.Command.Handler.Number
 {
     public class DeleteNumberHandler : IRequestHandler<DeleteNumberCommand, string>
     {

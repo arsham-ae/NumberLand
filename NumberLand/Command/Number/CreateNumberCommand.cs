@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using NumberLand.DataAccess.DTOs;
 
-namespace NumberLand.Command
+namespace NumberLand.Command.Number
 {
     public class CreateNumberCommand : IRequest<string>
     {

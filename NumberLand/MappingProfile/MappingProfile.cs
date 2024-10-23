@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using NumberLand.Command;
+using NumberLand.Command.Number;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Blogs;
 using NumberLand.Models.Numbers;

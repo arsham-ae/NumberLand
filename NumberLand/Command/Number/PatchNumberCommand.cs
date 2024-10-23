@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using NumberLand.Models.Numbers;
 
-namespace NumberLand.Command
+namespace NumberLand.Command.Number
 {
     public class PatchNumberCommand : IRequest<string>
     {

@@ -1,16 +1,10 @@
-﻿using AutoMapper;
-using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using NumberLand.Command;
-using NumberLand.DataAccess.DTOs;
-using NumberLand.DataAccess.Repository.IRepository;
+using NumberLand.Command.Number;
 using NumberLand.Models.Numbers;
 using NumberLand.Query;
-using NumberLand.Utility;
-using System.ComponentModel.DataAnnotations;
 
 namespace NumberLand.Controllers
 {
@@ -24,6 +18,8 @@ namespace NumberLand.Controllers
             _mediator = mediator;
         }
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAll()
         {
             var query = new GetAllNumbersQuery();
@@ -35,6 +31,8 @@ namespace NumberLand.Controllers
             return Ok(result);
         }
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
             var query = new GetNumberByIdQuery(id);
@@ -47,6 +45,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create(CreateNumberCommand number)
         {
             var result = await _mediator.Send(number);
@@ -54,6 +54,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Edit(int id, UpdateNumberCommand number)
         {
             if (number == null)
@@ -65,6 +67,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<NumberModel> patchDoc)
         {
             var result = await _mediator.Send(new PatchNumberCommand(id, patchDoc));
@@ -75,6 +79,8 @@ namespace NumberLand.Controllers
             return Ok(result);
         }
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Remove(int id)
         {
             if (id == null || id == 0)
@@ -86,6 +92,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> RemoveRange([FromBody] List<int> ids)
         {
             if (ids == null || !ids.Any())

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace NumberLand.Command
+namespace NumberLand.Command.Number
 {
     public class UpdateNumberCommand : IRequest<UpdateNumberResponse>
     {
