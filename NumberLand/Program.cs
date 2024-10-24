@@ -1,7 +1,9 @@
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository;
 using NumberLand.DataAccess.Repository.IRepository;
+using NumberLand.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +19,7 @@ builder.Services.AddCors(options =>
             });
 });
 
-builder.Services.AddControllers().AddNewtonsoftJson();
+builder.Services.AddControllers().AddNewtonsoftJson().AddFluentValidation(fl => fl.RegisterValidatorsFromAssemblyContaining<CreateNumberValidator>());
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
