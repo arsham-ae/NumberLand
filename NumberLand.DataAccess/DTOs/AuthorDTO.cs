@@ -2,9 +2,9 @@
 {
     public class AuthorDTO
     {
-        public int id { get; set; }
-        public string slug { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
+        public int authorId { get; set; }
+        public string authorSlug { get; set; }
+        public string authorName { get; set; }
+        public string authorDescription { get; set; }
     }
 }

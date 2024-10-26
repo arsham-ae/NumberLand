@@ -18,9 +18,9 @@ namespace NumberLand.MappingProfile
             CreateMap<BlogModel, BlogDTO>()
                 .ForMember(dest => dest.blogCategories, opt => opt.MapFrom(src => src.blogCategories));
             CreateMap<BlogCategoryJoinModel, BlogCategoryDTO>()
-                .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.categoryId))
-                .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.category.name))
-                .ForMember(dest => dest.description, opt => opt.MapFrom(src => src.category.description));
+                .ForMember(dest => dest.BlogCategoryId, opt => opt.MapFrom(src => src.categoryId))
+                .ForMember(dest => dest.BlogCategoryName, opt => opt.MapFrom(src => src.category.name))
+                .ForMember(dest => dest.BlogCategoryDescription, opt => opt.MapFrom(src => src.category.description));
             CreateMap<BlogCategoryDTO, BlogCategoryModel>();
             CreateMap<BlogCategoryModel, BlogCategoryDTO>();
             CreateMap<PageDTO, PageeModel>();

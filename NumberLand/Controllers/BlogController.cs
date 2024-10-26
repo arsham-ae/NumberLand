@@ -56,7 +56,7 @@ namespace NumberLand.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateBlogDTO blog, [FromForm] IFormFile file)
         {
-            if (blog == null || blog.id != 0)
+            if (blog == null || blog.blogId != 0)
             {
                 return BadRequest("Blog Id Should Be 0!");
             }
@@ -81,10 +81,10 @@ namespace NumberLand.Controllers
             var image = Path.Combine("images/blogs", uniqueFileName);
 
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            blog.content = Markdown.ToHtml(blog.content, pipeLine);
+            blog.blogContent = Markdown.ToHtml(blog.blogContent, pipeLine);
             var mappedBlog = _mapper.Map<BlogModel>(blog);
             mappedBlog.featuredImagePath = image.Replace("\\", "/");
-            mappedBlog.slug = SlugHelper.GenerateSlug(blog.title);
+            mappedBlog.slug = SlugHelper.GenerateSlug(blog.blogTitle);
             mappedBlog.createAt = DateTime.Now;
             mappedBlog.updateAt = DateTime.Now;
             mappedBlog.publishedAt = DateTime.Now;
@@ -106,11 +106,11 @@ namespace NumberLand.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromForm] CreateBlogDTO blog, [FromForm] IFormFile file)
         {
-            if (blog == null || blog.id == 0)
+            if (blog == null || blog.blogId == 0)
             {
                 return BadRequest();
             }
-            if (blog == null || blog.id != 0)
+            if (blog == null || blog.blogId != 0)
             {
                 return BadRequest();
             }
@@ -135,7 +135,7 @@ namespace NumberLand.Controllers
             var image = Path.Combine("images/uploads", uniqueFileName);
             var mappedBlog = _mapper.Map<BlogModel>(blog);
             mappedBlog.featuredImagePath = image.Replace("\\", "/");
-            mappedBlog.slug = SlugHelper.GenerateSlug(blog.title);
+            mappedBlog.slug = SlugHelper.GenerateSlug(blog.blogTitle);
             mappedBlog.blogCategories = new List<BlogCategoryJoinModel>();
             foreach (var categoryId in blog.blogCategories)
             {
@@ -239,12 +239,12 @@ namespace NumberLand.Controllers
         [HttpPost("Category")]
         public async Task<IActionResult> CatCreate(BlogCategoryDTO blogCategory)
         {
-            if (blogCategory == null || blogCategory.id != 0)
+            if (blogCategory == null || blogCategory.BlogCategoryId != 0)
             {
                 return BadRequest();
             }
             var mappedCat = _mapper.Map<BlogCategoryModel>(blogCategory);
-            mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.name);
+            mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.BlogCategoryName);
             _unitOfWork.blogCategory.Add(mappedCat);
             _unitOfWork.Save();
             return Ok(blogCategory);
@@ -254,12 +254,12 @@ namespace NumberLand.Controllers
         [HttpPut("Category/{id}")]
         public async Task<IActionResult> CatEdit(int id, BlogCategoryDTO blogCategory)
         {
-            if (blogCategory == null || blogCategory.id == 0)
+            if (blogCategory == null || blogCategory.BlogCategoryId == 0)
             {
                 return BadRequest();
             }
             var mappedCat = _mapper.Map<BlogCategoryModel>(blogCategory);
-            mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.name);
+            mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.BlogCategoryName);
             _unitOfWork.blogCategory.Update(mappedCat);
             return Ok(blogCategory);
         }

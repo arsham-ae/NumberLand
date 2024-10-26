@@ -41,7 +41,7 @@ namespace NumberLand.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] AuthorDTO author, [FromForm] IFormFile file)
         {
-            if (author == null || author.id != 0)
+            if (author == null || author.authorId != 0)
             {
                 return BadRequest();
             }
@@ -66,7 +66,7 @@ namespace NumberLand.Controllers
             var image = Path.Combine("images/authors", uniqueFileName);
             var mappedAuthor = _mapper.Map<AuthorModel>(author);
             mappedAuthor.imagePath = image.Replace("\\", "/");
-            mappedAuthor.slug = SlugHelper.GenerateSlug(author.name);
+            mappedAuthor.slug = SlugHelper.GenerateSlug(author.authorName);
             _unitOfWork.author.Add(mappedAuthor);
             _unitOfWork.Save();
             return Ok(mappedAuthor);
@@ -76,7 +76,7 @@ namespace NumberLand.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, [FromForm] AuthorDTO author, [FromForm] IFormFile file)
         {
-            if (author == null || author.id == 0)
+            if (author == null || author.authorId == 0)
             {
                 return BadRequest();
             }
@@ -101,7 +101,7 @@ namespace NumberLand.Controllers
             var image = Path.Combine("images/authors", uniqueFileName);
             var mappedAuthor = _mapper.Map<AuthorModel>(author);
             mappedAuthor.imagePath = image.Replace("\\", "/");
-            mappedAuthor.slug = SlugHelper.GenerateSlug(author.name);
+            mappedAuthor.slug = SlugHelper.GenerateSlug(author.authorName);
             _unitOfWork.author.Update(mappedAuthor);
             return Ok(author);
         }
