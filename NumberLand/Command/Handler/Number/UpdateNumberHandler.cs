@@ -22,7 +22,7 @@ namespace NumberLand.Command.Handler.Number
         {
             var mappedNum = _mapper.Map<NumberModel>(request);
             mappedNum.slug = SlugHelper.GenerateSlug(request.number);
-            _unitOfWork.number.Update(mappedNum);
+            await _unitOfWork.number.Update(mappedNum);
             return new UpdateNumberResponse
             {
                 Id = mappedNum.id,

@@ -5,6 +5,7 @@ namespace NumberLand.DataAccess.DTOs
     public class BlogDTO
     {
         public int blogId { get; set; }
+        public string blogSlug { get; set; }
         public string blogTitle { get; set; }
         public string blogContent { get; set; }
         public AuthorModel blogAuthor { get; set; }
@@ -30,8 +31,9 @@ namespace NumberLand.DataAccess.DTOs
 
     public class BlogCategoryDTO
     {
-        public int BlogCategoryId { get; set; }
-        public string BlogCategoryName { get; set; }
-        public string BlogCategoryDescription { get; set; }
+        public int blogCategoryId { get; set; }
+        public string blogCategorySlug { get; set; }
+        public string blogCategoryName { get; set; }
+        public string blogCategoryDescription { get; set; }
     }
 }

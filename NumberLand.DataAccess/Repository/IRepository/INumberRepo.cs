@@ -6,7 +6,7 @@ namespace NumberLand.DataAccess.Repository.IRepository
 {
     public interface INumberRepo : IRepo<NumberModel>
     {
-        void Update(NumberModel upNumber);
-        void Patch(int id, [FromBody] JsonPatchDocument<NumberModel> patchDoc);
+        Task Update(NumberModel upNumber);
+        Task Patch(int id, [FromBody] JsonPatchDocument<NumberModel> patchDoc);
     }
 }

@@ -27,7 +27,7 @@ namespace NumberLand.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var getall = _mapper.Map<List<BlogDTO>>(_unitOfWork.blog.GetAll(includeProp: "author, blogCategories.category"));
+            var getall = _mapper.Map<List<BlogDTO>>(await _unitOfWork.blog.GetAll(includeProp: "author, blogCategories.category"));
             return Ok(getall);
         }
         [HttpGet("{id}")]
@@ -37,7 +37,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _mapper.Map<BlogDTO>(_unitOfWork.blog.Get(o => o.id == id, includeProp: "author, blogCategories.category"));
+            var get = _mapper.Map<BlogDTO>(await _unitOfWork.blog.Get(o => o.id == id, includeProp: "author, blogCategories.category"));
             return Ok(get);
         }
         [HttpGet("SearchByCategory/{Catid}")]
@@ -47,7 +47,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _mapper.Map<List<BlogDTO>>(_unitOfWork.blog.GetAll(includeProp: "author, blogCategories.category")
+            var get = _mapper.Map<List<BlogDTO>>((await _unitOfWork.blog.GetAll(includeProp: "author, blogCategories.category"))
         .Where(b => b.blogCategories != null && b.blogCategories.Any(bc => bc.categoryId == Catid))
         .ToList());
             return Ok(get);
@@ -98,8 +98,8 @@ namespace NumberLand.Controllers
             }
 
 
-            _unitOfWork.blog.Add(mappedBlog);
-            _unitOfWork.Save();
+            await _unitOfWork.blog.Add(mappedBlog);
+            await _unitOfWork.Save();
             return Ok(blog);
         }
 
@@ -162,9 +162,9 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.blog.Get(o => o.id == id);
+            var get = await _unitOfWork.blog.Get(o => o.id == id);
             _unitOfWork.blog.Delete(get);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             return Ok(get);
         }
 
@@ -175,9 +175,9 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.blog.GetAll().Where(p => ids.Contains(p.id)).ToList();
+            var get = (await _unitOfWork.blog.GetAll()).Where(p => ids.Contains(p.id)).ToList();
             _unitOfWork.blog.DeleteRange(get);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             return Ok(get);
         }
 
@@ -222,7 +222,7 @@ namespace NumberLand.Controllers
         [HttpGet("Category")]
         public async Task<IActionResult> CatGetAll()
         {
-            var getall = _mapper.Map<List<BlogCategoryDTO>>(_unitOfWork.blogCategory.GetAll());
+            var getall = _mapper.Map<List<BlogCategoryDTO>>(await _unitOfWork.blogCategory.GetAll());
             return Ok(getall);
         }
         [HttpGet("Category/{id}")]
@@ -232,21 +232,21 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _mapper.Map<BlogCategoryDTO>(_unitOfWork.blogCategory.Get(o => o.id == id));
+            var get = _mapper.Map<BlogCategoryDTO>(await _unitOfWork.blogCategory.Get(o => o.id == id));
             return Ok(get);
         }
 
         [HttpPost("Category")]
         public async Task<IActionResult> CatCreate(BlogCategoryDTO blogCategory)
         {
-            if (blogCategory == null || blogCategory.BlogCategoryId != 0)
+            if (blogCategory == null || blogCategory.blogCategoryId != 0)
             {
                 return BadRequest();
             }
             var mappedCat = _mapper.Map<BlogCategoryModel>(blogCategory);
-            mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.BlogCategoryName);
-            _unitOfWork.blogCategory.Add(mappedCat);
-            _unitOfWork.Save();
+            mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.blogCategoryName);
+            await _unitOfWork.blogCategory.Add(mappedCat);
+            await _unitOfWork.Save();
             return Ok(blogCategory);
 
         }
@@ -254,12 +254,12 @@ namespace NumberLand.Controllers
         [HttpPut("Category/{id}")]
         public async Task<IActionResult> CatEdit(int id, BlogCategoryDTO blogCategory)
         {
-            if (blogCategory == null || blogCategory.BlogCategoryId == 0)
+            if (blogCategory == null || blogCategory.blogCategoryId == 0)
             {
                 return BadRequest();
             }
             var mappedCat = _mapper.Map<BlogCategoryModel>(blogCategory);
-            mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.BlogCategoryName);
+            mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.blogCategoryName);
             _unitOfWork.blogCategory.Update(mappedCat);
             return Ok(blogCategory);
         }
@@ -278,9 +278,9 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.blogCategory.Get(o => o.id == id);
+            var get = await _unitOfWork.blogCategory.Get(o => o.id == id);
             _unitOfWork.blogCategory.Delete(get);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             return Ok(get);
         }
 
@@ -291,9 +291,9 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.blogCategory.GetAll().Where(p => ids.Contains(p.id)).ToList();
+            var get = (await _unitOfWork.blogCategory.GetAll()).Where(p => ids.Contains(p.id)).ToList();
             _unitOfWork.blogCategory.DeleteRange(get);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             return Ok(get);
         }
     }

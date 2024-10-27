@@ -17,7 +17,7 @@ namespace NumberLand.Query.Handler
         }
         public async Task<NumberDTO> Handle(GetNumberByIdQuery request, CancellationToken cancellationToken)
         {
-            var number = _mapper.Map<NumberDTO>(_unitOfWork.number.Get(n => n.id == request.Id, includeProp: "category,nOperator"));
+            var number = _mapper.Map<NumberDTO>(await _unitOfWork.number.Get(n => n.id == request.Id, includeProp: "category,nOperator"));
 
             return number == null ? null : number;
         }

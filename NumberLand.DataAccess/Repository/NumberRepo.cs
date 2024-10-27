@@ -14,20 +14,20 @@ namespace NumberLand.DataAccess.Repository
             _context = context;
         }
 
-        public void Patch(int id, [FromBody] JsonPatchDocument<NumberModel> patchDoc)
+        public async Task Patch(int id, [FromBody] JsonPatchDocument<NumberModel> patchDoc)
         {
             var number = _context.Numbers.FirstOrDefault(p => p.id == id);
             if (number != null && patchDoc != null)
             {
                 patchDoc.ApplyTo(number);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public void Update(NumberModel upNumber)
+        public async Task Update(NumberModel upNumber)
         {
             _context.Update(upNumber);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

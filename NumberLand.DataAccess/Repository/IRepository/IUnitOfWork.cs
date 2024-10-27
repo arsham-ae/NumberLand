@@ -11,6 +11,6 @@
         IPageRepo page { get; }
         IBlogCategoryRepo blogCategory { get; }
 
-        void Save();
+        Task Save();
     }
 }

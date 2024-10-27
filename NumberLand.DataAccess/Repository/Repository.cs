@@ -14,7 +14,7 @@ namespace NumberLand.DataAccess.Repository
             _context = context;
             this.dbSet = _context.Set<T>();
         }
-        public ICollection<T> GetAll(string? includeProp = null)
+        public async Task<IEnumerable<T>> GetAll(string? includeProp = null)
         {
             IQueryable<T> query = dbSet;
             if (!string.IsNullOrEmpty(includeProp))
@@ -25,9 +25,9 @@ namespace NumberLand.DataAccess.Repository
                     query = query.Include(prop.Trim());
                 }
             }
-            return query.ToList();
+            return await query.ToListAsync();
         }
-        public T Get(Expression<Func<T, bool>> filter, string? includeProp = null)
+        public async Task<T> Get(Expression<Func<T, bool>> filter, string? includeProp = null)
         {
             IQueryable<T> query = dbSet;
             query = query.Where(filter);
@@ -39,12 +39,12 @@ namespace NumberLand.DataAccess.Repository
                     query = query.Include(prop.Trim());
                 }
             }
-            return query.FirstOrDefault();
+            return await query.FirstOrDefaultAsync();
         }
 
-        public void Add(T entity)
+        public async Task Add(T entity)
         {
-            dbSet.Add(entity);
+            await dbSet.AddAsync(entity);
         }
         public void Delete(T entity)
         {

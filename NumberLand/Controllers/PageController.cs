@@ -23,7 +23,7 @@ namespace NumberLand.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var getall = _mapper.Map<List<PageDTO>>(_unitOfWork.page.GetAll(includeProp: "category"));
+            var getall = _mapper.Map<List<PageDTO>>(await _unitOfWork.page.GetAll(includeProp: "category"));
             return Ok(getall);
         }
         [HttpGet("{id}")]
@@ -33,7 +33,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _mapper.Map<PageDTO>(_unitOfWork.page.Get(o => o.id == id, includeProp: "category"));
+            var get =  _mapper.Map<PageDTO>(await _unitOfWork.page.Get(o => o.id == id, includeProp: "category"));
             return Ok(get);
         }
 
@@ -48,7 +48,7 @@ namespace NumberLand.Controllers
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             mappedPage.content = Markdown.ToHtml(mappedPage.content, pipeLine);
             mappedPage.slug = SlugHelper.GenerateSlug(mappedPage.title);
-            _unitOfWork.page.Add(mappedPage);
+            await _unitOfWork.page.Add(mappedPage);
             _unitOfWork.Save();
             return Ok(page);
 
@@ -83,7 +83,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.page.Get(o => o.id == id);
+            var get = await _unitOfWork.page.Get(o => o.id == id);
             _unitOfWork.page.Delete(get);
             _unitOfWork.Save();
             return Ok(get);
@@ -96,7 +96,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.page.GetAll().Where(p => ids.Contains(p.id)).ToList();
+            var get = (await _unitOfWork.page.GetAll()).Where(p => ids.Contains(p.id)).ToList();
             _unitOfWork.page.DeleteRange(get);
             _unitOfWork.Save();
             return Ok(get);
@@ -107,7 +107,7 @@ namespace NumberLand.Controllers
         [HttpGet("Category")]
         public async Task<IActionResult> CatGetAll()
         {
-            var getall = _mapper.Map<List<PageCategoryDTO>>(_unitOfWork.pageCategory.GetAll(includeProp: "parentCategory"));
+            var getall = _mapper.Map<List<PageCategoryDTO>>(await _unitOfWork.pageCategory.GetAll(includeProp: "parentCategory"));
             return Ok(getall);
         }
         [HttpGet("Category/{id}")]
@@ -117,7 +117,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _mapper.Map<PageCategoryDTO>(_unitOfWork.pageCategory.Get(o => o.id == id, includeProp: "parentCategory"));
+            var get = _mapper.Map<PageCategoryDTO>(await _unitOfWork.pageCategory.Get(o => o.id == id, includeProp: "parentCategory"));
             return Ok(get);
         }
 
@@ -129,7 +129,7 @@ namespace NumberLand.Controllers
                 return BadRequest();
             }
             var mappedCat = _mapper.Map<PageCategoryModel>(pageCategory);
-            _unitOfWork.pageCategory.Add(mappedCat);
+            await _unitOfWork.pageCategory.Add(mappedCat);
             _unitOfWork.Save();
             return Ok(pageCategory);
 
@@ -161,7 +161,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.pageCategory.Get(o => o.id == id);
+            var get = await _unitOfWork.pageCategory.Get(o => o.id == id);
             _unitOfWork.pageCategory.Delete(get);
             _unitOfWork.Save();
             return Ok(get);
@@ -174,7 +174,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.pageCategory.GetAll().Where(p => ids.Contains(p.id)).ToList();
+            var get = (await _unitOfWork.pageCategory.GetAll()).Where(p => ids.Contains(p.id)).ToList();
             _unitOfWork.pageCategory.DeleteRange(get);
             _unitOfWork.Save();
             return Ok(get);

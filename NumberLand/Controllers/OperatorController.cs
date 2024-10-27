@@ -18,7 +18,7 @@ namespace NumberLand.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var getall = _unitOfWork.nOperator.GetAll();
+            var getall = await _unitOfWork.nOperator.GetAll();
             return Ok(getall);
         }
         [HttpGet("{id}")]
@@ -28,7 +28,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.nOperator.Get(o => o.id == id);
+            var get = await _unitOfWork.nOperator.Get(o => o.id == id);
             return Ok(get);
         }
 
@@ -40,7 +40,7 @@ namespace NumberLand.Controllers
                 return BadRequest();
             }
             operatorModel.slug = SlugHelper.GenerateSlug(operatorModel.operatorCode);
-            _unitOfWork.nOperator.Add(operatorModel);
+            await _unitOfWork.nOperator.Add(operatorModel);
             _unitOfWork.Save();
             return Ok(operatorModel);
 
@@ -72,7 +72,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.nOperator.Get(o => o.id == id);
+            var get = await _unitOfWork.nOperator.Get(o => o.id == id);
             _unitOfWork.nOperator.Delete(get);
             _unitOfWork.Save();
             return Ok(get);
@@ -85,7 +85,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.nOperator.GetAll().Where(p => ids.Contains(p.id)).ToList();
+            var get = (await _unitOfWork.nOperator.GetAll()).Where(p => ids.Contains(p.id)).ToList();
             _unitOfWork.nOperator.DeleteRange(get);
             _unitOfWork.Save();
             return Ok(get);

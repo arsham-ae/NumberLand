@@ -16,7 +16,7 @@ namespace NumberLand.Query.Handler
         }
         public async Task<List<NumberDTO>> Handle(GetAllNumbersQuery request, CancellationToken cancellationToken)
         {
-            var numbers = _mapper.Map<List<NumberDTO>>(_unitOfWork.number.GetAll(includeProp: "category,nOperator"));
+            var numbers = _mapper.Map<List<NumberDTO>>(await _unitOfWork.number.GetAll(includeProp: "category,nOperator"));
             return numbers == null ? null : numbers;
         }
     }

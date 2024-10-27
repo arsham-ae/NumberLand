@@ -24,8 +24,8 @@ namespace NumberLand.Command.Handler.Number
         {
             var mappedNum = _mapper.Map<NumberModel>(request);
             mappedNum.slug = SlugHelper.GenerateSlug(request.number);
-            _unitOfWork.number.Add(mappedNum);
-            _unitOfWork.Save();
+            await _unitOfWork.number.Add(mappedNum);
+            await _unitOfWork.Save();
             return $"Number {mappedNum.number} With Id {mappedNum.id} Created SuccessFully!";
         }
     }

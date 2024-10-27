@@ -15,13 +15,13 @@ namespace NumberLand.Command.Handler.Number
 
         public async Task<string> Handle(DeleteRangeNumberCommand request, CancellationToken cancellationToken)
         {
-            var get = _unitOfWork.number.GetAll().Where(p => request.Ids.Contains(p.id)).ToList();
+            var get = (await _unitOfWork.number.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
             if (get == null || !get.Any())
             {
                 return "Numbers Not Found!";
             }
             _unitOfWork.number.DeleteRange(get);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             return $"Numbers Deleted Successfully!";
         }
     }

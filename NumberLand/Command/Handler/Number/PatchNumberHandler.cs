@@ -15,7 +15,7 @@ namespace NumberLand.Command.Handler.Number
         }
         public async Task<string> Handle(PatchNumberCommand request, CancellationToken cancellationToken)
         {
-            _unitOfWork.number.Patch(request.Id, request.PatchDoc);
+            await _unitOfWork.number.Patch(request.Id, request.PatchDoc);
             return $"Number With Id {request.Id} Updated SuccessFully!";
         }
     }

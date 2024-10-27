@@ -5,6 +5,7 @@ namespace NumberLand.DataAccess.DTOs
     public class NumberDTO
     {
         public int id { get; set; }
+        public string numberSlug { get; set; }
         public string number { get; set; }
         public string application { get; set; }
         public CategoryModel category { get; set; }

@@ -24,7 +24,7 @@ namespace NumberLand.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var getall = _unitOfWork.author.GetAll();
+            var getall = await _unitOfWork.author.GetAll();
             return Ok(getall);
         }
         [HttpGet("{id}")]
@@ -34,7 +34,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.author.Get(o => o.id == id);
+            var get = await _unitOfWork.author.Get(o => o.id == id);
             return Ok(get);
         }
 
@@ -67,7 +67,7 @@ namespace NumberLand.Controllers
             var mappedAuthor = _mapper.Map<AuthorModel>(author);
             mappedAuthor.imagePath = image.Replace("\\", "/");
             mappedAuthor.slug = SlugHelper.GenerateSlug(author.authorName);
-            _unitOfWork.author.Add(mappedAuthor);
+            await _unitOfWork.author.Add(mappedAuthor);
             _unitOfWork.Save();
             return Ok(mappedAuthor);
 
@@ -120,7 +120,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.author.Get(o => o.id == id);
+            var get = await _unitOfWork.author.Get(o => o.id == id);
             _unitOfWork.author.Delete(get);
             _unitOfWork.Save();
             return Ok(get);
@@ -133,7 +133,7 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _unitOfWork.author.GetAll().Where(p => ids.Contains(p.id)).ToList();
+            var get = (await _unitOfWork.author.GetAll()).Where(p => ids.Contains(p.id)).ToList();
             _unitOfWork.author.DeleteRange(get);
             _unitOfWork.Save();
             return Ok(get);

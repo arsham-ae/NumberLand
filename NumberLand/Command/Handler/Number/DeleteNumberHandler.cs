@@ -16,13 +16,13 @@ namespace NumberLand.Command.Handler.Number
 
         public async Task<string> Handle(DeleteNumberCommand request, CancellationToken cancellationToken)
         {
-            var number = _unitOfWork.number.Get(o => o.id == request.id);
+            var number = await _unitOfWork.number.Get(o => o.id == request.id);
             if (number == null)
             {
                 return "Id Not Found!";
             }
             _unitOfWork.number.Delete(number);
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             return $"number {number.number} wiht Id {request.id} Deleted Successfully!";
         }
     }

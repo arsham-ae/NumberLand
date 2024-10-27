@@ -5,7 +5,7 @@ namespace NumberLand.DataAccess.Repository
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private myDbContext _context;
+        private readonly myDbContext _context;
         public INumberRepo number { get; private set; }
 
         public IOperatorRepo nOperator { get; private set; }
@@ -33,9 +33,9 @@ namespace NumberLand.DataAccess.Repository
             page = new PageRepo(_context);
             blogCategory = new BlogCategoryRepo(_context);
         }
-        public void Save()
+        public async Task Save()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }
