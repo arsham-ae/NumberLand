@@ -1,9 +1,18 @@
 ﻿using AutoMapper;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using NumberLand.Command.Author;
+using NumberLand.Command.Author.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
+using NumberLand.Query.Author;
+using NumberLand.Query.Author.Query;
 using NumberLand.Utility;
 
 namespace NumberLand.Controllers
@@ -15,16 +24,23 @@ namespace NumberLand.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _environment;
         private readonly IMapper _mapper;
-        public AuthorController(IUnitOfWork unitOfWork, IWebHostEnvironment environment, IMapper mapper)
+        private readonly IMediator _mediator;
+        public AuthorController(IUnitOfWork unitOfWork, IWebHostEnvironment environment, IMapper mapper, IMediator mediator)
         {
             _unitOfWork = unitOfWork;
             _environment = environment;
             _mapper = mapper;
+            _mediator = mediator;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var getall = await _unitOfWork.author.GetAll();
+            var query = new GetAllAuthorsQuery();
+            var getall = await _mediator.Send(query);
+            if (getall.IsNullOrEmpty())
+            {
+                return NotFound("هیچ نویسنده ای وجود ندارد!");
+            }
             return Ok(getall);
         }
         [HttpGet("{id}")]
@@ -32,14 +48,19 @@ namespace NumberLand.Controllers
         {
             if (id == null || id == 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Id!");
             }
-            var get = await _unitOfWork.author.Get(o => o.id == id);
+            var query = new GetAuthorByIdQuery(id);
+            var get = await _mediator.Send(query);
+            if (get == null)
+            {
+                return NotFound($"Author with id {id} Not Found!");
+            }
             return Ok(get);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] AuthorDTO author, [FromForm] IFormFile file)
+        public async Task<IActionResult> Create([FromForm] CreateAuthorDTO author, [FromForm] IFormFile file)
         {
             if (author == null || author.authorId != 0)
             {
@@ -49,68 +70,50 @@ namespace NumberLand.Controllers
             {
                 return BadRequest("No file was uploaded.");
             }
-
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "authors");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            var image = Path.Combine("images/authors", uniqueFileName);
-            var mappedAuthor = _mapper.Map<AuthorModel>(author);
-            mappedAuthor.imagePath = image.Replace("\\", "/");
-            mappedAuthor.slug = SlugHelper.GenerateSlug(author.authorName);
-            await _unitOfWork.author.Add(mappedAuthor);
-            _unitOfWork.Save();
-            return Ok(mappedAuthor);
-
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, [FromForm] AuthorDTO author, [FromForm] IFormFile file)
-        {
-            if (author == null || author.authorId == 0)
-            {
-                return BadRequest();
-            }
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("No file was uploaded.");
-            }
-
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "authors");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            var image = Path.Combine("images/authors", uniqueFileName);
-            var mappedAuthor = _mapper.Map<AuthorModel>(author);
-            mappedAuthor.imagePath = image.Replace("\\", "/");
-            mappedAuthor.slug = SlugHelper.GenerateSlug(author.authorName);
-            _unitOfWork.author.Update(mappedAuthor);
-            return Ok(author);
+            var command = new CreateAuthorCommand(author, file);
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<AuthorModel> patchDoc)
+        public async Task<IActionResult> Patch(int id, [FromForm] string jsonPatch, IFormFile? file)
         {
-            _unitOfWork.author.Patch(id, patchDoc);
-            return Ok(patchDoc);
+            if (string.IsNullOrWhiteSpace(jsonPatch))
+            {
+                return BadRequest("Patch document cannot be null or empty.");
+            }
+            JsonPatchDocument<AuthorModel> patchDoc;
+            try
+            {
+                patchDoc = JsonConvert.DeserializeObject<JsonPatchDocument<AuthorModel>>(jsonPatch);
+                if (patchDoc == null)
+                    return BadRequest("Invalid patch document.");
+            }
+            catch (JsonException)
+            {
+                return BadRequest("Error parsing patch document.");
+            }
+            var command = new UpdateAuthorCommand(id, patchDoc, file);
+            var result = await _mediator.Send(command);
+
+            return Ok(result);
+        }
+
+        [HttpPatch("{id}/UpdateImage")]
+        public async Task<IActionResult> ImagePatch(int id, IFormFile file)
+        {
+            if (id == null | id == 0)
+            {
+                return BadRequest("Invalid Id!");
+            }
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("Image file cannot be null or empty.");
+            }
+            var command = new UpdateImageAuthorCommand(id, file);
+            var result = await _mediator.Send(command);
+
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
@@ -118,12 +121,11 @@ namespace NumberLand.Controllers
         {
             if (id == null || id == 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Id!");
             }
-            var get = await _unitOfWork.author.Get(o => o.id == id);
-            _unitOfWork.author.Delete(get);
-            _unitOfWork.Save();
-            return Ok(get);
+            var command = new RemoveAuthorCommand(id);
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
         [HttpDelete]
@@ -131,12 +133,11 @@ namespace NumberLand.Controllers
         {
             if (ids == null || !ids.Any())
             {
-                return BadRequest();
+                return BadRequest("Invalid Ids!");
             }
-            var get = (await _unitOfWork.author.GetAll()).Where(p => ids.Contains(p.id)).ToList();
-            _unitOfWork.author.DeleteRange(get);
-            _unitOfWork.Save();
-            return Ok(get);
+            var command = new RemoveRangeAuthorCommand(ids);
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
     }
 }

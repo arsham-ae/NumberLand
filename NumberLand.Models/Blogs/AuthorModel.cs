@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace NumberLand.Models.Blogs
 {
@@ -8,7 +9,7 @@ namespace NumberLand.Models.Blogs
         public int id { get; set; }
         public string slug { get; set; }
         public string name { get; set; }
-        public string description { get; set; }
+        public string? description { get; set; }
         public string imagePath { get; set; }
     }
 }

@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
 using System.Linq.Expressions;
+using System.Net.WebSockets;
 
 namespace NumberLand.DataAccess.Repository
 {
@@ -41,16 +44,24 @@ namespace NumberLand.DataAccess.Repository
             }
             return await query.FirstOrDefaultAsync();
         }
-
         public async Task Add(T entity)
         {
             await dbSet.AddAsync(entity);
+        }
+        public async Task UpdateAsync(T entity)
+        {
+            dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+        public async Task PatchAsync(int id, [FromBody] JsonPatchDocument<T> patchDoc)
+        {
+            var entity = await dbSet.FindAsync(id);
+            patchDoc.ApplyTo(entity);
         }
         public void Delete(T entity)
         {
             dbSet.Remove(entity);
         }
-
         public void DeleteRange(IEnumerable<T> entity)
         {
             dbSet.RemoveRange(entity);

@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using NumberLand.Command.Number;
+using NumberLand.Command.Number.Command;
 using NumberLand.DataAccess.DTOs;
 
 namespace NumberLand.Validators

@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NumberLand.Models\NumberLand.Models.csproj" />
+    <ProjectReference Include="..\NumberLand.Utility\NumberLand.Utility.csproj" />
   </ItemGroup>
 
 </Project>

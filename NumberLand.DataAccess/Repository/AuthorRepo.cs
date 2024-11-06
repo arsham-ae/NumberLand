@@ -1,33 +1,30 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
+using NumberLand.Utility;
 
 namespace NumberLand.DataAccess.Repository
 {
     public class AuthorRepo : Repository<AuthorModel>, IAuthorRepo
     {
-        private myDbContext _context;
+        private readonly myDbContext _context;
         public AuthorRepo(myDbContext context) : base(context)
         {
             _context = context;
         }
-
-        public void Patch(int id, [FromBody] JsonPatchDocument<AuthorModel> patchDoc)
+        public async Task Update(AuthorModel author)
         {
-            var author = _context.Author.FirstOrDefault(p => p.id == id);
-            if (author != null && patchDoc != null)
-            {
-                patchDoc.ApplyTo(author);
-                _context.SaveChanges();
-            }
-        }
-
-        public void Update(AuthorModel author)
-        {
-            _context.Update(author);
-            _context.SaveChanges();
+            _context.Attach(author);
+            _context.Entry(author).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }

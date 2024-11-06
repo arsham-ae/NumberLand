@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using NumberLand.Command.Number;
+using NumberLand.Command.Author.Command;
+using NumberLand.Command.Number.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Blogs;
 using NumberLand.Models.Numbers;
@@ -29,9 +30,19 @@ namespace NumberLand.MappingProfile
             CreateMap<PageCategoryDTO, PageCategoryModel>();
             CreateMap<PageCategoryModel, PageCategoryDTO>();
             CreateMap<CreatePageCategoryDTO, PageCategoryModel>();
-            CreateMap<AuthorDTO, AuthorModel>();
             CreateMap<CreateNumberCommand, NumberModel>();
             CreateMap<UpdateNumberCommand, NumberModel>();
+            CreateMap<CreateAuthorDTO, AuthorModel>()
+                .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.authorId))
+                .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.authorName))
+                .ForMember(dest => dest.description, opt => opt.MapFrom(src => src.authorDescription));
+            CreateMap<CreateAuthorCommand, AuthorModel>();
+            CreateMap<AuthorModel, AuthorDTO>()
+                .ForMember(dest => dest.authorId, opt => opt.MapFrom(src => src.id))
+                .ForMember(dest => dest.authorSlug, opt => opt.MapFrom(src => src.slug))
+                .ForMember(dest => dest.authorName, opt => opt.MapFrom(src => src.name))
+                .ForMember(dest => dest.authorDescription, opt => opt.MapFrom(src => src.description))
+                .ForMember(dest => dest.imagePath, opt => opt.MapFrom(src => src.imagePath));
         }
     }
 }

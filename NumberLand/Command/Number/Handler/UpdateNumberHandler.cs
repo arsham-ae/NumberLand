@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using MediatR;
-using NumberLand.Command.Number;
+using NumberLand.Command.Number.Command;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
 using NumberLand.Utility;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace NumberLand.Command.Handler.Number
+namespace NumberLand.Command.Number.Handler
 {
     public class UpdateNumberHandler : IRequestHandler<UpdateNumberCommand, UpdateNumberResponse>
     {
@@ -22,7 +22,7 @@ namespace NumberLand.Command.Handler.Number
         {
             var mappedNum = _mapper.Map<NumberModel>(request);
             mappedNum.slug = SlugHelper.GenerateSlug(request.number);
-            await _unitOfWork.number.Update(mappedNum);
+            await _unitOfWork.number.UpdateAsync(mappedNum);
             return new UpdateNumberResponse
             {
                 Id = mappedNum.id,

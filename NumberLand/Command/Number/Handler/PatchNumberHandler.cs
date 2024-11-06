@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
-using NumberLand.Command.Number;
+using NumberLand.Command.Number.Command;
 using NumberLand.DataAccess.Repository.IRepository;
 
-namespace NumberLand.Command.Handler.Number
+namespace NumberLand.Command.Number.Handler
 {
     public class PatchNumberHandler : IRequestHandler<PatchNumberCommand, string>
     {
@@ -15,7 +15,7 @@ namespace NumberLand.Command.Handler.Number
         }
         public async Task<string> Handle(PatchNumberCommand request, CancellationToken cancellationToken)
         {
-            await _unitOfWork.number.Patch(request.Id, request.PatchDoc);
+            await _unitOfWork.number.PatchAsync(request.Id, request.PatchDoc);
             return $"Number With Id {request.Id} Updated SuccessFully!";
         }
     }

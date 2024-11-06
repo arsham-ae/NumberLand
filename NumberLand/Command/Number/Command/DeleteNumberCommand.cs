@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace NumberLand.Command.Number
+namespace NumberLand.Command.Number.Command
 {
     public class DeleteNumberCommand : IRequest<string>
     {

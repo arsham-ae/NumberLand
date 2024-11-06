@@ -2,8 +2,9 @@
 using MediatR;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
+using NumberLand.Query.Number.Query;
 
-namespace NumberLand.Query.Handler
+namespace NumberLand.Query.Number.Handler
 {
     public class GetAllNumbersHandler : IRequestHandler<GetAllNumbersQuery, List<NumberDTO>>
     {

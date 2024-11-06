@@ -2,7 +2,7 @@
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Numbers;
 
-namespace NumberLand.Query
+namespace NumberLand.Query.Number.Query
 {
     public class GetNumberByIdQuery : IRequest<NumberDTO>
     {

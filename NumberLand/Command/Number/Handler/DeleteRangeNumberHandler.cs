@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using NumberLand.Command.Number;
+using NumberLand.Command.Number.Command;
 using NumberLand.DataAccess.Repository.IRepository;
 
-namespace NumberLand.Command.Handler.Number
+namespace NumberLand.Command.Number.Handler
 {
     public class DeleteRangeNumberHandler : IRequestHandler<DeleteRangeNumberCommand, string>
     {

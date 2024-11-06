@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using NumberLand.Command.Number;
+using NumberLand.Command.Number.Command;
 using NumberLand.Models.Numbers;
 using NumberLand.Query;
+using NumberLand.Query.Number;
+using NumberLand.Query.Number.Query;
 
 namespace NumberLand.Controllers
 {

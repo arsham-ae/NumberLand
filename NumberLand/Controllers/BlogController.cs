@@ -98,7 +98,7 @@ namespace NumberLand.Controllers
             }
 
 
-            await _unitOfWork.blog.Add(mappedBlog);
+            _unitOfWork.blog.Add(mappedBlog);
             await _unitOfWork.Save();
             return Ok(blog);
         }
@@ -245,7 +245,7 @@ namespace NumberLand.Controllers
             }
             var mappedCat = _mapper.Map<BlogCategoryModel>(blogCategory);
             mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.blogCategoryName);
-            await _unitOfWork.blogCategory.Add(mappedCat);
+            _unitOfWork.blogCategory.Add(mappedCat);
             await _unitOfWork.Save();
             return Ok(blogCategory);
 

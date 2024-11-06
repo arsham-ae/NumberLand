@@ -48,7 +48,7 @@ namespace NumberLand.Controllers
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             mappedPage.content = Markdown.ToHtml(mappedPage.content, pipeLine);
             mappedPage.slug = SlugHelper.GenerateSlug(mappedPage.title);
-            await _unitOfWork.page.Add(mappedPage);
+             _unitOfWork.page.Add(mappedPage);
             _unitOfWork.Save();
             return Ok(page);
 
@@ -129,7 +129,7 @@ namespace NumberLand.Controllers
                 return BadRequest();
             }
             var mappedCat = _mapper.Map<PageCategoryModel>(pageCategory);
-            await _unitOfWork.pageCategory.Add(mappedCat);
+             _unitOfWork.pageCategory.Add(mappedCat);
             _unitOfWork.Save();
             return Ok(pageCategory);
 

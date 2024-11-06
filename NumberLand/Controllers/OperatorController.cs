@@ -40,7 +40,7 @@ namespace NumberLand.Controllers
                 return BadRequest();
             }
             operatorModel.slug = SlugHelper.GenerateSlug(operatorModel.operatorCode);
-            await _unitOfWork.nOperator.Add(operatorModel);
+             _unitOfWork.nOperator.Add(operatorModel);
             _unitOfWork.Save();
             return Ok(operatorModel);
 

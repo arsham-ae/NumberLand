@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using MediatR;
-using NumberLand.Command.Number;
+using NumberLand.Command.Number.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
 using NumberLand.Utility;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace NumberLand.Command.Handler.Number
+namespace NumberLand.Command.Number.Handler
 {
     public class CreateNumberHandler : IRequestHandler<CreateNumberCommand, string>
     {
@@ -24,7 +24,7 @@ namespace NumberLand.Command.Handler.Number
         {
             var mappedNum = _mapper.Map<NumberModel>(request);
             mappedNum.slug = SlugHelper.GenerateSlug(request.number);
-            await _unitOfWork.number.Add(mappedNum);
+            _unitOfWork.number.Add(mappedNum);
             await _unitOfWork.Save();
             return $"Number {mappedNum.number} With Id {mappedNum.id} Created SuccessFully!";
         }
