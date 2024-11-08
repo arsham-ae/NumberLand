@@ -1,10 +1,12 @@
 ﻿using MediatR;
 using NumberLand.Command.Number.Command;
+using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NumberLand.Command.Number.Handler
 {
-    public class DeleteRangeNumberHandler : IRequestHandler<DeleteRangeNumberCommand, string>
+    public class DeleteRangeNumberHandler : IRequestHandler<DeleteRangeNumberCommand, CommandsResponse<NumberDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -13,16 +15,24 @@ namespace NumberLand.Command.Number.Handler
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<string> Handle(DeleteRangeNumberCommand request, CancellationToken cancellationToken)
+        public async Task<CommandsResponse<NumberDTO>> Handle(DeleteRangeNumberCommand request, CancellationToken cancellationToken)
         {
             var get = (await _unitOfWork.number.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
             if (get == null || !get.Any())
             {
-                return "Numbers Not Found!";
+                return new CommandsResponse<NumberDTO>
+                {
+                    status = "Fail",
+                    message = $"Number with Id {string.Join(",", request.Ids)} Not Found!"
+                };
             }
             _unitOfWork.number.DeleteRange(get);
             await _unitOfWork.Save();
-            return $"Numbers Deleted Successfully!";
+            return new CommandsResponse<NumberDTO>
+            {
+                status = "Success",
+                message = $"Numbers with Id {string.Join(",", request.Ids)} Deleted Successfully!"
+            };
         }
     }
 }

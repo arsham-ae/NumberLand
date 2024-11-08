@@ -13,7 +13,8 @@ namespace NumberLand.MappingProfile
         public MappingProfile()
         {
             CreateMap<CreateNumberDTO, NumberModel>();
-            CreateMap<NumberModel, NumberDTO>();
+            CreateMap<NumberModel, NumberDTO>()
+                .ForMember(dest => dest.numberSlug, opt => opt.MapFrom(src => src.slug));
             CreateMap<CreateBlogDTO, BlogModel>()
                 .ForMember(dest => dest.blogCategories, opt => opt.Ignore());
             CreateMap<BlogModel, BlogDTO>()
@@ -30,7 +31,6 @@ namespace NumberLand.MappingProfile
             CreateMap<PageCategoryDTO, PageCategoryModel>();
             CreateMap<PageCategoryModel, PageCategoryDTO>();
             CreateMap<CreatePageCategoryDTO, PageCategoryModel>();
-            CreateMap<CreateNumberCommand, NumberModel>();
             CreateMap<UpdateNumberCommand, NumberModel>();
             CreateMap<CreateAuthorDTO, AuthorModel>()
                 .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.authorId))

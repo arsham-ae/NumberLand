@@ -9,7 +9,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NumberLand.Command.Number.Handler
 {
-    public class CreateNumberHandler : IRequestHandler<CreateNumberCommand, string>
+    public class CreateNumberHandler : IRequestHandler<CreateNumberCommand, CommandsResponse<NumberDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -20,13 +20,18 @@ namespace NumberLand.Command.Number.Handler
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<string> Handle(CreateNumberCommand request, CancellationToken cancellationToken)
+        public async Task<CommandsResponse<NumberDTO>> Handle(CreateNumberCommand request, CancellationToken cancellationToken)
         {
-            var mappedNum = _mapper.Map<NumberModel>(request);
-            mappedNum.slug = SlugHelper.GenerateSlug(request.number);
-            _unitOfWork.number.Add(mappedNum);
+            var mappedNum = _mapper.Map<NumberModel>(request.NumberDTO);
+            mappedNum.slug = SlugHelper.GenerateSlug(request.NumberDTO.number);
+            await _unitOfWork.number.Add(mappedNum);
             await _unitOfWork.Save();
-            return $"Number {mappedNum.number} With Id {mappedNum.id} Created SuccessFully!";
+            return new CommandsResponse<NumberDTO>
+            {
+                status = "Success",
+                message = $"{mappedNum.number} With Id {mappedNum.id} Created Successfully.",
+                data = _mapper.Map<NumberDTO>(mappedNum)
+            };
         }
     }
 }

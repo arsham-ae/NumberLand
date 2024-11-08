@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NumberLand.Command.Number.Command;
+using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Numbers;
 using NumberLand.Query;
 using NumberLand.Query.Number;
@@ -49,21 +50,23 @@ namespace NumberLand.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create(CreateNumberCommand number)
+        public async Task<IActionResult> Create(CreateNumberDTO number)
         {
-            var result = await _mediator.Send(number);
+            var command = new CreateNumberCommand(number);
+            var result = await _mediator.Send(command);
             return Ok(result);
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit(int id, UpdateNumberCommand number)
+        public async Task<IActionResult> Edit(int id, CreateNumberDTO number)
         {
             if (number == null)
             {
                 return BadRequest("Invalid Number Data!");
             }
+            var command = new UpdateNumberCommand(number);
             var result = await _mediator.Send(number);
             return Ok(result);
         }

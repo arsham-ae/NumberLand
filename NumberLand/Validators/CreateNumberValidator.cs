@@ -8,17 +8,17 @@ namespace NumberLand.Validators
     {
         public CreateNumberValidator()
         {
-            RuleFor(n => n.number)
+            RuleFor(n => n.NumberDTO.number)
                 .NotEmpty().WithMessage("Number Cannot Be Empty!")
                 .MaximumLength(15).WithMessage("Max Length Should be 15")
                 .Matches(@"^\+?[0-9]+$").WithMessage("Phone number must contain only numbers and the '+' sign.");
-            RuleFor(n => n.expireTime)
+            RuleFor(n => n.NumberDTO.expireTime)
                 .NotEmpty().WithMessage("Expire Time Cannot be Empty!")
                 .GreaterThan(DateTime.Now.AddMinutes(30)).WithMessage("Expire Time Cannot Be Les than 30Min!");
-            RuleFor(n => n.operatorId)
+            RuleFor(n => n.NumberDTO.operatorId)
                 .NotEmpty().WithMessage("OperatorId Cannot Be Empty!")
                 .GreaterThanOrEqualTo(1).WithMessage("OperatorId Should Be 1 Or Above!");
-            RuleFor(n => n.categoryId)
+            RuleFor(n => n.NumberDTO.categoryId)
                 .NotEmpty().WithMessage("CategoryId Cannot Be Empty!")
                 .GreaterThanOrEqualTo(1).WithMessage("CategoryId Should Be 1 Or Above!");
         }
