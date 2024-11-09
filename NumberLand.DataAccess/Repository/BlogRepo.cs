@@ -28,12 +28,12 @@ namespace NumberLand.DataAccess.Repository
             }
         }
 
-        public void Update(BlogModel blog)
+        public async void Update(BlogModel blog)
         {
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            var existingBlog = _context.Blog
+            var existingBlog = await _context.Blog
             .Include(b => b.blogCategories)
-            .FirstOrDefault(b => b.id == blog.id);
+            .FirstOrDefaultAsync(b => b.id == blog.id);
 
             if (existingBlog == null)
             {
@@ -52,7 +52,7 @@ namespace NumberLand.DataAccess.Repository
 
             if (blog.blogCategories != null && blog.blogCategories.Any())
             {
-                // Step 5: Add the updated BlogCategories
+                //Add the updated BlogCategories
                 foreach (var category in blog.blogCategories)
                 {
                     existingBlog.blogCategories.Add(new BlogCategoryJoinModel
@@ -64,7 +64,7 @@ namespace NumberLand.DataAccess.Repository
             }
 
             _context.Update(existingBlog);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

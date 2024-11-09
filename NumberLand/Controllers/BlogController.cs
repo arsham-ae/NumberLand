@@ -1,10 +1,15 @@
 ﻿using AutoMapper;
 using Markdig;
+using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using NumberLand.Command.Blog.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
+using NumberLand.Query.Blog.Query;
 using NumberLand.Utility;
 
 namespace NumberLand.Controllers
@@ -17,18 +22,25 @@ namespace NumberLand.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger<BlogController> _logger;
         private readonly IWebHostEnvironment _environment;
-        public BlogController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<BlogController> logger, IWebHostEnvironment environment)
+        private readonly IMediator _mediator;
+        public BlogController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<BlogController> logger, IWebHostEnvironment environment, IMediator mediator)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
             _environment = environment;
+            _mediator = mediator;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var getall = _mapper.Map<List<BlogDTO>>(await _unitOfWork.blog.GetAll(includeProp: "author, blogCategories.category"));
-            return Ok(getall);
+            var query = new GetAllBlogsQuery();
+            var result = await _mediator.Send(query);
+            if (result.IsNullOrEmpty())
+            {
+                return NotFound("There isn't Any Blogs");
+            }
+            return Ok(result);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
@@ -37,8 +49,13 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _mapper.Map<BlogDTO>(await _unitOfWork.blog.Get(o => o.id == id, includeProp: "author, blogCategories.category"));
-            return Ok(get);
+            var query = new GetBlogByIdQuery(id);
+            var result = await _mediator.Send(query);
+            if (result == null)
+            {
+                return NotFound($"Blog With Id {id} Not Found");
+            }
+            return Ok(result);
         }
         [HttpGet("SearchByCategory/{Catid}")]
         public async Task<IActionResult> GetByCategory(int Catid)
@@ -58,101 +75,42 @@ namespace NumberLand.Controllers
         {
             if (blog == null || blog.blogId != 0)
             {
-                return BadRequest("Blog Id Should Be 0!");
+                return BadRequest("Invalid Blog Data!");
             }
             if (file == null || file.Length == 0)
             {
                 return BadRequest("No file was uploaded.");
             }
+            var command = new CreateBlogCommand(blog, file);
+            var result = await _mediator.Send(command);
 
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "blogs");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            var image = Path.Combine("images/blogs", uniqueFileName);
-
-            var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            blog.blogContent = Markdown.ToHtml(blog.blogContent, pipeLine);
-            var mappedBlog = _mapper.Map<BlogModel>(blog);
-            mappedBlog.featuredImagePath = image.Replace("\\", "/");
-            mappedBlog.slug = SlugHelper.GenerateSlug(blog.blogTitle);
-            mappedBlog.createAt = DateTime.Now;
-            mappedBlog.updateAt = DateTime.Now;
-            mappedBlog.publishedAt = DateTime.Now;
-            mappedBlog.blogCategories = new List<BlogCategoryJoinModel>();
-            foreach (var categoryId in blog.blogCategories)
-            {
-                mappedBlog.blogCategories.Add(new BlogCategoryJoinModel
-                {
-                    categoryId = categoryId
-                });
-            }
-
-
-            _unitOfWork.blog.Add(mappedBlog);
-            await _unitOfWork.Save();
-            return Ok(blog);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, [FromForm] CreateBlogDTO blog, [FromForm] IFormFile file)
-        {
-            if (blog == null || blog.blogId == 0)
-            {
-                return BadRequest();
-            }
-            if (blog == null || blog.blogId != 0)
-            {
-                return BadRequest();
-            }
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("No file was uploaded.");
-            }
-
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "uploads");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            var image = Path.Combine("images/uploads", uniqueFileName);
-            var mappedBlog = _mapper.Map<BlogModel>(blog);
-            mappedBlog.featuredImagePath = image.Replace("\\", "/");
-            mappedBlog.slug = SlugHelper.GenerateSlug(blog.blogTitle);
-            mappedBlog.blogCategories = new List<BlogCategoryJoinModel>();
-            foreach (var categoryId in blog.blogCategories)
-            {
-                mappedBlog.blogCategories.Add(new BlogCategoryJoinModel
-                {
-                    categoryId = categoryId
-                });
-            }
-            _unitOfWork.blog.Update(mappedBlog);
-            return Ok(blog);
+            return Ok(result);
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<BlogModel> patchDoc)
+        public async Task<IActionResult> Patch(int id, [FromBody] string jsonPatch, IFormFile? file)
         {
-            _unitOfWork.blog.Patch(id, patchDoc);
-            return Ok(patchDoc);
+            if (!string.IsNullOrEmpty(jsonPatch))
+            {
+                return BadRequest("Patch document cannot be null or empty.");
+            }
+            JsonPatchDocument<BlogModel> patchDoc;
+            try
+            {
+                patchDoc = JsonConvert.DeserializeObject<JsonPatchDocument<BlogModel>>(jsonPatch);
+                if (patchDoc == null)
+                {
+                    return BadRequest("Invalid patch document.");
+                }
+            }
+            catch (JsonException)
+            {
+                return BadRequest("Error parsing patch document.");
+            }
+
+            var command = new UpdateBlogCommand(id, patchDoc, file);
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
@@ -160,12 +118,10 @@ namespace NumberLand.Controllers
         {
             if (id == null || id == 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Id!");
             }
-            var get = await _unitOfWork.blog.Get(o => o.id == id);
-            _unitOfWork.blog.Delete(get);
-            await _unitOfWork.Save();
-            return Ok(get);
+            var result = await _mediator.Send(new RemoveBlogCommand(id));
+            return Ok(result);
         }
 
         [HttpDelete]
@@ -175,48 +131,10 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = (await _unitOfWork.blog.GetAll()).Where(p => ids.Contains(p.id)).ToList();
-            _unitOfWork.blog.DeleteRange(get);
-            await _unitOfWork.Save();
-            return Ok(get);
+            var result = await _mediator.Send(new RemoveRangeBlogCommand(ids));
+            return Ok(result);
         }
 
-        //[HttpPost("UploadImage")]
-        //public async Task<IActionResult> UploadImage(IFormFile file, int blogId)
-        //{
-        //    if (file == null || file.Length == 0)
-        //    {
-        //        return BadRequest("No file was uploaded.");
-        //    }
-
-        //    var blog = _unitOfWork.blog.Get(b => b.id == blogId);
-        //    if (blog == null)
-        //    {
-        //        return NotFound("Blog not found.");
-        //    }
-
-        //    var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "uploads");
-        //    if (!Directory.Exists(uploadsFolder))
-        //    {
-        //        Directory.CreateDirectory(uploadsFolder);
-        //    }
-        //    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-        //    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-        //    using (var fileStream = new FileStream(filePath, FileMode.Create))
-        //    {
-        //        await file.CopyToAsync(fileStream);
-        //    }
-
-        //    var image = Path.Combine("images/uploads", uniqueFileName);
-        //    blog.featuredImagePath = image.Replace("\\", "/");
-        //    //blog.featuredImagePath = $"{Request.Scheme}://{Request.Host}/{image}";
-
-        //    _unitOfWork.blog.Update(blog);
-        //    _unitOfWork.Save();
-
-        //    return Ok(blog.featuredImagePath);
-        //}
 
 
         [HttpGet("Category")]

@@ -39,7 +39,7 @@ namespace NumberLand.Controllers
             var getall = await _mediator.Send(query);
             if (getall.IsNullOrEmpty())
             {
-                return NotFound("هیچ نویسنده ای وجود ندارد!");
+                return NotFound("There isn't Any Authors!");
             }
             return Ok(getall);
         }
