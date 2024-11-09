@@ -10,7 +10,7 @@ using System.Reflection.Metadata;
 
 namespace NumberLand.Command.Blog.Handler
 {
-    public class CreateBlogHandler : IRequestHandler<CreateBlogCommand, CommandsResponse<CreateBlogDTO>>
+    public class CreateBlogHandler : IRequestHandler<CreateBlogCommand, CommandsResponse<BlogDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -22,7 +22,7 @@ namespace NumberLand.Command.Blog.Handler
             _mapper = mapper;
             _environment = environment;
         }
-        public async Task<CommandsResponse<CreateBlogDTO>> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
+        public async Task<CommandsResponse<BlogDTO>> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
         {
             var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "blogs");
             if (!Directory.Exists(uploadsFolder))
@@ -58,11 +58,11 @@ namespace NumberLand.Command.Blog.Handler
             await _unitOfWork.blog.Add(mappedBlog);
             await _unitOfWork.Save();
 
-            return new CommandsResponse<CreateBlogDTO>
+            return new CommandsResponse<BlogDTO>
             {
                 status = "Success",
                 message = "Blog Created Successfully.",
-                data = request.BlogDTO
+                data = _mapper.Map<BlogDTO>(await _unitOfWork.blog.Get(b => b.id == mappedBlog.id, includeProp: "author, blogCategories.category"))
             };
         }
     }

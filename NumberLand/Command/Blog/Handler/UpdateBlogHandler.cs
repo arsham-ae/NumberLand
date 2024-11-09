@@ -11,7 +11,7 @@ using System.Reflection.Metadata;
 
 namespace NumberLand.Command.Blog.Handler
 {
-    public class UpdateBlogHandler : IRequestHandler<UpdateBlogCommand, CommandsResponse<CreateBlogDTO>>
+    public class UpdateBlogHandler : IRequestHandler<UpdateBlogCommand, CommandsResponse<BlogDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -23,13 +23,13 @@ namespace NumberLand.Command.Blog.Handler
             _mapper = mapper;
             _environment = environment;
         }
-        public async Task<CommandsResponse<CreateBlogDTO>> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
+        public async Task<CommandsResponse<BlogDTO>> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
         {
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             var blog = await _unitOfWork.blog.Get(p => p.id == request.Id);
             if (blog == null)
             {
-                return new CommandsResponse<CreateBlogDTO>
+                return new CommandsResponse<BlogDTO>
                 {
                     status = "Fail",
                     message = "Blog Not Found!"
@@ -46,7 +46,7 @@ namespace NumberLand.Command.Blog.Handler
             }
             catch (Exception ex)
             {
-                return new CommandsResponse<CreateBlogDTO>
+                return new CommandsResponse<BlogDTO>
                 {
                     status = "Fail",
                     message = $"Error applying patch document: {ex.Message}"
@@ -54,11 +54,11 @@ namespace NumberLand.Command.Blog.Handler
             }
             blog.slug = SlugHelper.GenerateSlug(blog.title);
             await _unitOfWork.Save();
-            return new CommandsResponse<CreateBlogDTO>
+            return new CommandsResponse<BlogDTO>
             {
                 status = "Success",
                 message = "Blog Updated Successfully.",
-                data = _mapper.Map<CreateBlogDTO>(blog)
+                data = _mapper.Map<BlogDTO>(await _unitOfWork.blog.Get(b => b.id == blog.id, includeProp: "author, blogCategories.category"))
             };
         }
 

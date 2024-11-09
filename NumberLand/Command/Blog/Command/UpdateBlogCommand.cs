@@ -6,7 +6,7 @@ using NumberLand.Models.Blogs;
 
 namespace NumberLand.Command.Blog.Command
 {
-    public class UpdateBlogCommand : IRequest<CommandsResponse<CreateBlogDTO>>
+    public class UpdateBlogCommand : IRequest<CommandsResponse<BlogDTO>>
     {
         public int Id { get; set; }
         public JsonPatchDocument<BlogModel> PatchDoc { get; set; }

@@ -18,7 +18,7 @@ namespace NumberLand.Models.Blogs
         public DateTime createAt { get; set; } = DateTime.Now;
         public DateTime updateAt { get; set; }
         public DateTime publishedAt { get; set; }
-        public bool isPublished { get; set; }
+        public bool isPublished { get; set; } = true;
 
     }
 }

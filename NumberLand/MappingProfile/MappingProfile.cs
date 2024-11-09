@@ -34,6 +34,7 @@ namespace NumberLand.MappingProfile
                 .ForMember(dest => dest.blogIsPublished, opt => opt.MapFrom(src => src.isPublished));
             CreateMap<BlogCategoryJoinModel, BlogCategoryDTO>()
                 .ForMember(dest => dest.blogCategoryId, opt => opt.MapFrom(src => src.categoryId))
+                .ForMember(dest => dest.blogCategorySlug, opt => opt.MapFrom(src => src.category.slug))
                 .ForMember(dest => dest.blogCategoryName, opt => opt.MapFrom(src => src.category.name))
                 .ForMember(dest => dest.blogCategoryDescription, opt => opt.MapFrom(src => src.category.description));
             CreateMap<BlogCategoryDTO, BlogCategoryModel>();
