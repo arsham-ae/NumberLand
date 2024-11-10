@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
@@ -14,13 +15,17 @@ namespace NumberLand.DataAccess.Repository
             _context = context;
         }
 
-        public void Patch(int id, [FromBody] JsonPatchDocument<BlogCategoryModel> patchDoc)
+        public async void Patch(int id, [FromBody] JsonPatchDocument<BlogCategoryModel> patchDoc)
         {
-            var blogCategory = _context.BlogCategory.FirstOrDefault(p => p.id == id);
+            var blogCategory = await _context.BlogCategory.FirstOrDefaultAsync(p => p.id == id);
             if (blogCategory != null && patchDoc != null)
             {
                 patchDoc.ApplyTo(blogCategory);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
+            }
+            if (blogCategory != null || patchDoc == null)
+            {
+                throw new KeyNotFoundException("Invalid Data!");
             }
         }
 

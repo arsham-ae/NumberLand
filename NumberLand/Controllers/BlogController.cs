@@ -11,6 +11,7 @@ using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
 using NumberLand.Query.Blog.Query;
 using NumberLand.Utility;
+using System.Diagnostics;
 
 namespace NumberLand.Controllers
 {
@@ -62,12 +63,14 @@ namespace NumberLand.Controllers
         {
             if (Catid == null || Catid == 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Cat Id");
             }
-            var get = _mapper.Map<List<BlogDTO>>((await _unitOfWork.blog.GetAll(includeProp: "author, blogCategories.category"))
-        .Where(b => b.blogCategories != null && b.blogCategories.Any(bc => bc.categoryId == Catid))
-        .ToList());
-            return Ok(get);
+            var result = await _mediator.Send(new GetByCatIdQuery(Catid));
+            if (result.IsNullOrEmpty())
+            {
+                return NotFound($"No Blog Found With Category Id {Catid}");
+            }
+            return Ok(result);
         }
 
         [HttpPost]
@@ -140,8 +143,12 @@ namespace NumberLand.Controllers
         [HttpGet("Category")]
         public async Task<IActionResult> CatGetAll()
         {
-            var getall = _mapper.Map<List<BlogCategoryDTO>>(await _unitOfWork.blogCategory.GetAll());
-            return Ok(getall);
+            var result = await _mediator.Send(new GetAllBlogsCategoryQuery());
+            if (result.IsNullOrEmpty())
+            {
+                return NotFound("There isn't Any Category");
+            }
+            return Ok(result);
         }
         [HttpGet("Category/{id}")]
         public async Task<IActionResult> CatGet(int id)
@@ -150,8 +157,13 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var get = _mapper.Map<BlogCategoryDTO>(await _unitOfWork.blogCategory.Get(o => o.id == id));
-            return Ok(get);
+            var result = await _mediator.Send(new GetBlogCategoryByIdQuery(id));
+            if (result == null)
+            {
+                return NotFound($"Category With Id {id} Not Found");
+            }
+
+            return Ok(result);
         }
 
         [HttpPost("Category")]
@@ -161,31 +173,17 @@ namespace NumberLand.Controllers
             {
                 return BadRequest();
             }
-            var mappedCat = _mapper.Map<BlogCategoryModel>(blogCategory);
-            mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.blogCategoryName);
-            _unitOfWork.blogCategory.Add(mappedCat);
-            await _unitOfWork.Save();
-            return Ok(blogCategory);
+            var command = new CreateBlogCategoryCommand(blogCategory);
+            var result = await _mediator.Send(command);
+            return Ok(result);
 
-        }
-
-        [HttpPut("Category/{id}")]
-        public async Task<IActionResult> CatEdit(int id, BlogCategoryDTO blogCategory)
-        {
-            if (blogCategory == null || blogCategory.blogCategoryId == 0)
-            {
-                return BadRequest();
-            }
-            var mappedCat = _mapper.Map<BlogCategoryModel>(blogCategory);
-            mappedCat.slug = SlugHelper.GenerateSlug(blogCategory.blogCategoryName);
-            _unitOfWork.blogCategory.Update(mappedCat);
-            return Ok(blogCategory);
         }
 
         [HttpPatch("Category/{id}")]
         public async Task<IActionResult> CatPatch(int id, [FromBody] JsonPatchDocument<BlogCategoryModel> patchDoc)
         {
-            _unitOfWork.blogCategory.Patch(id, patchDoc);
+            var command = new UpdateBlogCategoryCommand(id, patchDoc);
+            var result = await _mediator.Send(command);
             return Ok(patchDoc);
         }
 
@@ -194,12 +192,10 @@ namespace NumberLand.Controllers
         {
             if (id == null || id == 0)
             {
-                return BadRequest();
+                return BadRequest("Ivalid Id!");
             }
-            var get = await _unitOfWork.blogCategory.Get(o => o.id == id);
-            _unitOfWork.blogCategory.Delete(get);
-            await _unitOfWork.Save();
-            return Ok(get);
+            var result = await _mediator.Send(new RemoveBlogCategoryCommand(id));
+            return Ok(result);
         }
 
         [HttpDelete("Category")]
@@ -207,12 +203,10 @@ namespace NumberLand.Controllers
         {
             if (ids == null || !ids.Any())
             {
-                return BadRequest();
+                return BadRequest("Ivalid Id!");
             }
-            var get = (await _unitOfWork.blogCategory.GetAll()).Where(p => ids.Contains(p.id)).ToList();
-            _unitOfWork.blogCategory.DeleteRange(get);
-            await _unitOfWork.Save();
-            return Ok(get);
+            var result = await _mediator.Send(new RemoveRangeBlogCategoryCommand(ids));
+            return Ok(result);
         }
     }
 }
