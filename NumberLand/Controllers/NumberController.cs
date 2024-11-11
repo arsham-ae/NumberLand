@@ -5,10 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using NumberLand.Command.Number.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Numbers;
-using NumberLand.Query;
-using NumberLand.Query.Number;
 using NumberLand.Query.Number.Query;
-using NumberLand.Query.Operator.Query;
 
 namespace NumberLand.Controllers
 {

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using NumberLand.DataAccess.Data;
+﻿using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
 
 namespace NumberLand.DataAccess.Repository

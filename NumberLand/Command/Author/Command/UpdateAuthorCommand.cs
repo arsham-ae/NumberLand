@@ -1,7 +1,5 @@
-﻿using Azure;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
-using Newtonsoft.Json;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Blogs;
 

@@ -1,17 +1,12 @@
-﻿using AutoMapper;
-using Markdig;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NumberLand.Command.Blog.Command;
 using NumberLand.DataAccess.DTOs;
-using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
 using NumberLand.Query.Blog.Query;
-using NumberLand.Utility;
-using System.Diagnostics;
 
 namespace NumberLand.Controllers
 {

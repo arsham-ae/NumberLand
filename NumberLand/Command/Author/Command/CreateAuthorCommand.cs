@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using NumberLand.DataAccess.DTOs;
 
 namespace NumberLand.Command.Author.Command

@@ -1,7 +1,5 @@
-﻿using Azure;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Pages;
 

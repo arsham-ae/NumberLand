@@ -2,7 +2,6 @@
 using NumberLand.Command.Operator.Command;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NumberLand.Command.Operator.Handler
 {

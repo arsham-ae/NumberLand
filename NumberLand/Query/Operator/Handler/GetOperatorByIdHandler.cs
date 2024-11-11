@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
-using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
-using NumberLand.Query.Number.Query;
 using NumberLand.Query.Operator.Query;
 
 namespace NumberLand.Query.Operator.Handler

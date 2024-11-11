@@ -1,13 +1,8 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using MediatR;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using NumberLand.Command.Author.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models.Blogs;
 using NumberLand.Utility;
 
 namespace NumberLand.Command.Author.Handler

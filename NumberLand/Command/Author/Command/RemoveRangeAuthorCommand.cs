@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using NumberLand.DataAccess.DTOs;
-using NumberLand.Models.Blogs;
 
 namespace NumberLand.Command.Author.Command
 {

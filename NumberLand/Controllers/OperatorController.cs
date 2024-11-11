@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NumberLand.Command.Operator.Command;
-using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
 using NumberLand.Query.Operator.Query;
-using NumberLand.Utility;
 
 namespace NumberLand.Controllers
 {

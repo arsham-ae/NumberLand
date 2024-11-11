@@ -3,7 +3,6 @@ using MediatR;
 using NumberLand.Command.Author.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models.Blogs;
 
 namespace NumberLand.Command.Author.Handler
 {

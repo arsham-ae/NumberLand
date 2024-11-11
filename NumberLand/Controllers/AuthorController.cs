@@ -1,19 +1,12 @@
-﻿using AutoMapper;
-using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using NumberLand.Command.Author;
 using NumberLand.Command.Author.Command;
 using NumberLand.DataAccess.DTOs;
-using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
-using NumberLand.Query.Author;
 using NumberLand.Query.Author.Query;
-using NumberLand.Utility;
 
 namespace NumberLand.Controllers
 {

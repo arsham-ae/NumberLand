@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using NumberLand.Command.Blog.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;

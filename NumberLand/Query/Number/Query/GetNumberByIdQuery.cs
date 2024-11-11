@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using NumberLand.DataAccess.DTOs;
-using NumberLand.Models.Numbers;
 
 namespace NumberLand.Query.Number.Query
 {

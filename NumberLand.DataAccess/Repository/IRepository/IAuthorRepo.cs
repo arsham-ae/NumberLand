@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
-using NumberLand.Models.Blogs;
+﻿using NumberLand.Models.Blogs;
 
 namespace NumberLand.DataAccess.Repository.IRepository
 {

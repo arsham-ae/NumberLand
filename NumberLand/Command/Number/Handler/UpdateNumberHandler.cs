@@ -5,7 +5,6 @@ using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
 using NumberLand.Utility;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NumberLand.Command.Number.Handler
 {

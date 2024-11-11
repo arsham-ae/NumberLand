@@ -1,15 +1,7 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
-using NumberLand.Utility;
 
 namespace NumberLand.DataAccess.Repository
 {

@@ -2,7 +2,6 @@
 using NumberLand.Command.Page.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models.Numbers;
 
 namespace NumberLand.Command.Page.Handler
 {

@@ -2,7 +2,6 @@
 using NumberLand.Command.Page.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models.Numbers;
 
 namespace NumberLand.Command.Page.Handler
 {
@@ -17,7 +16,7 @@ namespace NumberLand.Command.Page.Handler
 
         public async Task<CommandsResponse<PageCategoryDTO>> Handle(RemoveRangePageCategoryCommand request, CancellationToken cancellationToken)
         {
-            var get = (await _unitOfWork.c.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
+            var get = (await _unitOfWork.pageCategory.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
             if (get == null || !get.Any())
             {
                 return new CommandsResponse<PageCategoryDTO>
