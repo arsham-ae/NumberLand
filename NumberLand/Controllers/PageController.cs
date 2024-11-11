@@ -20,6 +20,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAll()
         {
             var result = await _mediator.Send(new GetAllPagesQuery());
@@ -30,6 +32,9 @@ namespace NumberLand.Controllers
             return Ok(result);
         }
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
             if (id == null || id == 0)
@@ -45,6 +50,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create(CreatePageDTO page)
         {
             if (page == null || page.id != 0)
@@ -57,6 +64,8 @@ namespace NumberLand.Controllers
 
         }
         [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<PageeModel> patchDoc)
         {
             if (id == 0 || patchDoc == null)
@@ -69,6 +78,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Remove(int id)
         {
             if (id == null || id == 0)
@@ -80,6 +91,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RemoveRange([FromBody] List<int> ids)
         {
             if (ids == null || !ids.Any())
@@ -93,6 +106,8 @@ namespace NumberLand.Controllers
 
 
         [HttpGet("Category")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CatGetAll()
         {
             var result = await _mediator.Send(new GetAllPagesCategoryQuery());
@@ -103,6 +118,9 @@ namespace NumberLand.Controllers
             return Ok(result);
         }
         [HttpGet("Category/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CatGet(int id)
         {
             if (id == null || id == 0)
@@ -118,6 +136,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpPost("Category")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CatCreate(CreatePageCategoryDTO pageCategory)
         {
             if (pageCategory == null || pageCategory.id != 0)
@@ -130,6 +150,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpPatch("Category/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CatPatch(int id, [FromBody] JsonPatchDocument<PageCategoryModel> patchDoc)
         {
             if (id == 0 || patchDoc == null)
@@ -142,6 +164,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpDelete("Category/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CatRemove(int id)
         {
             if (id == null || id == 0)
@@ -153,6 +177,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpDelete("Category")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CatRemoveRange([FromBody] List<int> ids)
         {
             if (ids == null || !ids.Any())

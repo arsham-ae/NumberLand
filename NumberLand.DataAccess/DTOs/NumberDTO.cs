@@ -15,6 +15,7 @@ namespace NumberLand.DataAccess.DTOs
     }
     public class CreateNumberDTO
     {
+        public int id { get; set; }
         public string number { get; set; }
         public string application { get; set; }
         public int categoryId { get; set; }

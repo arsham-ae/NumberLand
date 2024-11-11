@@ -33,9 +33,14 @@ namespace NumberLand.Controllers
         }
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
+            if (id == null || id == 0)
+            {
+                return BadRequest("Invalid Id!");
+            }
             var query = new GetNumberByIdQuery(id);
             var result = await _mediator.Send(query);
             if (result == null)
@@ -50,22 +55,12 @@ namespace NumberLand.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create(CreateNumberDTO number)
         {
+            if (number == null || number.id != 0)
+            {
+                return BadRequest("Invalid Data!");
+            }
             var command = new CreateNumberCommand(number);
             var result = await _mediator.Send(command);
-            return Ok(result);
-        }
-
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Edit(int id, CreateNumberDTO number)
-        {
-            if (number == null)
-            {
-                return BadRequest("Invalid Number Data!");
-            }
-            var command = new UpdateNumberCommand(number);
-            var result = await _mediator.Send(number);
             return Ok(result);
         }
 
@@ -74,16 +69,16 @@ namespace NumberLand.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<NumberModel> patchDoc)
         {
-            var result = await _mediator.Send(new PatchNumberCommand(id, patchDoc));
-            if (result == null)
+            if (id == 0 || patchDoc == null)
             {
                 return BadRequest("Invalid Data!");
             }
+            var result = await _mediator.Send(new UpdateNumberCommand(id, patchDoc));
             return Ok(result);
         }
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Remove(int id)
         {
             if (id == null || id == 0)
@@ -96,7 +91,7 @@ namespace NumberLand.Controllers
 
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RemoveRange([FromBody] List<int> ids)
         {
             if (ids == null || !ids.Any())

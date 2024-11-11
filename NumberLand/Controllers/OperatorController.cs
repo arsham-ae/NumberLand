@@ -18,6 +18,8 @@ namespace NumberLand.Controllers
             _mediator = mediator;
         }
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAll()
         {
             var result = await _mediator.Send(new GetAllOperatorsQuery());
@@ -28,11 +30,14 @@ namespace NumberLand.Controllers
             return Ok(result);
         }
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
             if (id == null || id == 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Id!");
             }
             var result = await _mediator.Send(new GetOperatorByIdQuery(id));
             if (result == null)
@@ -43,6 +48,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create(OperatorModel operatorModel)
         {
             if (operatorModel == null || operatorModel.id != 0)
@@ -56,6 +63,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<OperatorModel> patchDoc)
         {
             if (id == 0 || patchDoc == null)
@@ -68,6 +77,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Remove(int id)
         {
             if (id == null || id == 0)
@@ -79,6 +90,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RemoveRange([FromBody] List<int> ids)
         {
             if (ids == null || !ids.Any())

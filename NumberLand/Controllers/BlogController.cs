@@ -21,6 +21,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAll()
         {
             var query = new GetAllBlogsQuery();
@@ -32,11 +34,14 @@ namespace NumberLand.Controllers
             return Ok(result);
         }
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
             if (id == null || id == 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Id!");
             }
             var query = new GetBlogByIdQuery(id);
             var result = await _mediator.Send(query);
@@ -47,6 +52,9 @@ namespace NumberLand.Controllers
             return Ok(result);
         }
         [HttpGet("SearchByCategory/{Catid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByCategory(int Catid)
         {
             if (Catid == null || Catid == 0)
@@ -62,6 +70,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromForm] CreateBlogDTO blog, [FromForm] IFormFile file)
         {
             if (blog == null || blog.blogId != 0)
@@ -79,6 +89,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Patch(int id, [FromBody] string jsonPatch, IFormFile? file)
         {
             if (!string.IsNullOrEmpty(jsonPatch))
@@ -105,6 +117,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Remove(int id)
         {
             if (id == null || id == 0)
@@ -116,11 +130,13 @@ namespace NumberLand.Controllers
         }
 
         [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RemoveRange([FromBody] List<int> ids)
         {
             if (ids == null || !ids.Any())
             {
-                return BadRequest();
+                return BadRequest("Invalid Ids!");
             }
             var result = await _mediator.Send(new RemoveRangeBlogCommand(ids));
             return Ok(result);
@@ -129,6 +145,8 @@ namespace NumberLand.Controllers
 
 
         [HttpGet("Category")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CatGetAll()
         {
             var result = await _mediator.Send(new GetAllBlogsCategoryQuery());
@@ -139,11 +157,14 @@ namespace NumberLand.Controllers
             return Ok(result);
         }
         [HttpGet("Category/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CatGet(int id)
         {
             if (id == null || id == 0)
             {
-                return BadRequest();
+                return BadRequest("invalid Id!");
             }
             var result = await _mediator.Send(new GetBlogCategoryByIdQuery(id));
             if (result == null)
@@ -155,6 +176,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpPost("Category")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CatCreate(BlogCategoryDTO blogCategory)
         {
             if (blogCategory == null || blogCategory.blogCategoryId != 0)
@@ -168,14 +191,22 @@ namespace NumberLand.Controllers
         }
 
         [HttpPatch("Category/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CatPatch(int id, [FromBody] JsonPatchDocument<BlogCategoryModel> patchDoc)
         {
+            if (id == 0 || patchDoc == null)
+            {
+                return BadRequest("Invalid Data!");
+            }
             var command = new UpdateBlogCategoryCommand(id, patchDoc);
             var result = await _mediator.Send(command);
             return Ok(patchDoc);
         }
 
         [HttpDelete("Category/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CatRemove(int id)
         {
             if (id == null || id == 0)
@@ -187,6 +218,8 @@ namespace NumberLand.Controllers
         }
 
         [HttpDelete("Category")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CatRemoveRange([FromBody] List<int> ids)
         {
             if (ids == null || !ids.Any())
