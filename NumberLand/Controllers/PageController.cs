@@ -1,10 +1,15 @@
 ﻿using AutoMapper;
 using Markdig;
+using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using NumberLand.Command.Operator.Command;
+using NumberLand.Command.Page.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Pages;
+using NumberLand.Query.Page.Query;
 using NumberLand.Utility;
 
 namespace NumberLand.Controllers
@@ -13,28 +18,35 @@ namespace NumberLand.Controllers
     [ApiController]
     public class PageController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        public PageController(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IMediator _mediator;
+        public PageController(IMediator mediator)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            _mediator = mediator;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var getall = _mapper.Map<List<PageDTO>>(await _unitOfWork.page.GetAll(includeProp: "category"));
-            return Ok(getall);
+            var result = await _mediator.Send(new GetAllPagesQuery());
+            if (result.IsNullOrEmpty())
+            {
+                return NotFound("There isn't Any Page!");
+            }
+            return Ok(result);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
             if (id == null || id == 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Id!");
             }
-            var get =  _mapper.Map<PageDTO>(await _unitOfWork.page.Get(o => o.id == id, includeProp: "category"));
-            return Ok(get);
+            var result = await _mediator.Send(new GetPageByIdQuery(id));
+            if (result == null)
+            {
+                return NotFound($"Page With Id {id} Not Found.");
+            }
+            return Ok(result);
         }
 
         [HttpPost]
@@ -42,38 +54,23 @@ namespace NumberLand.Controllers
         {
             if (page == null || page.id != 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Data!");
             }
-            var mappedPage = _mapper.Map<PageeModel>(page);
-            var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            mappedPage.content = Markdown.ToHtml(mappedPage.content, pipeLine);
-            mappedPage.slug = SlugHelper.GenerateSlug(mappedPage.title);
-             _unitOfWork.page.Add(mappedPage);
-            _unitOfWork.Save();
-            return Ok(page);
+            var command = new CreatePageCommand(page);
+            var result = await _mediator.Send(command);
+            return Ok(result);
 
         }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(int id, CreatePageDTO page)
-        {
-            if (page == null || page.id == 0)
-            {
-                return BadRequest();
-            }
-            var mappedPage = _mapper.Map<PageeModel>(page);
-            var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            mappedPage.content = Markdown.ToHtml(mappedPage.content, pipeLine);
-            mappedPage.slug = SlugHelper.GenerateSlug(mappedPage.title);
-            _unitOfWork.page.Update(mappedPage);
-            return Ok(page);
-        }
-
         [HttpPatch("{id}")]
         public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<PageeModel> patchDoc)
         {
-            _unitOfWork.page.Patch(id, patchDoc);
-            return Ok(patchDoc);
+            if (id == 0 || patchDoc == null)
+            {
+                return BadRequest("Invalid Data!");
+            }
+            var command = new UpdatePageCommand(id, patchDoc);
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
@@ -81,12 +78,10 @@ namespace NumberLand.Controllers
         {
             if (id == null || id == 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Id!");
             }
-            var get = await _unitOfWork.page.Get(o => o.id == id);
-            _unitOfWork.page.Delete(get);
-            _unitOfWork.Save();
-            return Ok(get);
+            var result = await _mediator.Send(new RemovePageCommand(id));
+            return Ok(result);
         }
 
         [HttpDelete]
@@ -94,12 +89,10 @@ namespace NumberLand.Controllers
         {
             if (ids == null || !ids.Any())
             {
-                return BadRequest();
+                return BadRequest("Invalid Ids!");
             }
-            var get = (await _unitOfWork.page.GetAll()).Where(p => ids.Contains(p.id)).ToList();
-            _unitOfWork.page.DeleteRange(get);
-            _unitOfWork.Save();
-            return Ok(get);
+            var result = await _mediator.Send(new RemoveRangePageCommand(ids));
+            return Ok(result);
         }
 
 
@@ -107,18 +100,26 @@ namespace NumberLand.Controllers
         [HttpGet("Category")]
         public async Task<IActionResult> CatGetAll()
         {
-            var getall = _mapper.Map<List<PageCategoryDTO>>(await _unitOfWork.pageCategory.GetAll(includeProp: "parentCategory"));
-            return Ok(getall);
+            var result = await _mediator.Send(new GetAllPagesCategoryQuery());
+            if (result.IsNullOrEmpty())
+            {
+                return NotFound("There isn't Any PageCategory!");
+            }
+            return Ok(result);
         }
         [HttpGet("Category/{id}")]
         public async Task<IActionResult> CatGet(int id)
         {
             if (id == null || id == 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Id!");
             }
-            var get = _mapper.Map<PageCategoryDTO>(await _unitOfWork.pageCategory.Get(o => o.id == id, includeProp: "parentCategory"));
-            return Ok(get);
+            var result = await _mediator.Send(new GetPageCategoryByIdQuery(id));
+            if (result == null)
+            {
+                return NotFound($"PageCategory With Id {id} Not Found.");
+            }
+            return Ok(result);
         }
 
         [HttpPost("Category")]
@@ -126,32 +127,23 @@ namespace NumberLand.Controllers
         {
             if (pageCategory == null || pageCategory.id != 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Data!");
             }
-            var mappedCat = _mapper.Map<PageCategoryModel>(pageCategory);
-             _unitOfWork.pageCategory.Add(mappedCat);
-            _unitOfWork.Save();
-            return Ok(pageCategory);
-
-        }
-
-        [HttpPut("Category/{id}")]
-        public async Task<IActionResult> CatEdit(int id, CreatePageCategoryDTO pageCategory)
-        {
-            if (pageCategory == null || pageCategory.id == 0)
-            {
-                return BadRequest();
-            }
-            var mappedCat = _mapper.Map<PageCategoryModel>(pageCategory);
-            _unitOfWork.pageCategory.Update(mappedCat);
-            return Ok(pageCategory);
+            var command = new CreatePageCategoryCommand(pageCategory);
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
         [HttpPatch("Category/{id}")]
         public async Task<IActionResult> CatPatch(int id, [FromBody] JsonPatchDocument<PageCategoryModel> patchDoc)
         {
-            _unitOfWork.pageCategory.Patch(id, patchDoc);
-            return Ok(patchDoc);
+            if (id == 0 || patchDoc == null)
+            {
+                return BadRequest("Invalid Data!");
+            }
+            var command = new UpdatePageCategoryCommand(id, patchDoc);
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
         [HttpDelete("Category/{id}")]
@@ -159,12 +151,10 @@ namespace NumberLand.Controllers
         {
             if (id == null || id == 0)
             {
-                return BadRequest();
+                return BadRequest("Invalid Id!");
             }
-            var get = await _unitOfWork.pageCategory.Get(o => o.id == id);
-            _unitOfWork.pageCategory.Delete(get);
-            _unitOfWork.Save();
-            return Ok(get);
+            var result = await _mediator.Send(new RemovePageCategoryCommand(id));
+            return Ok(result);
         }
 
         [HttpDelete("Category")]
@@ -172,12 +162,10 @@ namespace NumberLand.Controllers
         {
             if (ids == null || !ids.Any())
             {
-                return BadRequest();
+                return BadRequest("Invalid Id!");
             }
-            var get = (await _unitOfWork.pageCategory.GetAll()).Where(p => ids.Contains(p.id)).ToList();
-            _unitOfWork.pageCategory.DeleteRange(get);
-            _unitOfWork.Save();
-            return Ok(get);
+            var result = await _mediator.Send(new RemoveRangePageCategoryCommand(ids));
+            return Ok(result);
         }
     }
 }

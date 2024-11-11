@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Pages;
+using NumberLand.Utility;
 
 namespace NumberLand.DataAccess.Repository
 {
@@ -14,13 +16,14 @@ namespace NumberLand.DataAccess.Repository
             _context = context;
         }
 
-        public void Patch(int id, [FromBody] JsonPatchDocument<PageCategoryModel> patchDoc)
+        public async void Patch(int id, [FromBody] JsonPatchDocument<PageCategoryModel> patchDoc)
         {
-            var pageCategory = _context.PageCategory.FirstOrDefault(p => p.id == id);
+            var pageCategory = await _context.PageCategory.FirstOrDefaultAsync(p => p.id == id);
             if (pageCategory != null && patchDoc != null)
             {
                 patchDoc.ApplyTo(pageCategory);
-                _context.SaveChanges();
+                pageCategory.slug = SlugHelper.GenerateSlug(pageCategory.name);
+                await _context.SaveChangesAsync();
             }
         }
 

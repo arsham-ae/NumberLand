@@ -21,27 +21,22 @@ namespace NumberLand.Controllers
     [ApiController]
     public class AuthorController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IWebHostEnvironment _environment;
-        private readonly IMapper _mapper;
         private readonly IMediator _mediator;
-        public AuthorController(IUnitOfWork unitOfWork, IWebHostEnvironment environment, IMapper mapper, IMediator mediator)
+        public AuthorController(IMediator mediator)
         {
-            _unitOfWork = unitOfWork;
-            _environment = environment;
-            _mapper = mapper;
             _mediator = mediator;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var query = new GetAllAuthorsQuery();
-            var getall = await _mediator.Send(query);
-            if (getall.IsNullOrEmpty())
+            var result = await _mediator.Send(query);
+            if (result.IsNullOrEmpty())
             {
                 return NotFound("There isn't Any Authors!");
             }
-            return Ok(getall);
+            return Ok(result);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
@@ -51,12 +46,12 @@ namespace NumberLand.Controllers
                 return BadRequest("Invalid Id!");
             }
             var query = new GetAuthorByIdQuery(id);
-            var get = await _mediator.Send(query);
-            if (get == null)
+            var result = await _mediator.Send(query);
+            if (result == null)
             {
                 return NotFound($"Author with id {id} Not Found!");
             }
-            return Ok(get);
+            return Ok(result);
         }
 
         [HttpPost]

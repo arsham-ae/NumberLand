@@ -19,19 +19,12 @@ namespace NumberLand.Controllers
     [ApiController]
     public class BlogController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        private readonly ILogger<BlogController> _logger;
-        private readonly IWebHostEnvironment _environment;
         private readonly IMediator _mediator;
-        public BlogController(IUnitOfWork unitOfWork, IMapper mapper, ILogger<BlogController> logger, IWebHostEnvironment environment, IMediator mediator)
+        public BlogController(IMediator mediator)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _logger = logger;
-            _environment = environment;
             _mediator = mediator;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -192,7 +185,7 @@ namespace NumberLand.Controllers
         {
             if (id == null || id == 0)
             {
-                return BadRequest("Ivalid Id!");
+                return BadRequest("Invalid Id!");
             }
             var result = await _mediator.Send(new RemoveBlogCategoryCommand(id));
             return Ok(result);
@@ -203,7 +196,7 @@ namespace NumberLand.Controllers
         {
             if (ids == null || !ids.Any())
             {
-                return BadRequest("Ivalid Id!");
+                return BadRequest("Invalid Id!");
             }
             var result = await _mediator.Send(new RemoveRangeBlogCategoryCommand(ids));
             return Ok(result);

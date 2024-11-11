@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
+using NumberLand.Utility;
 
 namespace NumberLand.DataAccess.Repository
 {
@@ -13,13 +15,14 @@ namespace NumberLand.DataAccess.Repository
         {
             _context = context;
         }
-        public void Patch(int id, [FromBody] JsonPatchDocument<OperatorModel> patchDoc)
+        public async void Patch(int id, [FromBody] JsonPatchDocument<OperatorModel> patchDoc)
         {
-            var nOperator = _context.Operator.FirstOrDefault(p => p.id == id);
+            var nOperator = await _context.Operator.FirstOrDefaultAsync(p => p.id == id);
             if (nOperator != null && patchDoc != null)
             {
                 patchDoc.ApplyTo(nOperator);
-                _context.SaveChanges();
+                nOperator.slug = SlugHelper.GenerateSlug(nOperator.operatorCode);
+                await _context.SaveChangesAsync();
             }
         }
 
