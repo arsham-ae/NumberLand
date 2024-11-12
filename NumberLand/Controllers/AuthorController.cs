@@ -96,7 +96,7 @@ namespace NumberLand.Controllers
             return Ok(result);
         }
 
-        [HttpPatch("{id}/UpdateImage")]
+        [HttpPatch("UpdateImage/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ImagePatch(int id, IFormFile file)

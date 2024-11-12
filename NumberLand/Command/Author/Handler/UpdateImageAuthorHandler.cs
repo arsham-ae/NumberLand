@@ -3,6 +3,7 @@ using MediatR;
 using NumberLand.Command.Author.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
+using System.Reflection.Metadata;
 
 namespace NumberLand.Command.Author.Handler
 {
@@ -21,7 +22,7 @@ namespace NumberLand.Command.Author.Handler
 
         public async Task<CommandsResponse<AuthorDTO>> Handle(UpdateImageAuthorCommand request, CancellationToken cancellationToken)
         {
-            var author = _mapper.Map<AuthorDTO>(await _unitOfWork.author.Get(a => a.id == request.Id));
+            var author = await _unitOfWork.author.Get(a => a.id == request.Id);
             if (author == null)
             {
                 return new CommandsResponse<AuthorDTO>
@@ -44,11 +45,12 @@ namespace NumberLand.Command.Author.Handler
             }
 
             author.imagePath = Path.Combine("images/authors", uniqueFileName).Replace("\\", "/");
+            await _unitOfWork.Save();
             return new CommandsResponse<AuthorDTO>
             {
                 status = "Success",
                 message = "Image Updated Successfully.",
-                data = author
+                data = _mapper.Map<AuthorDTO>(author)
             };
 
         }

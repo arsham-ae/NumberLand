@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using NumberLand.Command.Author.Command;
 using NumberLand.Command.Blog.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Blogs;
@@ -115,7 +116,21 @@ namespace NumberLand.Controllers
             var result = await _mediator.Send(command);
             return Ok(result);
         }
-
+        [HttpPatch("UpdateImage/{id}")]
+        public async Task<IActionResult> UpdateImage(int id, IFormFile file)
+        {
+            if (id == null || id == 0)
+            {
+                return BadRequest("Invalid Id!");
+            }
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("Image file cannot be null or empty.");
+            }
+            var command = new UpdateBlogImageCommand(id, file);
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
