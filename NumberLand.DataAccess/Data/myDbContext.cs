@@ -25,7 +25,9 @@ namespace NumberLand.DataAccess.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            modelBuilder.Entity<NumberModel>()
+        .Property(p => p.price)
+        .HasPrecision(18, 2);
             modelBuilder.Entity<BlogCategoryJoinModel>()
                 .HasKey(bc => new { bc.blogId, bc.categoryId });
 

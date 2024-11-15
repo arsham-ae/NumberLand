@@ -35,11 +35,26 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseExceptionHandler("/error"); // Set up a custom error-handling endpoint
+    app.UseHsts();
+}
 app.UseStaticFiles();
 app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseCors("AllowAllOrigins");
 app.UseAuthorization();
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    // If you have any additional endpoints (e.g., for SignalR, gRPC, etc.)
+    // Add them here as well
+});
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<myDbContext>();
+    dbContext.Database.Migrate(); // Apply migrations automatically
+}
 app.Run();
