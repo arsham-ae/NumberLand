@@ -219,6 +219,7 @@ namespace NumberLand.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("slug")

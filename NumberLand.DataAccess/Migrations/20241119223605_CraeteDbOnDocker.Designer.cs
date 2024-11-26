@@ -12,8 +12,8 @@ using NumberLand.DataAccess.Data;
 namespace NumberLand.DataAccess.Migrations
 {
     [DbContext(typeof(myDbContext))]
-    [Migration("20241029095125_AddNulableToAuthorDescription")]
-    partial class AddNulableToAuthorDescription
+    [Migration("20241119223605_CraeteDbOnDocker")]
+    partial class CraeteDbOnDocker
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -222,6 +222,7 @@ namespace NumberLand.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("slug")
