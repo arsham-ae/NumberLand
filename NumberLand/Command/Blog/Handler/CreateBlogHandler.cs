@@ -47,12 +47,25 @@ namespace NumberLand.Command.Blog.Handler
             mappedBlog.updateAt = DateTime.Now;
             mappedBlog.publishedAt = DateTime.Now;
             mappedBlog.blogCategories = new List<BlogCategoryJoinModel>();
+
             foreach (var categoryId in request.BlogDTO.blogCategories)
             {
-                mappedBlog.blogCategories.Add(new BlogCategoryJoinModel
+                var get = await _unitOfWork.blogCategory.Get(bc => bc.id == categoryId);
+                if (get != null)
                 {
-                    categoryId = categoryId
-                });
+                    mappedBlog.blogCategories.Add(new BlogCategoryJoinModel
+                    {
+                        categoryId = categoryId
+                    });
+                }
+                else
+                {
+                    return new CommandsResponse<BlogDTO>
+                    {
+                        status = "Fail",
+                        message = "One Or All Of BlogCategories Not Exicted!",
+                    };
+                }
             }
             await _unitOfWork.blog.Add(mappedBlog);
             await _unitOfWork.Save();

@@ -52,9 +52,9 @@ app.UseEndpoints(endpoints =>
     // Add them here as well
 });
 
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<myDbContext>();
-    dbContext.Database.Migrate(); // Apply migrations automatically
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var dbContext = scope.ServiceProvider.GetRequiredService<myDbContext>();
+//    dbContext.Database.Migrate(); // Apply migrations automatically
+//}
 app.Run();

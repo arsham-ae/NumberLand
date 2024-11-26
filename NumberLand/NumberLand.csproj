@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Publish\**" />
+    <Content Remove="Publish\**" />
+    <EmbeddedResource Remove="Publish\**" />
+    <None Remove="Publish\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="Markdig" Version="0.37.0" />
@@ -29,7 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Publish\" />
     <Folder Include="wwwroot\Images\" />
     <Folder Include="wwwroot\Images\authors\" />
     <Folder Include="wwwroot\Images\blogs\" />
