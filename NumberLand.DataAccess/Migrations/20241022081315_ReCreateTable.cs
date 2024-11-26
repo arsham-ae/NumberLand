@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -8,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NumberLand.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class CraeteDbOnDocker : Migration
+    public partial class ReCreateTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,7 +20,7 @@ namespace NumberLand.DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     imagePath = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -134,7 +133,7 @@ namespace NumberLand.DataAccess.Migrations
                     categoryId = table.Column<int>(type: "int", nullable: false),
                     operatorId = table.Column<int>(type: "int", nullable: false),
                     expireTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false)
+                    price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -49,22 +49,10 @@ namespace NumberLand.Command.Blog.Handler
             mappedBlog.blogCategories = new List<BlogCategoryJoinModel>();
             foreach (var categoryId in request.BlogDTO.blogCategories)
             {
-                var get = await _unitOfWork.blogCategory.Get(bc => bc.id == categoryId);
-                if (get != null)
+                mappedBlog.blogCategories.Add(new BlogCategoryJoinModel
                 {
-                    mappedBlog.blogCategories.Add(new BlogCategoryJoinModel
-                    {
-                        categoryId = categoryId
-                    });
-                }
-                else
-                {
-                    return new CommandsResponse<BlogDTO>
-                    {
-                        status = "Fail",
-                        message = "One Or All Of BlogCategories Not Exicted!",
-                    };
-                }
+                    categoryId = categoryId
+                });
             }
             await _unitOfWork.blog.Add(mappedBlog);
             await _unitOfWork.Save();
