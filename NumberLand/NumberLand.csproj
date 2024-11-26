@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Publish\" />
     <Folder Include="wwwroot\Images\" />
     <Folder Include="wwwroot\Images\authors\" />
     <Folder Include="wwwroot\Images\blogs\" />
