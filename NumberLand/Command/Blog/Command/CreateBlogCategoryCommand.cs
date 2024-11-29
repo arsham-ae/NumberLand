@@ -5,8 +5,8 @@ namespace NumberLand.Command.Blog.Command
 {
     public class CreateBlogCategoryCommand : IRequest<CommandsResponse<BlogCategoryDTO>>
     {
-        public BlogCategoryDTO BlogCatDTO { get; set; }
-        public CreateBlogCategoryCommand(BlogCategoryDTO blogCatDTO)
+        public CreateBlogCategoryDTO BlogCatDTO { get; set; }
+        public CreateBlogCategoryCommand(CreateBlogCategoryDTO blogCatDTO)
         {
             BlogCatDTO = blogCatDTO;
         }

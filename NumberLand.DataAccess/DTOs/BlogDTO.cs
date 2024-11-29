@@ -28,7 +28,6 @@ namespace NumberLand.DataAccess.DTOs
         public DateTime publishedAt { get; set; }
         public bool blogIsPublished { get; set; }
     }
-
     public class BlogCategoryDTO
     {
         public int blogCategoryId { get; set; }
@@ -36,4 +35,11 @@ namespace NumberLand.DataAccess.DTOs
         public string blogCategoryName { get; set; }
         public string blogCategoryDescription { get; set; }
     }
+    public class CreateBlogCategoryDTO
+    {
+        public int blogCategoryId { get; set; }
+        public string blogCategoryName { get; set; }
+        public string blogCategoryDescription { get; set; }
+    }
+    
 }
