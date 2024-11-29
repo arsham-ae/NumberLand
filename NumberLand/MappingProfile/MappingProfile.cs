@@ -32,12 +32,11 @@ namespace NumberLand.MappingProfile
                 .ForMember(dest => dest.blogSlug, opt => opt.MapFrom(src => src.slug))
                 .ForMember(dest => dest.blogFeaturedImagePath, opt => opt.MapFrom(src => src.featuredImagePath))
                 .ForMember(dest => dest.blogIsPublished, opt => opt.MapFrom(src => src.isPublished));
-            CreateMap<BlogCategoryJoinModel, BlogCategoryDTO>()
-                .ForMember(dest => dest.blogCategoryId, opt => opt.MapFrom(src => src.categoryId))
-                .ForMember(dest => dest.blogCategorySlug, opt => opt.MapFrom(src => src.category.slug))
-                .ForMember(dest => dest.blogCategoryName, opt => opt.MapFrom(src => src.category.name))
-                .ForMember(dest => dest.blogCategoryDescription, opt => opt.MapFrom(src => src.category.description));
-            CreateMap<BlogCategoryDTO, BlogCategoryModel>();
+            CreateMap<BlogCategoryDTO, BlogCategoryModel>()
+                .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.blogCategoryId))
+                .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.blogCategoryName))
+                .ForMember(dest => dest.slug, opt => opt.MapFrom(src => src.blogCategorySlug))
+                .ForMember(dest => dest.description, opt => opt.MapFrom(src => src.blogCategoryDescription)).ReverseMap();
             CreateMap<BlogCategoryModel, BlogCategoryDTO>()
                 .ForMember(dest => dest.blogCategoryId, opt => opt.MapFrom(src => src.id))
                 .ForMember(dest => dest.blogCategoryName, opt => opt.MapFrom(src => src.name))

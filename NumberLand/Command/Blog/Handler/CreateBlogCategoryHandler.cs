@@ -19,8 +19,8 @@ namespace NumberLand.Command.Blog.Handler
         }
         public async Task<CommandsResponse<BlogCategoryDTO>> Handle(CreateBlogCategoryCommand request, CancellationToken cancellationToken)
         {
-            var mappedCat = _mapper.Map<BlogCategoryModel>(request.BlogDTO);
-            mappedCat.slug = SlugHelper.GenerateSlug(request.BlogDTO.blogCategoryName);
+            var mappedCat = _mapper.Map<BlogCategoryModel>(request.BlogCatDTO);
+            mappedCat.slug = SlugHelper.GenerateSlug(request.BlogCatDTO.blogCategoryName);
             await _unitOfWork.blogCategory.Add(mappedCat);
             await _unitOfWork.Save();
 

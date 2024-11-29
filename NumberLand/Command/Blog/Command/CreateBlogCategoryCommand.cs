@@ -5,10 +5,10 @@ namespace NumberLand.Command.Blog.Command
 {
     public class CreateBlogCategoryCommand : IRequest<CommandsResponse<BlogCategoryDTO>>
     {
-        public BlogCategoryDTO BlogDTO { get; set; }
-        public CreateBlogCategoryCommand(BlogCategoryDTO blogDTO)
+        public BlogCategoryDTO BlogCatDTO { get; set; }
+        public CreateBlogCategoryCommand(BlogCategoryDTO blogCatDTO)
         {
-            BlogDTO = blogDTO;
+            BlogCatDTO = blogCatDTO;
         }
     }
 }

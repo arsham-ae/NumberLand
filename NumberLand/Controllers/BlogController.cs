@@ -193,7 +193,7 @@ namespace NumberLand.Controllers
         [HttpPost("Category")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CatCreate(BlogCategoryDTO blogCategory)
+        public async Task<IActionResult> CatCreate([FromForm] BlogCategoryDTO blogCategory)
         {
             if (blogCategory == null || blogCategory.blogCategoryId != 0)
             {
