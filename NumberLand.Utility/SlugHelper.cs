@@ -6,6 +6,10 @@ namespace NumberLand.Utility
     {
         public static string GenerateSlug(string text)
         {
+            if (text.Any(c => c >= '\u0600' && c <= '\u06FF'))
+            {
+                throw new Exception("Slug cannot contain Persian characters.");
+            }
             string slug = text.ToLower().Trim();
             slug = slug.Replace(' ', '-');
             slug = Regex.Replace(slug, @"[^a-zA-Z0-9]", "");
