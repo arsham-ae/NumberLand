@@ -22,37 +22,47 @@ namespace NumberLand.Command.Author.Handler
 
         public async Task<CommandsResponse<AuthorDTO>> Handle(UpdateImageAuthorCommand request, CancellationToken cancellationToken)
         {
-            var author = await _unitOfWork.author.Get(a => a.id == request.Id);
-            if (author == null)
+            try
+            {
+                var author = await _unitOfWork.author.Get(a => a.id == request.Id);
+                if (author == null)
+                {
+                    return new CommandsResponse<AuthorDTO>
+                    {
+                        status = "Fail",
+                        message = "Author Not Found!",
+                    };
+                }
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "authors");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(request.File.FileName);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await request.File.CopyToAsync(fileStream);
+                }
+
+                author.imagePath = Path.Combine("images/authors", uniqueFileName).Replace("\\", "/");
+                await _unitOfWork.Save();
+                return new CommandsResponse<AuthorDTO>
+                {
+                    status = "Success",
+                    message = "Image Updated Successfully.",
+                    data = _mapper.Map<AuthorDTO>(author)
+                };
+            }
+            catch (Exception ex)
             {
                 return new CommandsResponse<AuthorDTO>
                 {
                     status = "Fail",
-                    message = "Author Not Found!",
+                    message = ex.Message
                 };
             }
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "authors");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(request.File.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await request.File.CopyToAsync(fileStream);
-            }
-
-            author.imagePath = Path.Combine("images/authors", uniqueFileName).Replace("\\", "/");
-            await _unitOfWork.Save();
-            return new CommandsResponse<AuthorDTO>
-            {
-                status = "Success",
-                message = "Image Updated Successfully.",
-                data = _mapper.Map<AuthorDTO>(author)
-            };
-
         }
     }
 }

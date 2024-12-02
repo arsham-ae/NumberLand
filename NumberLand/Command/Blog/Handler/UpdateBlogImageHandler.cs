@@ -20,34 +20,45 @@ namespace NumberLand.Command.Blog.Handler
 
         public async Task<CommandsResponse<BlogDTO>> Handle(UpdateBlogImageCommand request, CancellationToken cancellationToken)
         {
-            var blog = await _unitOfWork.blog.Get(b => b.id == request.Id);
-            if (blog == null)
+            try
+            {
+                var blog = await _unitOfWork.blog.Get(b => b.id == request.Id);
+                if (blog == null)
+                {
+                    return new CommandsResponse<BlogDTO>
+                    {
+                        status = "Fail",
+                        message = $"Blog With Id {request.Id} Not Found!"
+                    };
+                }
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "blogs");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(request.File.FileName);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await request.File.CopyToAsync(fileStream);
+                }
+                blog.featuredImagePath = Path.Combine("images/blogs", uniqueFileName).Replace("\\", "/");
+                await _unitOfWork.Save();
+                return new CommandsResponse<BlogDTO>
+                {
+                    status = "Success",
+                    message = "image Updated Successfully.",
+                    data = _mapper.Map<BlogDTO>(blog)
+                };
+            }
+            catch (Exception ex)
             {
                 return new CommandsResponse<BlogDTO>
                 {
                     status = "Fail",
-                    message = $"Blog With Id {request.Id} Not Found!"
+                    message = ex.Message
                 };
             }
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "blogs");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(request.File.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await request.File.CopyToAsync(fileStream);
-            }
-            blog.featuredImagePath = Path.Combine("images/blogs", uniqueFileName).Replace("\\", "/");
-            await _unitOfWork.Save();
-            return new CommandsResponse<BlogDTO>
-            {
-                status = "Success",
-                message = "image Updated Successfully.",
-                data = _mapper.Map<BlogDTO>(blog)
-            };
         }
     }
 }

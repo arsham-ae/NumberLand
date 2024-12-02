@@ -1,9 +1,11 @@
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Validators;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,10 @@ builder.Services.AddCors(options =>
             });
 });
 
-builder.Services.AddControllers().AddNewtonsoftJson().AddFluentValidation(fl => fl.RegisterValidatorsFromAssemblyContaining<CreateNumberValidator>());
+builder.Services.AddControllers()
+    .AddNewtonsoftJson();
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

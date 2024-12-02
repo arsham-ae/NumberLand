@@ -18,13 +18,24 @@ namespace NumberLand.Command.Page.Handler
 
         public async Task<CommandsResponse<PageCategoryDTO>> Handle(UpdatePageCategoryCommand request, CancellationToken cancellationToken)
         {
-            _unitOfWork.pageCategory.Patch(request.Id, request.PatchDoc);
-            return new CommandsResponse<PageCategoryDTO>
+            try
             {
-                status = "Success",
-                message = "PageCategory Updated Successfully",
-                data = _mapper.Map<PageCategoryDTO>(await _unitOfWork.pageCategory.Get(pc => pc.id == request.Id))
-            };
+                _unitOfWork.pageCategory.Patch(request.Id, request.PatchDoc);
+                return new CommandsResponse<PageCategoryDTO>
+                {
+                    status = "Success",
+                    message = "PageCategory Updated Successfully",
+                    data = _mapper.Map<PageCategoryDTO>(await _unitOfWork.pageCategory.Get(pc => pc.id == request.Id))
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CommandsResponse<PageCategoryDTO>
+                {
+                    status = "Fail",
+                    message = ex.Message
+                };
+            }
         }
     }
 }

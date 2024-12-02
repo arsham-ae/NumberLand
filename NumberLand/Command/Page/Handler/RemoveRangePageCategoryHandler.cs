@@ -16,22 +16,33 @@ namespace NumberLand.Command.Page.Handler
 
         public async Task<CommandsResponse<PageCategoryDTO>> Handle(RemoveRangePageCategoryCommand request, CancellationToken cancellationToken)
         {
-            var get = (await _unitOfWork.pageCategory.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
-            if (get == null || !get.Any())
+            try
+            {
+                var get = (await _unitOfWork.pageCategory.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
+                if (get == null || !get.Any())
+                {
+                    return new CommandsResponse<PageCategoryDTO>
+                    {
+                        status = "Fail",
+                        message = $"PageCategories with Id {string.Join(",", request.Ids)} Not Found!"
+                    };
+                }
+                _unitOfWork.pageCategory.DeleteRange(get);
+                await _unitOfWork.Save();
+                return new CommandsResponse<PageCategoryDTO>
+                {
+                    status = "Success",
+                    message = $"PageCategories with Id {string.Join(",", request.Ids)} Deleted Successfully!"
+                };
+            }
+            catch (Exception ex)
             {
                 return new CommandsResponse<PageCategoryDTO>
                 {
                     status = "Fail",
-                    message = $"PageCategories with Id {string.Join(",", request.Ids)} Not Found!"
+                    message = ex.Message
                 };
             }
-            _unitOfWork.pageCategory.DeleteRange(get);
-            await _unitOfWork.Save();
-            return new CommandsResponse<PageCategoryDTO>
-            {
-                status = "Success",
-                message = $"PageCategories with Id {string.Join(",", request.Ids)} Deleted Successfully!"
-            };
         }
     }
 }

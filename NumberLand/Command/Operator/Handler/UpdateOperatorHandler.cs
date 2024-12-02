@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using NumberLand.Command.Operator.Command;
+using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
 
@@ -16,13 +17,24 @@ namespace NumberLand.Command.Operator.Handler
 
         public async Task<CommandsResponse<OperatorModel>> Handle(UpdateOperatorCommand request, CancellationToken cancellationToken)
         {
-            _unitOfWork.nOperator.Patch(request.Id, request.OperatorModel);
-            return new CommandsResponse<OperatorModel>
+            try
             {
-                status = "Success",
-                message = "Operator Edited Successfully.",
-                data = await _unitOfWork.nOperator.Get(o => o.id == request.Id)
-            };
+                _unitOfWork.nOperator.Patch(request.Id, request.OperatorModel);
+                return new CommandsResponse<OperatorModel>
+                {
+                    status = "Success",
+                    message = "Operator Edited Successfully.",
+                    data = await _unitOfWork.nOperator.Get(o => o.id == request.Id)
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CommandsResponse<OperatorModel>
+                {
+                    status = "Fail",
+                    message = ex.Message
+                };
+            }
         }
     }
 }

@@ -15,23 +15,34 @@ namespace NumberLand.Command.Blog.Handler
         }
         public async Task<CommandsResponse<BlogCategoryDTO>> Handle(RemoveBlogCategoryCommand request, CancellationToken cancellationToken)
         {
-            var get = await _unitOfWork.blogCategory.Get(o => o.id == request.Id);
-            if (get == null)
+            try
+            {
+                var get = await _unitOfWork.blogCategory.Get(o => o.id == request.Id);
+                if (get == null)
+                {
+                    return new CommandsResponse<BlogCategoryDTO>
+                    {
+                        status = "Fail",
+                        message = $"BlogCategory With Id {request.Id} Not Found!"
+                    };
+                }
+                _unitOfWork.blogCategory.Delete(get);
+                await _unitOfWork.Save();
+
+                return new CommandsResponse<BlogCategoryDTO>
+                {
+                    status = "Success",
+                    message = $"BlogCategory With Id {request.Id} Deleted Successfully."
+                };
+            }
+            catch (Exception ex)
             {
                 return new CommandsResponse<BlogCategoryDTO>
                 {
                     status = "Fail",
-                    message = $"BlogCategory With Id {request.Id} Not Found!"
+                    message = ex.Message
                 };
             }
-            _unitOfWork.blogCategory.Delete(get);
-            await _unitOfWork.Save();
-
-            return new CommandsResponse<BlogCategoryDTO>
-            {
-                status = "Success",
-                message = $"BlogCategory With Id {request.Id} Deleted Successfully."
-            };
         }
     }
 }

@@ -19,13 +19,24 @@ namespace NumberLand.Command.Page.Handler
 
         public async Task<CommandsResponse<PageDTO>> Handle(UpdatePageCommand request, CancellationToken cancellationToken)
         {
-            _unitOfWork.page.Patch(request.Id, request.PatchDoc);
-            return new CommandsResponse<PageDTO>
+            try
             {
-                status = "Success",
-                message = "Page Updated Successfully",
-                data = _mapper.Map<PageDTO>(await _unitOfWork.page.Get(p => p.id == request.Id))
-            };
+                _unitOfWork.page.Patch(request.Id, request.PatchDoc);
+                return new CommandsResponse<PageDTO>
+                {
+                    status = "Success",
+                    message = "Page Updated Successfully",
+                    data = _mapper.Map<PageDTO>(await _unitOfWork.page.Get(p => p.id == request.Id))
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CommandsResponse<PageDTO>
+                {
+                    status = "Fail",
+                    message = ex.Message
+                };
+            }
         }
     }
 }

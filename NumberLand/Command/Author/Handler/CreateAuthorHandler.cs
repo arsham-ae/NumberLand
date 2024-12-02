@@ -23,32 +23,43 @@ namespace NumberLand.Command.Author.Handler
 
         public async Task<CommandsResponse<AuthorDTO>> Handle(CreateAuthorCommand request, CancellationToken cancellationToken)
         {
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "authors");
-            if (!Directory.Exists(uploadsFolder))
+            try
             {
-                Directory.CreateDirectory(uploadsFolder);
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "authors");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(request.imageFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await request.imageFile.CopyToAsync(fileStream);
+                }
+
+                var image = Path.Combine("images/authors", uniqueFileName);
+                var mappedAuthor = _mapper.Map<AuthorModel>(request.authorDTO);
+                mappedAuthor.imagePath = image.Replace("\\", "/");
+                mappedAuthor.slug = SlugHelper.GenerateSlug(request.authorDTO.authorSlug);
+                await _unitOfWork.author.Add(mappedAuthor);
+                await _unitOfWork.Save();
+
+                return new CommandsResponse<AuthorDTO>
+                {
+                    status = "Success",
+                    message = "Author Created Successfully.",
+                    data = _mapper.Map<AuthorDTO>(mappedAuthor)
+                };
             }
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(request.imageFile.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            catch (Exception ex)
             {
-                await request.imageFile.CopyToAsync(fileStream);
+                return new CommandsResponse<AuthorDTO>
+                {
+                    status = "Fail",
+                    message = ex.Message
+                };
             }
-
-            var image = Path.Combine("images/authors", uniqueFileName);
-            var mappedAuthor = _mapper.Map<AuthorModel>(request.authorDTO);
-            mappedAuthor.imagePath = image.Replace("\\", "/");
-            mappedAuthor.slug = SlugHelper.GenerateSlug(request.authorDTO.authorName);
-            await _unitOfWork.author.Add(mappedAuthor);
-            await _unitOfWork.Save();
-
-            return new CommandsResponse<AuthorDTO>
-            {
-                status = "Success",
-                message = "Author Created Successfully.",
-                data = _mapper.Map<AuthorDTO>(mappedAuthor)
-            };
         }
     }
 }

@@ -22,41 +22,51 @@ namespace NumberLand.Command.Blog.Handler
         }
         public async Task<CommandsResponse<BlogDTO>> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
         {
-            var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            var blog = await _unitOfWork.blog.Get(p => p.id == request.Id);
-            if (blog == null)
-            {
-                return new CommandsResponse<BlogDTO>
-                {
-                    status = "Fail",
-                    message = "Blog Not Found!"
-                };
-            }
-            if (request.File != null && request.File.Length > 0)
-            {
-                blog.featuredImagePath = await SaveAuthorImage(request.File);
-            }
             try
             {
-                request.PatchDoc.ApplyTo(blog);
+                var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+                var blog = await _unitOfWork.blog.Get(p => p.id == request.Id);
+                if (blog == null)
+                {
+                    return new CommandsResponse<BlogDTO>
+                    {
+                        status = "Fail",
+                        message = "Blog Not Found!"
+                    };
+                }
+                if (request.File != null && request.File.Length > 0)
+                {
+                    blog.featuredImagePath = await SaveAuthorImage(request.File);
+                }
+                try
+                {
+                    request.PatchDoc.ApplyTo(blog);
 
+                }
+                catch (Exception ex)
+                {
+                    return new CommandsResponse<BlogDTO>
+                    {
+                        status = "Fail",
+                        message = $"Error applying patch document: {ex.Message}"
+                    };
+                }
+                await _unitOfWork.Save();
+                return new CommandsResponse<BlogDTO>
+                {
+                    status = "Success",
+                    message = "Blog Updated Successfully.",
+                    data = _mapper.Map<BlogDTO>(await _unitOfWork.blog.Get(b => b.id == blog.id, includeProp: "author, blogCategories.category"))
+                };
             }
             catch (Exception ex)
             {
                 return new CommandsResponse<BlogDTO>
                 {
                     status = "Fail",
-                    message = $"Error applying patch document: {ex.Message}"
+                    message = ex.Message
                 };
             }
-            blog.slug = SlugHelper.GenerateSlug(blog.title);
-            await _unitOfWork.Save();
-            return new CommandsResponse<BlogDTO>
-            {
-                status = "Success",
-                message = "Blog Updated Successfully.",
-                data = _mapper.Map<BlogDTO>(await _unitOfWork.blog.Get(b => b.id == blog.id, includeProp: "author, blogCategories.category"))
-            };
         }
 
         private async Task<string> SaveAuthorImage(IFormFile file)

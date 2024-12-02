@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using NumberLand.Command.Operator.Command;
+using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
 
@@ -16,22 +17,33 @@ namespace NumberLand.Command.Operator.Handler
 
         public async Task<CommandsResponse<OperatorModel>> Handle(RemoveOperatorCommand request, CancellationToken cancellationToken)
         {
-            var get = await _unitOfWork.nOperator.Get(o => o.id == request.Id);
-            if (get == null)
+            try
+            {
+                var get = await _unitOfWork.nOperator.Get(o => o.id == request.Id);
+                if (get == null)
+                {
+                    return new CommandsResponse<OperatorModel>
+                    {
+                        status = "Fail",
+                        message = $"Operator with Id {request.Id} Not Found!"
+                    };
+                }
+                _unitOfWork.nOperator.Delete(get);
+                await _unitOfWork.Save();
+                return new CommandsResponse<OperatorModel>
+                {
+                    status = "Success",
+                    message = $"Operator {get.operatorCode} with Id {request.Id} Deleted Successfully!"
+                };
+            }
+            catch (Exception ex)
             {
                 return new CommandsResponse<OperatorModel>
                 {
                     status = "Fail",
-                    message = $"Operator with Id {request.Id} Not Found!"
+                    message = ex.Message
                 };
             }
-            _unitOfWork.nOperator.Delete(get);
-            await _unitOfWork.Save();
-            return new CommandsResponse<OperatorModel>
-            {
-                status = "Success",
-                message = $"Operator {get.operatorCode} with Id {request.Id} Deleted Successfully!"
-            };
         }
     }
 }

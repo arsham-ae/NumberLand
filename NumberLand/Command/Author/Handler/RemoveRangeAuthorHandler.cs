@@ -20,23 +20,34 @@ namespace NumberLand.Command.Author.Handler
         }
         public async Task<CommandsResponse<AuthorDTO>> Handle(RemoveRangeAuthorCommand request, CancellationToken cancellationToken)
         {
-            var get = (await _unitOfWork.author.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
-            if (!get.Any() || get == null)
+            try
+            {
+                var get = (await _unitOfWork.author.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
+                if (!get.Any() || get == null)
+                {
+                    return new CommandsResponse<AuthorDTO>
+                    {
+                        status = "Fail",
+                        message = "Authors Not Found!",
+                    };
+                }
+                _unitOfWork.author.DeleteRange(get);
+                await _unitOfWork.Save();
+
+                return new CommandsResponse<AuthorDTO>
+                {
+                    status = "Success",
+                    message = "Authors Deleted Successfully.",
+                };
+            }
+            catch (Exception ex)
             {
                 return new CommandsResponse<AuthorDTO>
                 {
                     status = "Fail",
-                    message = "Authors Not Found!",
+                    message = ex.Message
                 };
             }
-            _unitOfWork.author.DeleteRange(get);
-            await _unitOfWork.Save();
-
-            return new CommandsResponse<AuthorDTO>
-            {
-                status = "Success",
-                message = "Authors Deleted Successfully.",
-            };
         }
     }
 }

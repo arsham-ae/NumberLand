@@ -21,16 +21,28 @@ namespace NumberLand.Command.Number.Handler
 
         public async Task<CommandsResponse<NumberDTO>> Handle(CreateNumberCommand request, CancellationToken cancellationToken)
         {
-            var mappedNum = _mapper.Map<NumberModel>(request.NumberDTO);
-            mappedNum.slug = SlugHelper.GenerateSlug(request.NumberDTO.number);
-            await _unitOfWork.number.Add(mappedNum);
-            await _unitOfWork.Save();
-            return new CommandsResponse<NumberDTO>
+            try
             {
-                status = "Success",
-                message = $"{mappedNum.number} With Id {mappedNum.id} Created Successfully.",
-                data = _mapper.Map<NumberDTO>(mappedNum)
-            };
+                var mappedNum = _mapper.Map<NumberModel>(request.NumberDTO);
+                mappedNum.slug = SlugHelper.GenerateSlug(request.NumberDTO.numberSlug);
+                await _unitOfWork.number.Add(mappedNum);
+                await _unitOfWork.Save();
+                return new CommandsResponse<NumberDTO>
+                {
+                    status = "Success",
+                    message = $"{mappedNum.number} With Id {mappedNum.id} Created Successfully.",
+                    data = _mapper.Map<NumberDTO>(mappedNum)
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new CommandsResponse<NumberDTO>
+                {
+                    status = "Fail",
+                    message = ex.Message
+                };
+            }
         }
     }
 }

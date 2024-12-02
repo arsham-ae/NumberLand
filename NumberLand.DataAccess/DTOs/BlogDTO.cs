@@ -19,6 +19,7 @@ namespace NumberLand.DataAccess.DTOs
     public class CreateBlogDTO
     {
         public int blogId { get; set; }
+        public string blogSlug { get; set; }
         public string blogTitle { get; set; }
         public string blogContent { get; set; }
         public int blogAuthorId { get; set; }
@@ -38,6 +39,7 @@ namespace NumberLand.DataAccess.DTOs
     public class CreateBlogCategoryDTO
     {
         public int blogCategoryId { get; set; }
+        public string blogCategorySlug { get; set; }
         public string blogCategoryName { get; set; }
         public string blogCategoryDescription { get; set; }
     }

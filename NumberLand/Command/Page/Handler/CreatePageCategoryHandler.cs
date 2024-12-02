@@ -21,16 +21,27 @@ namespace NumberLand.Command.Page.Handler
 
         public async Task<CommandsResponse<PageCategoryDTO>> Handle(CreatePageCategoryCommand request, CancellationToken cancellationToken)
         {
-            var mappedCat = _mapper.Map<PageCategoryModel>(request.PageCategory);
-            mappedCat.slug = SlugHelper.GenerateSlug(mappedCat.name);
-            await _unitOfWork.pageCategory.Add(mappedCat);
-            await _unitOfWork.Save();
-            return new CommandsResponse<PageCategoryDTO>
+            try
             {
-                status = "Success",
-                message = "PageCategory Created Successfully.",
-                data = _mapper.Map<PageCategoryDTO>(await _unitOfWork.pageCategory.Get(p => p.id == mappedCat.id))
-            };
+                var mappedCat = _mapper.Map<PageCategoryModel>(request.PageCategory);
+                mappedCat.slug = SlugHelper.GenerateSlug(mappedCat.slug);
+                await _unitOfWork.pageCategory.Add(mappedCat);
+                await _unitOfWork.Save();
+                return new CommandsResponse<PageCategoryDTO>
+                {
+                    status = "Success",
+                    message = "PageCategory Created Successfully.",
+                    data = _mapper.Map<PageCategoryDTO>(await _unitOfWork.pageCategory.Get(p => p.id == mappedCat.id))
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CommandsResponse<PageCategoryDTO>
+                {
+                    status = "Fail",
+                    message = ex.Message
+                };
+            }
         }
     }
 }

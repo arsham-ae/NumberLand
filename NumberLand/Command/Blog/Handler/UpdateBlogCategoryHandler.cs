@@ -17,14 +17,25 @@ namespace NumberLand.Command.Blog.Handler
         }
         public async Task<CommandsResponse<BlogCategoryDTO>> Handle(UpdateBlogCategoryCommand request, CancellationToken cancellationToken)
         {
-            _unitOfWork.blogCategory.Patch(request.Id, request.PatchDoc);
-
-            return new CommandsResponse<BlogCategoryDTO>
+            try
             {
-                status = "Success",
-                message = "BlogCategory Updated Successfully.",
-                data = _mapper.Map<BlogCategoryDTO>(await _unitOfWork.blogCategory.Get(bc => bc.id == request.Id))
-            };
+                _unitOfWork.blogCategory.Patch(request.Id, request.PatchDoc);
+
+                return new CommandsResponse<BlogCategoryDTO>
+                {
+                    status = "Success",
+                    message = "BlogCategory Updated Successfully.",
+                    data = _mapper.Map<BlogCategoryDTO>(await _unitOfWork.blogCategory.Get(bc => bc.id == request.Id))
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CommandsResponse<BlogCategoryDTO>
+                {
+                    status = "Fail",
+                    message = ex.Message
+                };
+            }
         }
     }
 }

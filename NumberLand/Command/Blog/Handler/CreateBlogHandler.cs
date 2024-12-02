@@ -44,7 +44,7 @@ namespace NumberLand.Command.Blog.Handler
                 request.BlogDTO.blogContent = Markdown.ToHtml(request.BlogDTO.blogContent, pipeLine);
                 var mappedBlog = _mapper.Map<BlogModel>(request.BlogDTO);
                 mappedBlog.featuredImagePath = image.Replace("\\", "/");
-                mappedBlog.slug = SlugHelper.GenerateSlug(request.BlogDTO.blogTitle);
+                mappedBlog.slug = SlugHelper.GenerateSlug(request.BlogDTO.blogSlug);
                 mappedBlog.createAt = DateTime.Now;
                 mappedBlog.updateAt = DateTime.Now;
                 mappedBlog.publishedAt = DateTime.Now;

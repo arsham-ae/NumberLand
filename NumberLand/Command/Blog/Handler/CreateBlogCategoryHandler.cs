@@ -19,17 +19,28 @@ namespace NumberLand.Command.Blog.Handler
         }
         public async Task<CommandsResponse<BlogCategoryDTO>> Handle(CreateBlogCategoryCommand request, CancellationToken cancellationToken)
         {
-            var mappedCat = _mapper.Map<BlogCategoryModel>(request.BlogCatDTO);
-            mappedCat.slug = SlugHelper.GenerateSlug(request.BlogCatDTO.blogCategoryName);
-            await _unitOfWork.blogCategory.Add(mappedCat);
-            await _unitOfWork.Save();
-
-            return new CommandsResponse<BlogCategoryDTO>
+            try
             {
-                status = "Success",
-                message = "BlogCategory Created Successfully.",
-                data = _mapper.Map<BlogCategoryDTO>(mappedCat)
-            };
+                var mappedCat = _mapper.Map<BlogCategoryModel>(request.BlogCatDTO);
+                mappedCat.slug = SlugHelper.GenerateSlug(request.BlogCatDTO.blogCategorySlug);
+                await _unitOfWork.blogCategory.Add(mappedCat);
+                await _unitOfWork.Save();
+
+                return new CommandsResponse<BlogCategoryDTO>
+                {
+                    status = "Success",
+                    message = "BlogCategory Created Successfully.",
+                    data = _mapper.Map<BlogCategoryDTO>(mappedCat)
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CommandsResponse<BlogCategoryDTO>
+                {
+                    status = "Fail",
+                    message = ex.Message
+                };
+            }
         }
     }
 }

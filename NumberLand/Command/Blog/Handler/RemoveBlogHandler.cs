@@ -15,23 +15,34 @@ namespace NumberLand.Command.Blog.Handler
         }
         public async Task<CommandsResponse<CreateBlogDTO>> Handle(RemoveBlogCommand request, CancellationToken cancellationToken)
         {
-            var get = await _unitOfWork.blog.Get(o => o.id == request.Id);
-            if (get == null)
+            try
+            {
+                var get = await _unitOfWork.blog.Get(o => o.id == request.Id);
+                if (get == null)
+                {
+                    return new CommandsResponse<CreateBlogDTO>
+                    {
+                        status = "Fail",
+                        message = $"Blog With Id {request.Id} Not Found!"
+                    };
+                }
+                _unitOfWork.blog.Delete(get);
+                await _unitOfWork.Save();
+
+                return new CommandsResponse<CreateBlogDTO>
+                {
+                    status = "Success",
+                    message = $"Blog With Id {request.Id} Deleted Successfully."
+                };
+            }
+            catch (Exception ex)
             {
                 return new CommandsResponse<CreateBlogDTO>
                 {
                     status = "Fail",
-                    message = $"Blog With Id {request.Id} Not Found!"
+                    message = ex.Message
                 };
             }
-            _unitOfWork.blog.Delete(get);
-            await _unitOfWork.Save();
-
-            return new CommandsResponse<CreateBlogDTO>
-            {
-                status = "Success",
-                message = $"Blog With Id {request.Id} Deleted Successfully."
-            };
         }
     }
 }

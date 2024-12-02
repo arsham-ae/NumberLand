@@ -20,22 +20,33 @@ namespace NumberLand.Command.Author.Handler
         }
         public async Task<CommandsResponse<AuthorDTO>> Handle(RemoveAuthorCommand request, CancellationToken cancellationToken)
         {
-            var get = await _unitOfWork.author.Get(o => o.id == request.Id);
-            if (get == null)
+            try
+            {
+                var get = await _unitOfWork.author.Get(o => o.id == request.Id);
+                if (get == null)
+                {
+                    return new CommandsResponse<AuthorDTO>
+                    {
+                        status = "Fail",
+                        message = "Author Not Found!"
+                    };
+                }
+                _unitOfWork.author.Delete(get);
+                await _unitOfWork.Save();
+                return new CommandsResponse<AuthorDTO>
+                {
+                    status = "Success",
+                    message = "Author Deleted Successfully!"
+                };
+            }
+            catch (Exception ex)
             {
                 return new CommandsResponse<AuthorDTO>
                 {
                     status = "Fail",
-                    message = "Author Not Found!"
+                    message = ex.Message
                 };
             }
-            _unitOfWork.author.Delete(get);
-            await _unitOfWork.Save();
-            return new CommandsResponse<AuthorDTO>
-            {
-                status = "Success",
-                message = "Author Deleted Successfully!"
-            };
         }
     }
 }

@@ -16,23 +16,34 @@ namespace NumberLand.Command.Blog.Handler
 
         public async Task<CommandsResponse<BlogCategoryDTO>> Handle(RemoveRangeBlogCategoryCommand request, CancellationToken cancellationToken)
         {
-            var get = (await _unitOfWork.blogCategory.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
-            if (!get.Any())
+            try
+            {
+                var get = (await _unitOfWork.blogCategory.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
+                if (!get.Any())
+                {
+                    return new CommandsResponse<BlogCategoryDTO>
+                    {
+                        status = "Fail",
+                        message = $"BlogCategory With Id {string.Join(",", request.Ids)} Not Found!"
+                    };
+                }
+                _unitOfWork.blogCategory.DeleteRange(get);
+                await _unitOfWork.Save();
+
+                return new CommandsResponse<BlogCategoryDTO>
+                {
+                    status = "Success",
+                    message = $"BlogCategory With Id {string.Join(",", request.Ids)} Deleted Successfully."
+                };
+            }
+            catch (Exception ex)
             {
                 return new CommandsResponse<BlogCategoryDTO>
                 {
                     status = "Fail",
-                    message = $"BlogCategory With Id {string.Join(",", request.Ids)} Not Found!"
+                    message = ex.Message
                 };
             }
-            _unitOfWork.blogCategory.DeleteRange(get);
-            await _unitOfWork.Save();
-
-            return new CommandsResponse<BlogCategoryDTO>
-            {
-                status = "Success",
-                message = $"BlogCategory With Id {string.Join(",", request.Ids)} Deleted Successfully."
-            };
         }
     }
 }

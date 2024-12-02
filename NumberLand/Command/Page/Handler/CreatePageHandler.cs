@@ -21,18 +21,29 @@ namespace NumberLand.Command.Page.Handler
         }
         public async Task<CommandsResponse<PageDTO>> Handle(CreatePageCommand request, CancellationToken cancellationToken)
         {
-            var mappedPage = _mapper.Map<PageeModel>(request.PageDto);
-            var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            mappedPage.content = Markdown.ToHtml(mappedPage.content, pipeLine);
-            mappedPage.slug = SlugHelper.GenerateSlug(mappedPage.title);
-            await _unitOfWork.page.Add(mappedPage);
-            await _unitOfWork.Save();
-            return new CommandsResponse<PageDTO>
+            try
             {
-                status = "Success",
-                message = "Page Created Successfully.",
-                data = _mapper.Map<PageDTO>(await _unitOfWork.page.Get(p => p.id == mappedPage.id))
-            };
+                var mappedPage = _mapper.Map<PageeModel>(request.PageDto);
+                var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+                mappedPage.content = Markdown.ToHtml(mappedPage.content, pipeLine);
+                mappedPage.slug = SlugHelper.GenerateSlug(mappedPage.slug);
+                await _unitOfWork.page.Add(mappedPage);
+                await _unitOfWork.Save();
+                return new CommandsResponse<PageDTO>
+                {
+                    status = "Success",
+                    message = "Page Created Successfully.",
+                    data = _mapper.Map<PageDTO>(await _unitOfWork.page.Get(p => p.id == mappedPage.id))
+                };
+            }
+            catch (Exception ex)
+            {
+                return new CommandsResponse<PageDTO>
+                {
+                    status = "Fail",
+                    message = ex.Message
+                };
+            }
         }
     }
 }

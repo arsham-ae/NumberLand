@@ -18,6 +18,7 @@ namespace NumberLand.MappingProfile
             CreateMap<UpdateNumberCommand, NumberModel>();
             CreateMap<CreateBlogDTO, BlogModel>()
                 .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.blogId))
+                .ForMember(dest => dest.slug, opt => opt.MapFrom(src => src.blogSlug))
                 .ForMember(dest => dest.title, opt => opt.MapFrom(src => src.blogTitle))
                 .ForMember(dest => dest.content, opt => opt.MapFrom(src => src.blogContent))
                 .ForMember(dest => dest.authorId, opt => opt.MapFrom(src => src.blogAuthorId))
@@ -68,6 +69,7 @@ namespace NumberLand.MappingProfile
 
             CreateMap<CreateAuthorDTO, AuthorModel>()
                 .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.authorId))
+                .ForMember(dest => dest.slug, opt => opt.MapFrom(src => src.authorSlug))
                 .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.authorName))
                 .ForMember(dest => dest.description, opt => opt.MapFrom(src => src.authorDescription));
             CreateMap<CreateAuthorCommand, AuthorModel>();

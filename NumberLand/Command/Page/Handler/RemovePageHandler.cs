@@ -16,22 +16,33 @@ namespace NumberLand.Command.Page.Handler
 
         public async Task<CommandsResponse<PageDTO>> Handle(RemovePageCommand request, CancellationToken cancellationToken)
         {
-            var get = await _unitOfWork.page.Get(o => o.id == request.Id);
-            if (get == null)
+            try
+            {
+                var get = await _unitOfWork.page.Get(o => o.id == request.Id);
+                if (get == null)
+                {
+                    return new CommandsResponse<PageDTO>
+                    {
+                        status = "Fail",
+                        message = $"Page with Id {request.Id} Not Found!"
+                    };
+                }
+                _unitOfWork.page.Delete(get);
+                await _unitOfWork.Save();
+                return new CommandsResponse<PageDTO>
+                {
+                    status = "Success",
+                    message = $"Page {get.title} with Id {request.Id} Deleted Successfully!"
+                };
+            }
+            catch (Exception ex)
             {
                 return new CommandsResponse<PageDTO>
                 {
                     status = "Fail",
-                    message = $"Page with Id {request.Id} Not Found!"
+                    message = ex.Message
                 };
             }
-            _unitOfWork.page.Delete(get);
-            await _unitOfWork.Save();
-            return new CommandsResponse<PageDTO>
-            {
-                status = "Success",
-                message = $"Page {get.title} with Id {request.Id} Deleted Successfully!"
-            };
         }
     }
 }

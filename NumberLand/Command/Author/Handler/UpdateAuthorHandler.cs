@@ -22,42 +22,52 @@ namespace NumberLand.Command.Author.Handler
 
         public async Task<CommandsResponse<AuthorDTO>> Handle(UpdateAuthorCommand request, CancellationToken cancellationToken)
         {
-            var author = await _unitOfWork.author.Get(p => p.id == request.Id);
-
-            if (author == null)
-            {
-                return new CommandsResponse<AuthorDTO>
-                {
-                    status = "Fail",
-                    message = "Author Not Found!"
-                };
-            }
-            if (request.File != null && request.File.Length > 0)
-            {
-                author.imagePath = await SaveAuthorImage(request.File);
-            }
             try
             {
-                request.JsonPatch.ApplyTo(author);
+                var author = await _unitOfWork.author.Get(p => p.id == request.Id);
 
+                if (author == null)
+                {
+                    return new CommandsResponse<AuthorDTO>
+                    {
+                        status = "Fail",
+                        message = "Author Not Found!"
+                    };
+                }
+                if (request.File != null && request.File.Length > 0)
+                {
+                    author.imagePath = await SaveAuthorImage(request.File);
+                }
+                try
+                {
+                    request.JsonPatch.ApplyTo(author);
+
+                }
+                catch (Exception ex)
+                {
+                    return new CommandsResponse<AuthorDTO>
+                    {
+                        status = "Fail",
+                        message = $"Error applying patch document: {ex.Message}"
+                    };
+                }
+                await _unitOfWork.Save();
+
+                return new CommandsResponse<AuthorDTO>
+                {
+                    status = "Success",
+                    message = "Author Updated Successfully!",
+                    data = _mapper.Map<AuthorDTO>(author)
+                };
             }
             catch (Exception ex)
             {
                 return new CommandsResponse<AuthorDTO>
                 {
                     status = "Fail",
-                    message = $"Error applying patch document: {ex.Message}"
+                    message = ex.Message
                 };
             }
-            author.slug = SlugHelper.GenerateSlug(author.name);
-            await _unitOfWork.Save();
-
-            return new CommandsResponse<AuthorDTO>
-            {
-                status = "Success",
-                message = "Author Updated Successfully!",
-                data = _mapper.Map<AuthorDTO>(author)
-            };
         }
         private async Task<string> SaveAuthorImage(IFormFile file)
         {

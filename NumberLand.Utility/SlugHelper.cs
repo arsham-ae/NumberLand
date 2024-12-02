@@ -8,8 +8,9 @@ namespace NumberLand.Utility
         {
             string slug = text.ToLower().Trim();
             slug = slug.Replace(' ', '-');
-            slug = Regex.Replace(slug, @"[^a-zA-Z0-9\u0600-\u06FF-]", "");
+            slug = Regex.Replace(slug, @"[^a-zA-Z0-9]", "");
             slug = Regex.Replace(slug, @"-+", "-");
+            slug = $"{slug}-{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}";
             return slug;
         }
     }

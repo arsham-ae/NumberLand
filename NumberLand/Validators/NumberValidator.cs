@@ -5,9 +5,9 @@ using NumberLand.DataAccess.DTOs;
 
 namespace NumberLand.Validators
 {
-    public class CreateNumberValidator : AbstractValidator<CreateNumberDTO>
+    public class NumberValidator : AbstractValidator<CreateNumberDTO>
     {
-        public CreateNumberValidator()
+        public NumberValidator()
         {
             RuleFor(n => n.number)
                 .NotEmpty().WithMessage("Number Cannot Be Empty!")
