@@ -49,7 +49,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"An error occurred while checking or migrating the database: {ex.Message}");
+        Console.WriteLine($"An error occurred while checking or migrating the database: {ex.InnerException.Message}");
         throw;
     }
 }

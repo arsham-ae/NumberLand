@@ -21,6 +21,7 @@ namespace NumberLand.MappingProfile
                 .ForMember(dest => dest.slug, opt => opt.MapFrom(src => src.blogSlug))
                 .ForMember(dest => dest.title, opt => opt.MapFrom(src => src.blogTitle))
                 .ForMember(dest => dest.content, opt => opt.MapFrom(src => src.blogContent))
+                .ForMember(dest => dest.preview, opt => opt.MapFrom(src => src.blogPreview))
                 .ForMember(dest => dest.authorId, opt => opt.MapFrom(src => src.blogAuthorId))
                 .ForMember(dest => dest.blogCategories, opt => opt.MapFrom(src => src.blogCategories.Select(id => new BlogCategoryJoinModel
                 {
@@ -36,6 +37,7 @@ namespace NumberLand.MappingProfile
                 .ForMember(dest => dest.blogSlug, opt => opt.MapFrom(src => src.slug))
                 .ForMember(dest => dest.blogTitle, opt => opt.MapFrom(src => src.title))
                 .ForMember(dest => dest.blogContent, opt => opt.MapFrom(src => src.content))
+                .ForMember(dest => dest.blogPreview, opt => opt.MapFrom(src => src.preview))
                 .ForMember(dest => dest.blogAuthor, opt => opt.MapFrom(src => src.author))
                 .ForMember(dest => dest.blogCategories, opt => opt.MapFrom(src => src.blogCategories.Select(bc => new BlogCategoryDTO
                 {
@@ -79,6 +81,31 @@ namespace NumberLand.MappingProfile
                 .ForMember(dest => dest.authorName, opt => opt.MapFrom(src => src.name))
                 .ForMember(dest => dest.authorDescription, opt => opt.MapFrom(src => src.description))
                 .ForMember(dest => dest.imagePath, opt => opt.MapFrom(src => src.imagePath));
+            CreateMap<CreateOperatorDTO, OperatorModel>();
+            CreateMap<OperatorModel, OperatorModel>();
+            CreateMap<ApplicationModel, ApplicationDTO>()
+            .ForMember(dest => dest.appId, opt => opt.MapFrom(src => src.id))
+            .ForMember(dest => dest.appSlug, opt => opt.MapFrom(src => src.slug))
+            .ForMember(dest => dest.appName, opt => opt.MapFrom(src => src.name))
+            .ForMember(dest => dest.appContent, opt => opt.MapFrom(src => src.content));
+            CreateMap<CreateApplicationDTO, ApplicationModel>()
+            .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.appId))
+            .ForMember(dest => dest.slug, opt => opt.MapFrom(src => src.appSlug))
+            .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.appName))
+            .ForMember(dest => dest.content, opt => opt.MapFrom(src => src.appContent));
+
+            CreateMap<CountryModel, CountryDTO>()
+                .ForMember(dest => dest.countryId, opt => opt.MapFrom(src => src.id))
+                .ForMember(dest => dest.countrySlug, opt => opt.MapFrom(src => src.slug))
+                .ForMember(dest => dest.countryName, opt => opt.MapFrom(src => src.name))
+                .ForMember(dest => dest.countryContent, opt => opt.MapFrom(src => src.content))
+                .ForMember(dest => dest.countryFlagIcon, opt => opt.MapFrom(src => src.flagIcon));
+
+            CreateMap<CreateCountryDTO, CountryModel>()
+                .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.countryId))
+                .ForMember(dest => dest.slug, opt => opt.MapFrom(src => src.countrySlug))
+                .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.countryName))
+                .ForMember(dest => dest.content, opt => opt.MapFrom(src => src.countryContent));
         }
     }
 }

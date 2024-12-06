@@ -33,7 +33,7 @@ namespace NumberLand.Command.Page.Handler
                 return new CommandsResponse<PageCategoryDTO>
                 {
                     status = "Fail",
-                    message = ex.Message
+                    message = ex.InnerException.Message
                 };
             }
         }

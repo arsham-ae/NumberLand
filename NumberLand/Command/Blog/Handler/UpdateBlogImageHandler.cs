@@ -56,7 +56,7 @@ namespace NumberLand.Command.Blog.Handler
                 return new CommandsResponse<BlogDTO>
                 {
                     status = "Fail",
-                    message = ex.Message
+                    message = ex.InnerException.Message
                 };
             }
         }

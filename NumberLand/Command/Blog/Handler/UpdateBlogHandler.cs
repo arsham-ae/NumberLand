@@ -38,19 +38,8 @@ namespace NumberLand.Command.Blog.Handler
                 {
                     blog.featuredImagePath = await SaveAuthorImage(request.File);
                 }
-                try
-                {
-                    request.PatchDoc.ApplyTo(blog);
-
-                }
-                catch (Exception ex)
-                {
-                    return new CommandsResponse<BlogDTO>
-                    {
-                        status = "Fail",
-                        message = $"Error applying patch document: {ex.Message}"
-                    };
-                }
+                request.PatchDoc.ApplyTo(blog);
+                blog.content = Markdown.ToHtml(blog.content, pipeLine);
                 await _unitOfWork.Save();
                 return new CommandsResponse<BlogDTO>
                 {
@@ -64,7 +53,7 @@ namespace NumberLand.Command.Blog.Handler
                 return new CommandsResponse<BlogDTO>
                 {
                     status = "Fail",
-                    message = ex.Message
+                    message = ex.InnerException.Message
                 };
             }
         }

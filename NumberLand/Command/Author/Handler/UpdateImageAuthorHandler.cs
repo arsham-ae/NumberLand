@@ -60,7 +60,7 @@ namespace NumberLand.Command.Author.Handler
                 return new CommandsResponse<AuthorDTO>
                 {
                     status = "Fail",
-                    message = ex.Message
+                    message = ex.InnerException.Message
                 };
             }
         }

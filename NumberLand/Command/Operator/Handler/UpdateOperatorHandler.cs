@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using NumberLand.Command.Operator.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
@@ -6,33 +7,34 @@ using NumberLand.Models.Numbers;
 
 namespace NumberLand.Command.Operator.Handler
 {
-    public class UpdateOperatorHandler : IRequestHandler<UpdateOperatorCommand, CommandsResponse<OperatorModel>>
+    public class UpdateOperatorHandler : IRequestHandler<UpdateOperatorCommand, CommandsResponse<OperatorDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
-
-        public UpdateOperatorHandler(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+        public UpdateOperatorHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<CommandsResponse<OperatorModel>> Handle(UpdateOperatorCommand request, CancellationToken cancellationToken)
+        public async Task<CommandsResponse<OperatorDTO>> Handle(UpdateOperatorCommand request, CancellationToken cancellationToken)
         {
             try
             {
                 _unitOfWork.nOperator.Patch(request.Id, request.OperatorModel);
-                return new CommandsResponse<OperatorModel>
+                return new CommandsResponse<OperatorDTO>
                 {
                     status = "Success",
                     message = "Operator Edited Successfully.",
-                    data = await _unitOfWork.nOperator.Get(o => o.id == request.Id)
+                    data = _mapper.Map<OperatorDTO>(await _unitOfWork.nOperator.Get(o => o.id == request.Id))
                 };
             }
             catch (Exception ex)
             {
-                return new CommandsResponse<OperatorModel>
+                return new CommandsResponse<OperatorDTO>
                 {
                     status = "Fail",
-                    message = ex.Message
+                    message = ex.InnerException.Message
                 };
             }
         }

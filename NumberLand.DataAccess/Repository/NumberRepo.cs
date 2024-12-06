@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
@@ -16,7 +17,7 @@ namespace NumberLand.DataAccess.Repository
 
         public async Task Patch(int id, [FromBody] JsonPatchDocument<NumberModel> patchDoc)
         {
-            var number = _context.Numbers.FirstOrDefault(p => p.id == id);
+            var number = await _context.Numbers.FirstOrDefaultAsync(p => p.id == id);
             if (number != null && patchDoc != null)
             {
                 patchDoc.ApplyTo(number);

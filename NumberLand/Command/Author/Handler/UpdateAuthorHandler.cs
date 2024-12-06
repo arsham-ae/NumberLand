@@ -48,7 +48,7 @@ namespace NumberLand.Command.Author.Handler
                     return new CommandsResponse<AuthorDTO>
                     {
                         status = "Fail",
-                        message = $"Error applying patch document: {ex.Message}"
+                        message = $"Error applying patch document: {ex.InnerException.Message}"
                     };
                 }
                 await _unitOfWork.Save();
@@ -65,7 +65,7 @@ namespace NumberLand.Command.Author.Handler
                 return new CommandsResponse<AuthorDTO>
                 {
                     status = "Fail",
-                    message = ex.Message
+                    message = ex.InnerException.Message
                 };
             }
         }

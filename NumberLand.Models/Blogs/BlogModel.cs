@@ -10,6 +10,7 @@ namespace NumberLand.Models.Blogs
         public string slug { get; set; }
         public string title { get; set; }
         public string content { get; set; }
+        public string preview { get; set; }
         public int authorId { get; set; }
         [ForeignKey("authorId")]
         public AuthorModel author { get; set; }

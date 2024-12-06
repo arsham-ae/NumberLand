@@ -9,15 +9,15 @@ namespace NumberLand.Models.Numbers
         public int id { get; set; }
         public string slug { get; set; }
         public string number { get; set; }
-        public string application { get; set; }
+        public int applicationId { get; set; }
+        [ForeignKey("applicationId")]
+        public ApplicationModel application { get; set; }
         public int categoryId { get; set; }
         [ForeignKey("categoryId")]
         public CategoryModel category { get; set; }
         public int operatorId { get; set; }
         [ForeignKey("operatorId")]
-        [DisplayName("Operator")]
-        public OperatorModel nOperator { get; set; }
-        public DateTime expireTime { get; set; }
-        public decimal price { get; set; }
+        public OperatorModel @operator { get; set; }
+        public DateTime? expireTime { get; set; }
     }
 }

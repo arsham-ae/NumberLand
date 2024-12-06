@@ -37,8 +37,10 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Images\" />
+    <Folder Include="wwwroot\Images\apps\" />
     <Folder Include="wwwroot\Images\authors\" />
     <Folder Include="wwwroot\Images\blogs\" />
+    <Folder Include="wwwroot\Images\flags\" />
   </ItemGroup>
 
 </Project>

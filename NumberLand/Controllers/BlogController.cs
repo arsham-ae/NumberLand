@@ -94,7 +94,7 @@ namespace NumberLand.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Patch(int id, [FromBody] string jsonPatch, IFormFile? file)
         {
-            if (!string.IsNullOrEmpty(jsonPatch))
+            if (string.IsNullOrEmpty(jsonPatch))
             {
                 return BadRequest("Patch document cannot be null or empty.");
             }
@@ -117,6 +117,8 @@ namespace NumberLand.Controllers
             return Ok(result);
         }
         [HttpPatch("UpdateImage/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateImage(int id, IFormFile file)
         {
             if (id == null || id == 0)

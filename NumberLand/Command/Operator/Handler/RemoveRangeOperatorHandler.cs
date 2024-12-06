@@ -6,7 +6,7 @@ using NumberLand.Models.Numbers;
 
 namespace NumberLand.Command.Operator.Handler
 {
-    public class RemoveRangeOperatorHandler : IRequestHandler<RemoveRangeOperatorCommand, CommandsResponse<OperatorModel>>
+    public class RemoveRangeOperatorHandler : IRequestHandler<RemoveRangeOperatorCommand, CommandsResponse<OperatorDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -15,14 +15,14 @@ namespace NumberLand.Command.Operator.Handler
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<CommandsResponse<OperatorModel>> Handle(RemoveRangeOperatorCommand request, CancellationToken cancellationToken)
+        public async Task<CommandsResponse<OperatorDTO>> Handle(RemoveRangeOperatorCommand request, CancellationToken cancellationToken)
         {
             try
             {
                 var get = (await _unitOfWork.nOperator.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
                 if (get == null || !get.Any())
                 {
-                    return new CommandsResponse<OperatorModel>
+                    return new CommandsResponse<OperatorDTO>
                     {
                         status = "Fail",
                         message = $"Operators with Id {string.Join(",", request.Ids)} Not Found!"
@@ -30,7 +30,7 @@ namespace NumberLand.Command.Operator.Handler
                 }
                 _unitOfWork.nOperator.DeleteRange(get);
                 await _unitOfWork.Save();
-                return new CommandsResponse<OperatorModel>
+                return new CommandsResponse<OperatorDTO>
                 {
                     status = "Success",
                     message = $"Operators with Id {string.Join(",", request.Ids)} Deleted Successfully!"
@@ -38,10 +38,10 @@ namespace NumberLand.Command.Operator.Handler
             }
             catch (Exception ex)
             {
-                return new CommandsResponse<OperatorModel>
+                return new CommandsResponse<OperatorDTO>
                 {
                     status = "Fail",
-                    message = ex.Message
+                    message = ex.InnerException.Message
                 };
             }
         }

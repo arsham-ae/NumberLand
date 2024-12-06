@@ -21,7 +21,7 @@ namespace NumberLand.Command.Number.Handler
             try
             {
                 var getNumber = await _unitOfWork.number.Get(n => n.id == request.Id);
-                await _unitOfWork.number.PatchAsync(request.Id, request.PatchDoc);
+                await _unitOfWork.number.Patch(request.Id, request.PatchDoc);
                 return new CommandsResponse<NumberDTO>
                 {
                     status = "Success",
@@ -34,7 +34,7 @@ namespace NumberLand.Command.Number.Handler
                 return new CommandsResponse<NumberDTO>
                 {
                     status = "Fail",
-                    message = ex.Message
+                    message = ex.InnerException.Message
                 };
             }
         }

@@ -20,6 +20,8 @@ namespace NumberLand.DataAccess.Repository
 
         public IPageRepo page { get; private set; }
         public IBlogCategoryRepo blogCategory { get; private set; }
+        public ICountryRepo country { get; private set; }
+        public IApplicationRepo application { get; private set; }
 
         public UnitOfWork(myDbContext context)
         {
@@ -32,6 +34,8 @@ namespace NumberLand.DataAccess.Repository
             pageCategory = new PageCategoryRepo(_context);
             page = new PageRepo(_context);
             blogCategory = new BlogCategoryRepo(_context);
+            country = new CountryRepo(_context);
+            application = new ApplicationRepo(_context);
         }
         public async Task Save()
         {

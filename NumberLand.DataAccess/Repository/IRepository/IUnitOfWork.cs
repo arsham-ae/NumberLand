@@ -10,6 +10,8 @@
         IPageCategoryRepo pageCategory { get; }
         IPageRepo page { get; }
         IBlogCategoryRepo blogCategory { get; }
+        ICountryRepo country { get; }
+        IApplicationRepo application { get; }
 
         Task Save();
     }

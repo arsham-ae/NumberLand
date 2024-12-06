@@ -88,15 +88,6 @@ namespace NumberLand.DataAccess.Migrations
                     b.HasKey("id");
 
                     b.ToTable("BlogCategory");
-
-                    b.HasData(
-                        new
-                        {
-                            id = 1,
-                            description = "Heloooo",
-                            name = "tech",
-                            slug = "a"
-                        });
                 });
 
             modelBuilder.Entity("NumberLand.Models.Blogs.BlogModel", b =>
@@ -124,6 +115,10 @@ namespace NumberLand.DataAccess.Migrations
                     b.Property<bool>("isPublished")
                         .HasColumnType("bit");
 
+                    b.Property<string>("preview")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("publishedAt")
                         .HasColumnType("datetime2");
 
@@ -143,6 +138,34 @@ namespace NumberLand.DataAccess.Migrations
                     b.HasIndex("authorId");
 
                     b.ToTable("Blog");
+                });
+
+            modelBuilder.Entity("NumberLand.Models.Numbers.ApplicationModel", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<string>("appIcon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Application");
                 });
 
             modelBuilder.Entity("NumberLand.Models.Numbers.CategoryModel", b =>
@@ -175,22 +198,54 @@ namespace NumberLand.DataAccess.Migrations
                             id = 1,
                             description = "",
                             name = "Regular",
-                            slug = "ed"
+                            slug = "regular"
                         },
                         new
                         {
                             id = 2,
                             description = "",
                             name = "Rental",
-                            slug = "ss"
+                            slug = "rental"
                         },
                         new
                         {
                             id = 3,
                             description = "",
                             name = "Permanent",
-                            slug = "sf"
+                            slug = "permanent"
                         });
+                });
+
+            modelBuilder.Entity("NumberLand.Models.Numbers.CountryModel", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<string>("content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("countryCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("flagIcon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Country");
                 });
 
             modelBuilder.Entity("NumberLand.Models.Numbers.NumberModel", b =>
@@ -201,14 +256,13 @@ namespace NumberLand.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<string>("application")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("applicationId")
+                        .HasColumnType("int");
 
                     b.Property<int>("categoryId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("expireTime")
+                    b.Property<DateTime?>("expireTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("number")
@@ -218,14 +272,13 @@ namespace NumberLand.DataAccess.Migrations
                     b.Property<int>("operatorId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("price")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("slug")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
+
+                    b.HasIndex("applicationId");
 
                     b.HasIndex("categoryId");
 
@@ -242,13 +295,16 @@ namespace NumberLand.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<string>("country")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("countryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("operatorCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("quantity")
                         .HasColumnType("int");
@@ -259,25 +315,9 @@ namespace NumberLand.DataAccess.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Operator");
+                    b.HasIndex("countryId");
 
-                    b.HasData(
-                        new
-                        {
-                            id = 1,
-                            country = "UK",
-                            operatorCode = "43",
-                            quantity = 20,
-                            slug = "eg"
-                        },
-                        new
-                        {
-                            id = 2,
-                            country = "US",
-                            operatorCode = "53",
-                            quantity = 10,
-                            slug = "asd"
-                        });
+                    b.ToTable("Operator");
                 });
 
             modelBuilder.Entity("NumberLand.Models.Pages.PageCategoryModel", b =>
@@ -371,21 +411,40 @@ namespace NumberLand.DataAccess.Migrations
 
             modelBuilder.Entity("NumberLand.Models.Numbers.NumberModel", b =>
                 {
+                    b.HasOne("NumberLand.Models.Numbers.ApplicationModel", "application")
+                        .WithMany()
+                        .HasForeignKey("applicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("NumberLand.Models.Numbers.CategoryModel", "category")
                         .WithMany()
                         .HasForeignKey("categoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NumberLand.Models.Numbers.OperatorModel", "nOperator")
+                    b.HasOne("NumberLand.Models.Numbers.OperatorModel", "operator")
                         .WithMany()
                         .HasForeignKey("operatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("application");
+
                     b.Navigation("category");
 
-                    b.Navigation("nOperator");
+                    b.Navigation("operator");
+                });
+
+            modelBuilder.Entity("NumberLand.Models.Numbers.OperatorModel", b =>
+                {
+                    b.HasOne("NumberLand.Models.Numbers.CountryModel", "country")
+                        .WithMany()
+                        .HasForeignKey("countryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("country");
                 });
 
             modelBuilder.Entity("NumberLand.Models.Pages.PageCategoryModel", b =>

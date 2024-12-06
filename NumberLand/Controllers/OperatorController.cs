@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using NumberLand.Command.Operator.Command;
+using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Numbers;
 using NumberLand.Query.Operator.Query;
 
@@ -50,7 +51,7 @@ namespace NumberLand.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create(OperatorModel operatorModel)
+        public async Task<IActionResult> Create(CreateOperatorDTO operatorModel)
         {
             if (operatorModel == null || operatorModel.id != 0)
             {

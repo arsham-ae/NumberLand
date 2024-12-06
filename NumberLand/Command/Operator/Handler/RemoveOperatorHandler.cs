@@ -6,7 +6,7 @@ using NumberLand.Models.Numbers;
 
 namespace NumberLand.Command.Operator.Handler
 {
-    public class RemoveOperatorHandler : IRequestHandler<RemoveOperatorCommand, CommandsResponse<OperatorModel>>
+    public class RemoveOperatorHandler : IRequestHandler<RemoveOperatorCommand, CommandsResponse<OperatorDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -15,14 +15,14 @@ namespace NumberLand.Command.Operator.Handler
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<CommandsResponse<OperatorModel>> Handle(RemoveOperatorCommand request, CancellationToken cancellationToken)
+        public async Task<CommandsResponse<OperatorDTO>> Handle(RemoveOperatorCommand request, CancellationToken cancellationToken)
         {
             try
             {
                 var get = await _unitOfWork.nOperator.Get(o => o.id == request.Id);
                 if (get == null)
                 {
-                    return new CommandsResponse<OperatorModel>
+                    return new CommandsResponse<OperatorDTO>
                     {
                         status = "Fail",
                         message = $"Operator with Id {request.Id} Not Found!"
@@ -30,7 +30,7 @@ namespace NumberLand.Command.Operator.Handler
                 }
                 _unitOfWork.nOperator.Delete(get);
                 await _unitOfWork.Save();
-                return new CommandsResponse<OperatorModel>
+                return new CommandsResponse<OperatorDTO>
                 {
                     status = "Success",
                     message = $"Operator {get.operatorCode} with Id {request.Id} Deleted Successfully!"
@@ -38,10 +38,10 @@ namespace NumberLand.Command.Operator.Handler
             }
             catch (Exception ex)
             {
-                return new CommandsResponse<OperatorModel>
+                return new CommandsResponse<OperatorDTO>
                 {
                     status = "Fail",
-                    message = ex.Message
+                    message = ex.InnerException.Message
                 };
             }
         }

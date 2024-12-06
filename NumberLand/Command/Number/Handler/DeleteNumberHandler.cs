@@ -40,7 +40,7 @@ namespace NumberLand.Command.Number.Handler
                 return new CommandsResponse<NumberDTO>
                 {
                     status = "Fail",
-                    message = ex.Message
+                    message = ex.InnerException.Message
                 };
             }
         }

@@ -20,14 +20,17 @@ namespace NumberLand.DataAccess.Data
         public DbSet<BlogCategoryModel> BlogCategory { get; set; }
         public DbSet<BlogCategoryJoinModel> BlogCategoryJoin { get; set; }
         public DbSet<AuthorModel> Author { get; set; }
-
+        public DbSet<CountryModel> Country { get; set; }
+        public DbSet<ApplicationModel> Application { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<NumberModel>()
+
+            modelBuilder.Entity<OperatorModel>()
         .Property(p => p.price)
         .HasPrecision(18, 2);
+
             modelBuilder.Entity<BlogCategoryJoinModel>()
                 .HasKey(bc => new { bc.blogId, bc.categoryId });
 
@@ -41,62 +44,28 @@ namespace NumberLand.DataAccess.Data
                 .WithMany(c => c.blogCategories)
                 .HasForeignKey(bc => bc.categoryId);
 
-
-
-
-
-
-
-            modelBuilder.Entity<OperatorModel>().HasData(
-                new OperatorModel
-                {
-                    id = 1,
-                    operatorCode = "43",
-                    country = "UK",
-                    quantity = 20,
-                    slug = "eg"
-                },
-                new OperatorModel
-                {
-                    id = 2,
-                    operatorCode = "53",
-                    country = "US",
-                    quantity = 10,
-                    slug = "asd"
-                });
-
             modelBuilder.Entity<CategoryModel>().HasData(
                 new CategoryModel
                 {
                     id = 1,
                     name = "Regular",
                     description = "",
-                    slug = "ed"
+                    slug = "regular"
                 },
                 new CategoryModel
                 {
                     id = 2,
                     name = "Rental",
                     description = "",
-                    slug = "ss"
+                    slug = "rental"
                 },
                 new CategoryModel
                 {
                     id = 3,
                     name = "Permanent",
                     description = "",
-                    slug = "sf"
+                    slug = "permanent"
                 });
-
-            modelBuilder.Entity<BlogCategoryModel>().HasData(
-                new BlogCategoryModel
-                {
-                    id = 1,
-                    name = "tech",
-                    description = "Heloooo",
-                    slug = "a"
-                });
-
         }
     }
 }

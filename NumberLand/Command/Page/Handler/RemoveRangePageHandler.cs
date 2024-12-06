@@ -40,7 +40,7 @@ namespace NumberLand.Command.Page.Handler
                 return new CommandsResponse<PageDTO>
                 {
                     status = "Fail",
-                    message = ex.Message
+                    message = ex.InnerException.Message
                 };
             }
         }

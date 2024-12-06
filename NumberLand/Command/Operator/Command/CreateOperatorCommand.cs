@@ -1,12 +1,13 @@
 ﻿using MediatR;
+using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Numbers;
 
 namespace NumberLand.Command.Operator.Command
 {
-    public class CreateOperatorCommand : IRequest<CommandsResponse<OperatorModel>>
+    public class CreateOperatorCommand : IRequest<CommandsResponse<OperatorDTO>>
     {
-        public OperatorModel OperatorModel { get; set; }
-        public CreateOperatorCommand(OperatorModel operatorModel)
+        public CreateOperatorDTO OperatorModel { get; set; }
+        public CreateOperatorCommand(CreateOperatorDTO operatorModel)
         {
             OperatorModel = operatorModel;
         }

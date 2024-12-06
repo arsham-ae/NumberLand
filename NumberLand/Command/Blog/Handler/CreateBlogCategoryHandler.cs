@@ -38,7 +38,7 @@ namespace NumberLand.Command.Blog.Handler
                 return new CommandsResponse<BlogCategoryDTO>
                 {
                     status = "Fail",
-                    message = ex.Message
+                    message = ex.InnerException.Message
                 };
             }
         }
