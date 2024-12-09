@@ -18,8 +18,8 @@ namespace NumberLand.Command.Blog.Handler
         {
             try
             {
-                var get = (await _unitOfWork.blogCategory.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
-                if (!get.Any())
+                var blogCat = (await _unitOfWork.blogCategory.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
+                if (!blogCat.Any())
                 {
                     return new CommandsResponse<BlogCategoryDTO>
                     {
@@ -27,7 +27,7 @@ namespace NumberLand.Command.Blog.Handler
                         message = $"BlogCategory With Id {string.Join(",", request.Ids)} Not Found!"
                     };
                 }
-                _unitOfWork.blogCategory.DeleteRange(get);
+                _unitOfWork.blogCategory.DeleteRange(blogCat);
                 await _unitOfWork.Save();
 
                 return new CommandsResponse<BlogCategoryDTO>

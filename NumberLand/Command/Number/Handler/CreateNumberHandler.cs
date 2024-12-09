@@ -30,7 +30,7 @@ namespace NumberLand.Command.Number.Handler
                 return new CommandsResponse<NumberDTO>
                 {
                     status = "Success",
-                    message = $"{mappedNum.number} With Id {mappedNum.id} Created Successfully.",
+                    message = "Number Created Successfully.",
                     data = _mapper.Map<NumberDTO>(mappedNum)
                 };
 

@@ -12,13 +12,13 @@ namespace NumberLand.Command.Blog.Handler
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _environment;
+        private readonly SaveImageHelper _saveImageHelper;
 
-        public UpdateBlogHandler(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment environment)
+        public UpdateBlogHandler(IUnitOfWork unitOfWork, IMapper mapper, SaveImageHelper saveImageHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _environment = environment;
+            _saveImageHelper = saveImageHelper;
         }
         public async Task<CommandsResponse<BlogDTO>> Handle(UpdateBlogCommand request, CancellationToken cancellationToken)
         {
@@ -31,12 +31,12 @@ namespace NumberLand.Command.Blog.Handler
                     return new CommandsResponse<BlogDTO>
                     {
                         status = "Fail",
-                        message = "Blog Not Found!"
+                        message = $"Blog With Id {request.Id} Not Found!"
                     };
                 }
                 if (request.File != null && request.File.Length > 0)
                 {
-                    blog.featuredImagePath = await SaveAuthorImage(request.File);
+                    blog.featuredImagePath = await _saveImageHelper.SaveImage(request.File, "blogs");
                 }
                 request.PatchDoc.ApplyTo(blog);
                 blog.content = Markdown.ToHtml(blog.content, pipeLine);
@@ -44,7 +44,7 @@ namespace NumberLand.Command.Blog.Handler
                 return new CommandsResponse<BlogDTO>
                 {
                     status = "Success",
-                    message = "Blog Updated Successfully.",
+                    message = $"Blog With Id {request.Id} Updated SuccessFully!",
                     data = _mapper.Map<BlogDTO>(await _unitOfWork.blog.Get(b => b.id == blog.id, includeProp: "author, blogCategories.category"))
                 };
             }
@@ -56,24 +56,6 @@ namespace NumberLand.Command.Blog.Handler
                     message = ex.InnerException.Message
                 };
             }
-        }
-
-        private async Task<string> SaveAuthorImage(IFormFile file)
-        {
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "blogs");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            return Path.Combine("images/blogs", uniqueFileName).Replace("\\", "/");
         }
     }
 }

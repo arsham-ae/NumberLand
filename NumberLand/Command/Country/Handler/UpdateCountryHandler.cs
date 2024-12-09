@@ -4,7 +4,7 @@ using MediatR;
 using NumberLand.Command.Country.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models.Numbers;
+using NumberLand.Utility;
 
 namespace NumberLand.Command.Country.Handler
 {
@@ -12,12 +12,12 @@ namespace NumberLand.Command.Country.Handler
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _environment;
-        public UpdateCountryHandler(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment environment)
+        private readonly SaveImageHelper _saveImageHelper;
+        public UpdateCountryHandler(IUnitOfWork unitOfWork, IMapper mapper, SaveImageHelper saveImageHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _environment = environment;
+            _saveImageHelper = saveImageHelper;
         }
 
         public async Task<CommandsResponse<CountryDTO>> Handle(UpdateCountryCommand request, CancellationToken cancellationToken)
@@ -31,12 +31,12 @@ namespace NumberLand.Command.Country.Handler
                     return new CommandsResponse<CountryDTO>
                     {
                         status = "Fail",
-                        message = "Country Not Found!"
+                        message = $"Country With Id {request.Id} Not Found!"
                     };
                 }
                 if (request.File != null && request.File.Length > 0)
                 {
-                    country.flagIcon = await SaveFlagIcon(request.File);
+                    country.flagIcon = await _saveImageHelper.SaveImage(request.File, "flags");
                 }
                 request.PatchDoc.ApplyTo(country);
                 await _unitOfWork.Save();
@@ -57,23 +57,6 @@ namespace NumberLand.Command.Country.Handler
                     message = ex.InnerException.Message
                 };
             }
-        }
-        private async Task<string> SaveFlagIcon(IFormFile file)
-        {
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "flags");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            return Path.Combine("images/flags", uniqueFileName).Replace("\\", "/");
         }
     }
 }

@@ -17,8 +17,8 @@ namespace NumberLand.Command.Blog.Handler
         {
             try
             {
-                var get = await _unitOfWork.blogCategory.Get(o => o.id == request.Id);
-                if (get == null)
+                var blogCat = await _unitOfWork.blogCategory.Get(o => o.id == request.Id);
+                if (blogCat == null)
                 {
                     return new CommandsResponse<BlogCategoryDTO>
                     {
@@ -26,7 +26,7 @@ namespace NumberLand.Command.Blog.Handler
                         message = $"BlogCategory With Id {request.Id} Not Found!"
                     };
                 }
-                _unitOfWork.blogCategory.Delete(get);
+                _unitOfWork.blogCategory.Delete(blogCat);
                 await _unitOfWork.Save();
 
                 return new CommandsResponse<BlogCategoryDTO>

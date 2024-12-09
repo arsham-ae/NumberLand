@@ -12,36 +12,20 @@ namespace NumberLand.Command.Application.Handler
     public class CreateApplicationHandler : IRequestHandler<CreateApplicationCommand, CommandsResponse<ApplicationDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IWebHostEnvironment _environment;
         private readonly IMapper _mapper;
-        public CreateApplicationHandler(IUnitOfWork unitOfWork, IWebHostEnvironment environment, IMapper mapper)
+        private readonly SaveImageHelper _saveImageHelper;
+        public CreateApplicationHandler(IUnitOfWork unitOfWork, IMapper mapper, SaveImageHelper saveImageHelper)
         {
             _unitOfWork = unitOfWork;
-            _environment = environment;
             _mapper = mapper;
+            _saveImageHelper = saveImageHelper;
         }
-
         public async Task<CommandsResponse<ApplicationDTO>> Handle(CreateApplicationCommand request, CancellationToken cancellationToken)
         {
             try
             {
                 var mappedApp = _mapper.Map<ApplicationModel>(request.Application);
-                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "apps");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(request.File.FileName);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await request.File.CopyToAsync(fileStream);
-                }
-
-                var image = Path.Combine("images/apps", uniqueFileName);
-                mappedApp.appIcon = image.Replace("\\", "/");
-
+                mappedApp.appIcon = await _saveImageHelper.SaveImage(request.File, "apps");
                 if (request.Application.appContent != null)
                 {
                     var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();

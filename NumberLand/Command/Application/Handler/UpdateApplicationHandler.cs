@@ -4,6 +4,7 @@ using MediatR;
 using NumberLand.Command.Application.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
+using NumberLand.Utility;
 
 namespace NumberLand.Command.Application.Handler
 {
@@ -11,12 +12,12 @@ namespace NumberLand.Command.Application.Handler
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _environment;
-        public UpdateApplicationHandler(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment environment)
+        private readonly SaveImageHelper _saveImageHelper;
+        public UpdateApplicationHandler(IUnitOfWork unitOfWork, IMapper mapper, SaveImageHelper saveImageHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _environment = environment;
+            _saveImageHelper = saveImageHelper;
         }
 
         public async Task<CommandsResponse<ApplicationDTO>> Handle(UpdateApplicationCommand request, CancellationToken cancellationToken)
@@ -30,12 +31,12 @@ namespace NumberLand.Command.Application.Handler
                     return new CommandsResponse<ApplicationDTO>
                     {
                         status = "Fail",
-                        message = "app Not Found!"
+                        message = $"Application With Id {request.Id} Not Found!"
                     };
                 }
                 if (request.File != null && request.File.Length > 0)
                 {
-                    app.appIcon = await SaveAppIcon(request.File);
+                    app.appIcon = await _saveImageHelper.SaveImage(request.File, "apps");
                 }
                 request.PatchDoc.ApplyTo(app);
                 app.content = Markdown.ToHtml(app.content, pipeLine);
@@ -57,23 +58,6 @@ namespace NumberLand.Command.Application.Handler
                     message = ex.InnerException.Message
                 };
             }
-        }
-        private async Task<string> SaveAppIcon(IFormFile file)
-        {
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "apps");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            return Path.Combine("images/apps", uniqueFileName).Replace("\\", "/");
         }
     }
 }

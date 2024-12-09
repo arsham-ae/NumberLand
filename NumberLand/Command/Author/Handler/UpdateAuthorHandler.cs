@@ -11,13 +11,12 @@ namespace NumberLand.Command.Author.Handler
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _environment;
-
-        public UpdateAuthorHandler(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment environment)
+        private readonly SaveImageHelper _saveImageHelper;
+        public UpdateAuthorHandler(IUnitOfWork unitOfWork, IMapper mapper, SaveImageHelper saveImageHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _environment = environment;
+            _saveImageHelper = saveImageHelper;
         }
 
         public async Task<CommandsResponse<AuthorDTO>> Handle(UpdateAuthorCommand request, CancellationToken cancellationToken)
@@ -31,32 +30,22 @@ namespace NumberLand.Command.Author.Handler
                     return new CommandsResponse<AuthorDTO>
                     {
                         status = "Fail",
-                        message = "Author Not Found!"
+                        message = $"Author With Id {request.Id} Not Found!"
                     };
                 }
+
                 if (request.File != null && request.File.Length > 0)
                 {
-                    author.imagePath = await SaveAuthorImage(request.File);
+                    author.imagePath = await _saveImageHelper.SaveImage(request.File, "authors");
                 }
-                try
-                {
-                    request.JsonPatch.ApplyTo(author);
 
-                }
-                catch (Exception ex)
-                {
-                    return new CommandsResponse<AuthorDTO>
-                    {
-                        status = "Fail",
-                        message = $"Error applying patch document: {ex.InnerException.Message}"
-                    };
-                }
+                request.JsonPatch.ApplyTo(author);
                 await _unitOfWork.Save();
 
                 return new CommandsResponse<AuthorDTO>
                 {
                     status = "Success",
-                    message = "Author Updated Successfully!",
+                    message = $"Author With Id {request.Id} Updated SuccessFully!",
                     data = _mapper.Map<AuthorDTO>(author)
                 };
             }
@@ -68,23 +57,6 @@ namespace NumberLand.Command.Author.Handler
                     message = ex.InnerException.Message
                 };
             }
-        }
-        private async Task<string> SaveAuthorImage(IFormFile file)
-        {
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "authors");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            return Path.Combine("images/authors", uniqueFileName).Replace("\\", "/");
         }
     }
 

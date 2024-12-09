@@ -1,6 +1,4 @@
 ﻿using FluentValidation;
-using NumberLand.Command.Number.Command;
-using NumberLand.Command.Number.Handler;
 using NumberLand.DataAccess.DTOs;
 
 namespace NumberLand.Validators

@@ -3,6 +3,7 @@ using MediatR;
 using NumberLand.Command.Blog.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
+using NumberLand.Utility;
 
 namespace NumberLand.Command.Blog.Handler
 {
@@ -10,12 +11,12 @@ namespace NumberLand.Command.Blog.Handler
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _environment;
-        public UpdateBlogImageHandler(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment environment)
+        private readonly SaveImageHelper _saveImageHelper;
+        public UpdateBlogImageHandler(IUnitOfWork unitOfWork, IMapper mapper, SaveImageHelper saveImageHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _environment = environment;
+            _saveImageHelper = saveImageHelper;
         }
 
         public async Task<CommandsResponse<BlogDTO>> Handle(UpdateBlogImageCommand request, CancellationToken cancellationToken)
@@ -31,23 +32,13 @@ namespace NumberLand.Command.Blog.Handler
                         message = $"Blog With Id {request.Id} Not Found!"
                     };
                 }
-                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "blogs");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(request.File.FileName);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await request.File.CopyToAsync(fileStream);
-                }
-                blog.featuredImagePath = Path.Combine("images/blogs", uniqueFileName).Replace("\\", "/");
+
+                blog.featuredImagePath = await _saveImageHelper.SaveImage(request.File, "blogs");
                 await _unitOfWork.Save();
                 return new CommandsResponse<BlogDTO>
                 {
                     status = "Success",
-                    message = "image Updated Successfully.",
+                    message = $"Blog Image With Id {request.Id} Updated Successfully.",
                     data = _mapper.Map<BlogDTO>(blog)
                 };
             }

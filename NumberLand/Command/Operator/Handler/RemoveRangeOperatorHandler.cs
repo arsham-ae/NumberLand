@@ -2,7 +2,6 @@
 using NumberLand.Command.Operator.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models.Numbers;
 
 namespace NumberLand.Command.Operator.Handler
 {
@@ -19,8 +18,8 @@ namespace NumberLand.Command.Operator.Handler
         {
             try
             {
-                var get = (await _unitOfWork.nOperator.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
-                if (get == null || !get.Any())
+                var operators = (await _unitOfWork.nOperator.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
+                if (operators == null || !operators.Any())
                 {
                     return new CommandsResponse<OperatorDTO>
                     {
@@ -28,7 +27,7 @@ namespace NumberLand.Command.Operator.Handler
                         message = $"Operators with Id {string.Join(",", request.Ids)} Not Found!"
                     };
                 }
-                _unitOfWork.nOperator.DeleteRange(get);
+                _unitOfWork.nOperator.DeleteRange(operators);
                 await _unitOfWork.Save();
                 return new CommandsResponse<OperatorDTO>
                 {

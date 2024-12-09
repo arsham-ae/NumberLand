@@ -3,7 +3,6 @@ using MediatR;
 using NumberLand.Command.Operator.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models.Numbers;
 
 namespace NumberLand.Command.Operator.Handler
 {
@@ -25,7 +24,7 @@ namespace NumberLand.Command.Operator.Handler
                 return new CommandsResponse<OperatorDTO>
                 {
                     status = "Success",
-                    message = "Operator Edited Successfully.",
+                    message = $"Operator With Id {request.Id} Updated SuccessFully!",
                     data = _mapper.Map<OperatorDTO>(await _unitOfWork.nOperator.Get(o => o.id == request.Id))
                 };
             }

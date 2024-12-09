@@ -1,5 +1,4 @@
 ﻿using NumberLand.Models.Pages;
-using System.ComponentModel.DataAnnotations;
 
 namespace NumberLand.DataAccess.DTOs
 {

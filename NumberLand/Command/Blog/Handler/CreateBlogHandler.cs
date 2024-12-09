@@ -13,37 +13,21 @@ namespace NumberLand.Command.Blog.Handler
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _environment;
-
-        public CreateBlogHandler(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment environment)
+        private readonly SaveImageHelper _saveImageHelper;
+        public CreateBlogHandler(IUnitOfWork unitOfWork, IMapper mapper, SaveImageHelper saveImageHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _environment = environment;
+            _saveImageHelper = saveImageHelper;
         }
         public async Task<CommandsResponse<BlogDTO>> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "blogs");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(request.File.FileName);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await request.File.CopyToAsync(fileStream);
-                }
-
-                var image = Path.Combine("images/blogs", uniqueFileName);
-
                 var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
                 request.BlogDTO.blogContent = Markdown.ToHtml(request.BlogDTO.blogContent, pipeLine);
                 var mappedBlog = _mapper.Map<BlogModel>(request.BlogDTO);
-                mappedBlog.featuredImagePath = image.Replace("\\", "/");
+                mappedBlog.featuredImagePath = await _saveImageHelper.SaveImage(request.File, "blogs");
                 mappedBlog.slug = SlugHelper.GenerateSlug(request.BlogDTO.blogSlug);
                 mappedBlog.createAt = DateTime.Now;
                 mappedBlog.updateAt = DateTime.Now;

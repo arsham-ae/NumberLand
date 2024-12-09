@@ -18,8 +18,8 @@ namespace NumberLand.Command.Page.Handler
         {
             try
             {
-                var get = (await _unitOfWork.pageCategory.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
-                if (get == null || !get.Any())
+                var pageCats = (await _unitOfWork.pageCategory.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
+                if (pageCats == null || !pageCats.Any())
                 {
                     return new CommandsResponse<PageCategoryDTO>
                     {
@@ -27,7 +27,7 @@ namespace NumberLand.Command.Page.Handler
                         message = $"PageCategories with Id {string.Join(",", request.Ids)} Not Found!"
                     };
                 }
-                _unitOfWork.pageCategory.DeleteRange(get);
+                _unitOfWork.pageCategory.DeleteRange(pageCats);
                 await _unitOfWork.Save();
                 return new CommandsResponse<PageCategoryDTO>
                 {

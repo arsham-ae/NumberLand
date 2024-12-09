@@ -9,7 +9,8 @@ namespace NumberLand.DataAccess.DTOs
         public string blogTitle { get; set; }
         public string blogContent { get; set; }
         public string blogPreview { get; set; }
-        public AuthorModel blogAuthor { get; set; }public string preview { get; set; }
+        public AuthorModel blogAuthor { get; set; }
+        public string preview { get; set; }
         public ICollection<BlogCategoryDTO> blogCategories { get; set; }
         public string blogFeaturedImagePath { get; set; }
         public DateTime createAt { get; set; }
@@ -45,5 +46,5 @@ namespace NumberLand.DataAccess.DTOs
         public string blogCategoryName { get; set; }
         public string blogCategoryDescription { get; set; }
     }
-    
+
 }

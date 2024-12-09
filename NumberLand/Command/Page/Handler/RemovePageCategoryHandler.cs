@@ -18,8 +18,8 @@ namespace NumberLand.Command.Page.Handler
         {
             try
             {
-                var get = await _unitOfWork.pageCategory.Get(pc => pc.id == request.Id);
-                if (get == null)
+                var pageCat = await _unitOfWork.pageCategory.Get(pc => pc.id == request.Id);
+                if (pageCat == null)
                 {
                     return new CommandsResponse<PageCategoryDTO>
                     {
@@ -27,12 +27,12 @@ namespace NumberLand.Command.Page.Handler
                         message = $"PageCategory with Id {request.Id} Not Found!"
                     };
                 }
-                _unitOfWork.pageCategory.Delete(get);
+                _unitOfWork.pageCategory.Delete(pageCat);
                 await _unitOfWork.Save();
                 return new CommandsResponse<PageCategoryDTO>
                 {
                     status = "Success",
-                    message = $"PageCategory {get.name} with Id {request.Id} Deleted Successfully!"
+                    message = $"PageCategory {pageCat.name} with Id {request.Id} Deleted Successfully!"
                 };
             }
             catch (Exception ex)

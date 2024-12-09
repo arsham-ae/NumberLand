@@ -20,13 +20,13 @@ namespace NumberLand.Command.Number.Handler
         {
             try
             {
-                var getNumber = await _unitOfWork.number.Get(n => n.id == request.Id);
+                var Numbers = await _unitOfWork.number.Get(n => n.id == request.Id);
                 await _unitOfWork.number.Patch(request.Id, request.PatchDoc);
                 return new CommandsResponse<NumberDTO>
                 {
                     status = "Success",
                     message = $"Number With Id {request.Id} Updated SuccessFully!",
-                    data = _mapper.Map<NumberDTO>(getNumber)
+                    data = _mapper.Map<NumberDTO>(Numbers)
                 };
             }
             catch (Exception ex)

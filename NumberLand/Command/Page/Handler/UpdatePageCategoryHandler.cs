@@ -24,7 +24,7 @@ namespace NumberLand.Command.Page.Handler
                 return new CommandsResponse<PageCategoryDTO>
                 {
                     status = "Success",
-                    message = "PageCategory Updated Successfully",
+                    message = $"PageCategory With Id {request.Id} Updated SuccessFully!",
                     data = _mapper.Map<PageCategoryDTO>(await _unitOfWork.pageCategory.Get(pc => pc.id == request.Id))
                 };
             }

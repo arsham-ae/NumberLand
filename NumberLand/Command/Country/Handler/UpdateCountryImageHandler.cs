@@ -3,19 +3,20 @@ using MediatR;
 using NumberLand.Command.Country.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
+using NumberLand.Utility;
 
 namespace NumberLand.Command.Country.Handler
 {
     public class UpdateCountryImageHandler : IRequestHandler<UpdateCountryImageCommand, CommandsResponse<CountryDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IWebHostEnvironment _environment;
         private readonly IMapper _mapper;
-        public UpdateCountryImageHandler(IUnitOfWork unitOfWork, IWebHostEnvironment environment, IMapper mapper)
+        private readonly SaveImageHelper _saveImageHelper;
+        public UpdateCountryImageHandler(IUnitOfWork unitOfWork, IMapper mapper, SaveImageHelper saveImageHelper)
         {
             _unitOfWork = unitOfWork;
-            _environment = environment;
             _mapper = mapper;
+            _saveImageHelper = saveImageHelper;
         }
         public async Task<CommandsResponse<CountryDTO>> Handle(UpdateCountryImageCommand request, CancellationToken cancellationToken)
         {
@@ -30,23 +31,12 @@ namespace NumberLand.Command.Country.Handler
                         message = $"Country With Id {request.Id} Not Found!"
                     };
                 }
-                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "flags");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(request.File.FileName);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await request.File.CopyToAsync(fileStream);
-                }
-                country.flagIcon = Path.Combine("images/flags", uniqueFileName).Replace("\\", "/");
+                country.flagIcon = await _saveImageHelper.SaveImage(request.File, "flags");
                 await _unitOfWork.Save();
                 return new CommandsResponse<CountryDTO>
                 {
                     status = "Success",
-                    message = "image Updated Successfully.",
+                    message = $"Country Image With Id {request.Id} Updated Successfully.",
                     data = _mapper.Map<CountryDTO>(country)
                 };
             }

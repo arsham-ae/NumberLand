@@ -22,21 +22,30 @@ namespace NumberLand.Command.Author.Handler
         {
             try
             {
-                var get = await _unitOfWork.author.Get(o => o.id == request.Id);
-                if (get == null)
+                var author = await _unitOfWork.author.Get(o => o.id == request.Id);
+                if (author == null)
                 {
                     return new CommandsResponse<AuthorDTO>
                     {
                         status = "Fail",
-                        message = "Author Not Found!"
+                        message = $"Author With Id {request.Id} Not Found!"
                     };
                 }
-                _unitOfWork.author.Delete(get);
+                var fullPath = Path.Combine(_environment.WebRootPath, author.imagePath);
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+                else
+                {
+                    throw new FileNotFoundException("File not found.", fullPath);
+                }
+                _unitOfWork.author.Delete(author);
                 await _unitOfWork.Save();
                 return new CommandsResponse<AuthorDTO>
                 {
                     status = "Success",
-                    message = "Author Deleted Successfully!"
+                    message = $"Author With Id {request.Id} Deleted Successfully."
                 };
             }
             catch (Exception ex)

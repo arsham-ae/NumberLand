@@ -18,8 +18,8 @@ namespace NumberLand.Command.Page.Handler
         {
             try
             {
-                var get = (await _unitOfWork.page.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
-                if (get == null || !get.Any())
+                var pages = (await _unitOfWork.page.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
+                if (pages == null || !pages.Any())
                 {
                     return new CommandsResponse<PageDTO>
                     {
@@ -27,7 +27,7 @@ namespace NumberLand.Command.Page.Handler
                         message = $"Pages with Id {string.Join(",", request.Ids)} Not Found!"
                     };
                 }
-                _unitOfWork.page.DeleteRange(get);
+                _unitOfWork.page.DeleteRange(pages);
                 await _unitOfWork.Save();
                 return new CommandsResponse<PageDTO>
                 {

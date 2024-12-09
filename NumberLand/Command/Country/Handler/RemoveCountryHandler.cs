@@ -2,17 +2,18 @@
 using NumberLand.Command.Country.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models.Numbers;
 
 namespace NumberLand.Command.Country.Handler
 {
     public class RemoveCountryHandler : IRequestHandler<RemoveCountryCommand, CommandsResponse<CountryDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _environment;
 
-        public RemoveCountryHandler(IUnitOfWork unitOfWork)
+        public RemoveCountryHandler(IUnitOfWork unitOfWork, IWebHostEnvironment environment)
         {
             _unitOfWork = unitOfWork;
+            _environment = environment;
         }
 
         public async Task<CommandsResponse<CountryDTO>> Handle(RemoveCountryCommand request, CancellationToken cancellationToken)
@@ -25,15 +26,24 @@ namespace NumberLand.Command.Country.Handler
                     return new CommandsResponse<CountryDTO>
                     {
                         status = "Fail",
-                        message = "Country Not Found!"
+                        message = $"Country With Id {request.Id} Not Found!"
                     };
+                }
+                var fullPath = Path.Combine(_environment.WebRootPath, country.flagIcon);
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+                else
+                {
+                    throw new FileNotFoundException("File not found.", fullPath);
                 }
                 _unitOfWork.country.Delete(country);
                 await _unitOfWork.Save();
                 return new CommandsResponse<CountryDTO>
                 {
                     status = "Success",
-                    message = "Country Deleted Successfully!"
+                    message = $"Country With Id {request.Id} Deleted Successfully."
                 };
             }
             catch (Exception ex)

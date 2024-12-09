@@ -12,13 +12,13 @@ namespace NumberLand.Command.Country.Handler
     public class CreateCountryHandler : IRequestHandler<CreateCountryCommand, CommandsResponse<CountryDTO>>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IWebHostEnvironment _environment;
         private readonly IMapper _mapper;
-        public CreateCountryHandler(IUnitOfWork unitOfWork, IWebHostEnvironment environment, IMapper mapper)
+        private readonly SaveImageHelper _saveImageHelper;
+        public CreateCountryHandler(IUnitOfWork unitOfWork, IMapper mapper, SaveImageHelper saveImageHelper)
         {
             _unitOfWork = unitOfWork;
-            _environment = environment;
             _mapper = mapper;
+            _saveImageHelper = saveImageHelper;
         }
 
         public async Task<CommandsResponse<CountryDTO>> Handle(CreateCountryCommand request, CancellationToken cancellationToken)
@@ -26,22 +26,7 @@ namespace NumberLand.Command.Country.Handler
             try
             {
                 var mappedCountry = _mapper.Map<CountryModel>(request.Country);
-                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "flags");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(request.File.FileName);
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await request.File.CopyToAsync(fileStream);
-                }
-
-                var image = Path.Combine("images/flags", uniqueFileName);
-                mappedCountry.flagIcon = image.Replace("\\", "/");
-
+                mappedCountry.flagIcon = await _saveImageHelper.SaveImage(request.File, "flags");
                 if (request.Country.countryContent != null)
                 {
                     var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();

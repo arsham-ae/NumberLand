@@ -18,8 +18,8 @@ namespace NumberLand.Command.Number.Handler
         {
             try
             {
-                var get = (await _unitOfWork.number.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
-                if (get == null || !get.Any())
+                var Numbers = (await _unitOfWork.number.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
+                if (Numbers == null || !Numbers.Any())
                 {
                     return new CommandsResponse<NumberDTO>
                     {
@@ -27,7 +27,7 @@ namespace NumberLand.Command.Number.Handler
                         message = $"Number with Id {string.Join(",", request.Ids)} Not Found!"
                     };
                 }
-                _unitOfWork.number.DeleteRange(get);
+                _unitOfWork.number.DeleteRange(Numbers);
                 await _unitOfWork.Save();
                 return new CommandsResponse<NumberDTO>
                 {

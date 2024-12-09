@@ -22,22 +22,34 @@ namespace NumberLand.Command.Author.Handler
         {
             try
             {
-                var get = (await _unitOfWork.author.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
-                if (!get.Any() || get == null)
+                var authors = (await _unitOfWork.author.GetAll()).Where(p => request.Ids.Contains(p.id)).ToList();
+                if (!authors.Any() || authors == null)
                 {
                     return new CommandsResponse<AuthorDTO>
                     {
                         status = "Fail",
-                        message = "Authors Not Found!",
+                        message = $"Authors With Id {string.Join(",", request.Ids)} Not Found!"
                     };
                 }
-                _unitOfWork.author.DeleteRange(get);
+                foreach (var author in authors)
+                {
+                    var fullPath = Path.Combine(_environment.WebRootPath, author.imagePath);
+                    if (File.Exists(fullPath))
+                    {
+                        File.Delete(fullPath);
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException("File not found.", fullPath);
+                    }
+                }
+                _unitOfWork.author.DeleteRange(authors);
                 await _unitOfWork.Save();
 
                 return new CommandsResponse<AuthorDTO>
                 {
                     status = "Success",
-                    message = "Authors Deleted Successfully.",
+                    message = $"Authors With Id {string.Join(",", request.Ids)} Deleted Successfully."
                 };
             }
             catch (Exception ex)

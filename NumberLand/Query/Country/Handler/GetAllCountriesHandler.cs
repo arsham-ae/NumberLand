@@ -2,7 +2,6 @@
 using MediatR;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models.Numbers;
 using NumberLand.Query.Country.Query;
 
 namespace NumberLand.Query.Country.Handler

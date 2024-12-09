@@ -1,16 +1,12 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using NumberLand.Command.Application.Command;
 using NumberLand.Command.Country.Command;
-using NumberLand.Command.Operator.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Numbers;
 using NumberLand.Query.Country.Query;
-using NumberLand.Query.Operator.Query;
 
 namespace NumberLand.Controllers
 {

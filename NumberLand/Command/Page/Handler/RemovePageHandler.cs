@@ -18,8 +18,8 @@ namespace NumberLand.Command.Page.Handler
         {
             try
             {
-                var get = await _unitOfWork.page.Get(o => o.id == request.Id);
-                if (get == null)
+                var page = await _unitOfWork.page.Get(o => o.id == request.Id);
+                if (page == null)
                 {
                     return new CommandsResponse<PageDTO>
                     {
@@ -27,12 +27,12 @@ namespace NumberLand.Command.Page.Handler
                         message = $"Page with Id {request.Id} Not Found!"
                     };
                 }
-                _unitOfWork.page.Delete(get);
+                _unitOfWork.page.Delete(page);
                 await _unitOfWork.Save();
                 return new CommandsResponse<PageDTO>
                 {
                     status = "Success",
-                    message = $"Page {get.title} with Id {request.Id} Deleted Successfully!"
+                    message = $"Page {page.title} with Id {request.Id} Deleted Successfully!"
                 };
             }
             catch (Exception ex)

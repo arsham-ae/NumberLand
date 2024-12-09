@@ -2,7 +2,6 @@
 using NumberLand.Command.Operator.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
-using NumberLand.Models.Numbers;
 
 namespace NumberLand.Command.Operator.Handler
 {
@@ -19,8 +18,8 @@ namespace NumberLand.Command.Operator.Handler
         {
             try
             {
-                var get = await _unitOfWork.nOperator.Get(o => o.id == request.Id);
-                if (get == null)
+                var @operator = await _unitOfWork.nOperator.Get(o => o.id == request.Id);
+                if (@operator == null)
                 {
                     return new CommandsResponse<OperatorDTO>
                     {
@@ -28,12 +27,12 @@ namespace NumberLand.Command.Operator.Handler
                         message = $"Operator with Id {request.Id} Not Found!"
                     };
                 }
-                _unitOfWork.nOperator.Delete(get);
+                _unitOfWork.nOperator.Delete(@operator);
                 await _unitOfWork.Save();
                 return new CommandsResponse<OperatorDTO>
                 {
                     status = "Success",
-                    message = $"Operator {get.operatorCode} with Id {request.Id} Deleted Successfully!"
+                    message = $"Operator {@operator.operatorCode} with Id {request.Id} Deleted Successfully!"
                 };
             }
             catch (Exception ex)

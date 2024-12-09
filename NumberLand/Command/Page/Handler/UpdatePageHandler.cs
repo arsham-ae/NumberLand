@@ -25,7 +25,7 @@ namespace NumberLand.Command.Page.Handler
                 return new CommandsResponse<PageDTO>
                 {
                     status = "Success",
-                    message = "Page Updated Successfully",
+                    message = $"Page With Id {request.Id} Updated SuccessFully!",
                     data = _mapper.Map<PageDTO>(await _unitOfWork.page.Get(p => p.id == request.Id))
                 };
             }
