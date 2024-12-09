@@ -16,7 +16,7 @@ namespace NumberLand.DataAccess.Repository
             _context = context;
         }
 
-        public async void Patch(int id, [FromBody] JsonPatchDocument<PageCategoryModel> patchDoc)
+        public async Task Patch(int id, [FromBody] JsonPatchDocument<PageCategoryModel> patchDoc)
         {
             var pageCategory = await _context.PageCategory.FirstOrDefaultAsync(p => p.id == id);
             if (pageCategory != null && patchDoc != null)
@@ -27,10 +27,10 @@ namespace NumberLand.DataAccess.Repository
             }
         }
 
-        public void Update(PageCategoryModel pageCategory)
+        public async Task Update(PageCategoryModel pageCategory)
         {
             _context.Update(pageCategory);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

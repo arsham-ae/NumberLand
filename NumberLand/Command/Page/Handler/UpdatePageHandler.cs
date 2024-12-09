@@ -21,7 +21,7 @@ namespace NumberLand.Command.Page.Handler
         {
             try
             {
-                _unitOfWork.page.Patch(request.Id, request.PatchDoc);
+                await _unitOfWork.page.Patch(request.Id, request.PatchDoc);
                 return new CommandsResponse<PageDTO>
                 {
                     status = "Success",

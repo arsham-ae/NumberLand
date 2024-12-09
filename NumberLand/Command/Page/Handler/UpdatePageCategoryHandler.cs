@@ -20,7 +20,7 @@ namespace NumberLand.Command.Page.Handler
         {
             try
             {
-                _unitOfWork.pageCategory.Patch(request.Id, request.PatchDoc);
+                await _unitOfWork.pageCategory.Patch(request.Id, request.PatchDoc);
                 return new CommandsResponse<PageCategoryDTO>
                 {
                     status = "Success",

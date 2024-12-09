@@ -16,19 +16,19 @@ namespace NumberLand.DataAccess.Repository
             _context = context;
         }
 
-        public void Patch(int id, [FromBody] JsonPatchDocument<BlogModel> patchDoc)
+        public async Task Patch(int id, [FromBody] JsonPatchDocument<BlogModel> patchDoc)
         {
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-            var blog = _context.Blog.FirstOrDefault(p => p.id == id);
+            var blog = await _context.Blog.FirstOrDefaultAsync(p => p.id == id);
             if (blog != null || patchDoc != null)
             {
                 patchDoc.ApplyTo(blog);
                 blog.content = Markdown.ToHtml(blog.content, pipeLine);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async void Update(BlogModel blog)
+        public async Task Update(BlogModel blog)
         {
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             var existingBlog = await _context.Blog

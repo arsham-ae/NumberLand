@@ -6,7 +6,7 @@ namespace NumberLand.DataAccess.Repository.IRepository
 {
     public interface IPageCategoryRepo : IRepo<PageCategoryModel>
     {
-        void Update(PageCategoryModel pageCategory);
-        void Patch(int id, [FromBody] JsonPatchDocument<PageCategoryModel> patchDoc);
+        Task Update(PageCategoryModel pageCategory);
+        Task Patch(int id, [FromBody] JsonPatchDocument<PageCategoryModel> patchDoc);
     }
 }

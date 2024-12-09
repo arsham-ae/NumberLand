@@ -6,7 +6,7 @@ namespace NumberLand.DataAccess.Repository.IRepository
 {
     public interface IBlogRepo : IRepo<BlogModel>
     {
-        void Update(BlogModel blog);
-        void Patch(int id, [FromBody] JsonPatchDocument<BlogModel> patchDoc);
+        Task Update(BlogModel blog);
+        Task Patch(int id, [FromBody] JsonPatchDocument<BlogModel> patchDoc);
     }
 }

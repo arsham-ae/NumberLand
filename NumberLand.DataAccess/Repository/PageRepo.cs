@@ -16,7 +16,7 @@ namespace NumberLand.DataAccess.Repository
         {
             _context = context;
         }
-        public async void Patch(int id, [FromBody] JsonPatchDocument<PageeModel> patchDoc)
+        public async Task Patch(int id, [FromBody] JsonPatchDocument<PageeModel> patchDoc)
         {
             var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             var page = await _context.Page.FirstOrDefaultAsync(p => p.id == id);
@@ -29,10 +29,10 @@ namespace NumberLand.DataAccess.Repository
             }
         }
 
-        public void Update(PageeModel page)
+        public async Task Update(PageeModel page)
         {
             _context.Update(page);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

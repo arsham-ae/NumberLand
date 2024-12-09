@@ -6,7 +6,7 @@ namespace NumberLand.DataAccess.Repository.IRepository
 {
     public interface IPageRepo : IRepo<PageeModel>
     {
-        void Update(PageeModel page);
-        void Patch(int id, [FromBody] JsonPatchDocument<PageeModel> patchDoc);
+        Task Update(PageeModel page);
+        Task Patch(int id, [FromBody] JsonPatchDocument<PageeModel> patchDoc);
     }
 }

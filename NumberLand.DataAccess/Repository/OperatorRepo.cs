@@ -15,7 +15,7 @@ namespace NumberLand.DataAccess.Repository
         {
             _context = context;
         }
-        public async void Patch(int id, [FromBody] JsonPatchDocument<OperatorModel> patchDoc)
+        public async Task Patch(int id, [FromBody] JsonPatchDocument<OperatorModel> patchDoc)
         {
             var nOperator = await _context.Operator.FirstOrDefaultAsync(p => p.id == id);
             if (nOperator != null && patchDoc != null)
@@ -26,10 +26,10 @@ namespace NumberLand.DataAccess.Repository
             }
         }
 
-        public void Update(OperatorModel upOperator)
+        public async Task Update(OperatorModel upOperator)
         {
             _context.Update(upOperator);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

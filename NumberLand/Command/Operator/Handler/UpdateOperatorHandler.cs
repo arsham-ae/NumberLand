@@ -20,7 +20,7 @@ namespace NumberLand.Command.Operator.Handler
         {
             try
             {
-                _unitOfWork.nOperator.Patch(request.Id, request.OperatorModel);
+                await _unitOfWork.nOperator.Patch(request.Id, request.OperatorModel);
                 return new CommandsResponse<OperatorDTO>
                 {
                     status = "Success",
