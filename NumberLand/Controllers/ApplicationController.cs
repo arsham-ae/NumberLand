@@ -55,7 +55,7 @@ namespace NumberLand.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm] CreateApplicationDTO application, [FromForm] IFormFile file)
+        public async Task<IActionResult> Create([FromForm] CreateApplicationDTO application, IFormFile file)
         {
             if (application == null || application.appId != 0)
             {
@@ -70,7 +70,7 @@ namespace NumberLand.Controllers
         [HttpPatch("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Patch(int id, [FromForm] string jsonPatch, [FromForm] IFormFile? file)
+        public async Task<IActionResult> Patch(int id, [FromForm] string jsonPatch, IFormFile? file)
         {
             if (string.IsNullOrEmpty(jsonPatch))
             {
@@ -97,7 +97,7 @@ namespace NumberLand.Controllers
         [HttpPatch("UpdateImage/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdadteImage(int id, [FromForm] IFormFile file)
+        public async Task<IActionResult> UpdadteImage(int id, IFormFile file)
         {
             if (id == null || id == 0)
             {

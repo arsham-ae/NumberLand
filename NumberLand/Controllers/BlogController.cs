@@ -72,7 +72,7 @@ namespace NumberLand.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm] CreateBlogDTO blog, [FromForm] IFormFile file)
+        public async Task<IActionResult> Create([FromForm] CreateBlogDTO blog, IFormFile file)
         {
             if (blog == null || blog.blogId != 0)
             {

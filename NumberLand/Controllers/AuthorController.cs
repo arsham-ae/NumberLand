@@ -55,7 +55,7 @@ namespace NumberLand.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm] CreateAuthorDTO author, [FromForm] IFormFile file)
+        public async Task<IActionResult> Create([FromForm] CreateAuthorDTO author, IFormFile file)
         {
             if (author == null || author.authorId != 0)
             {
