@@ -10,7 +10,7 @@ namespace NumberLand.Utility
             {
                 throw new Exception("Slug cannot contain Persian characters.");
             }
-            string slug = text.ToLower().Trim();
+            string slug = text.ToLower().TrimStart().TrimEnd();
             slug = slug.Replace(' ', '-');
             slug = Regex.Replace(slug, @"[^a-zA-Z0-9]", "");
             slug = Regex.Replace(slug, @"-+", "-");

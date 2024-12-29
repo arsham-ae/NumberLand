@@ -1,16 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NumberLand.Models.Blogs;
 using NumberLand.Models.Numbers;
 using NumberLand.Models.Pages;
 
 namespace NumberLand.DataAccess.Data
 {
-    public class myDbContext : DbContext
+    public class myDbContext : IdentityDbContext<IdentityUser>
     {
-        public myDbContext(DbContextOptions<myDbContext> options) : base(options)
+        public myDbContext(DbContextOptions options) : base(options)
         {
-
         }
+
         public DbSet<NumberModel> Numbers { get; set; }
         public DbSet<CategoryModel> Category { get; set; }
         public DbSet<OperatorModel> Operator { get; set; }

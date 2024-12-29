@@ -56,11 +56,11 @@ namespace NumberLand.MappingProfile
                 .ForMember(dest => dest.blogCategoryName, opt => opt.MapFrom(src => src.name))
                 .ForMember(dest => dest.blogCategorySlug, opt => opt.MapFrom(src => src.slug))
                 .ForMember(dest => dest.blogCategoryDescription, opt => opt.MapFrom(src => src.description));
-            CreateMap<BlogCategoryModel, BlogCategoryDTO>()
-                .ForMember(dest => dest.blogCategoryId, opt => opt.MapFrom(src => src.id))
-                .ForMember(dest => dest.blogCategoryName, opt => opt.MapFrom(src => src.name))
-                .ForMember(dest => dest.blogCategorySlug, opt => opt.MapFrom(src => src.slug))
-                .ForMember(dest => dest.blogCategoryDescription, opt => opt.MapFrom(src => src.description));
+            CreateMap<CreateBlogCategoryDTO, BlogCategoryModel>()
+                .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.blogCategoryId))
+                .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.blogCategoryName))
+                .ForMember(dest => dest.slug, opt => opt.MapFrom(src => src.blogCategorySlug))
+                .ForMember(dest => dest.description, opt => opt.MapFrom(src => src.blogCategoryDescription));
 
             CreateMap<PageDTO, PageeModel>();
             CreateMap<PageeModel, PageDTO>();
