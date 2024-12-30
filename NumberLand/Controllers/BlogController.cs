@@ -109,7 +109,7 @@ namespace NumberLand.Controllers
         [HttpPatch("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Patch(int id, [FromBody] string jsonPatch, IFormFile? file)
+        public async Task<IActionResult> Patch(int id, [FromForm] string jsonPatch, IFormFile? file)
         {
             if (string.IsNullOrEmpty(jsonPatch))
             {
