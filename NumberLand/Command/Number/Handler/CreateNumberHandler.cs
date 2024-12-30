@@ -24,7 +24,7 @@ namespace NumberLand.Command.Number.Handler
             try
             {
                 var mappedNum = _mapper.Map<NumberModel>(request.NumberDTO);
-                mappedNum.slug = SlugHelper.GenerateSlug(request.NumberDTO.numberSlug);
+                mappedNum.slug = SlugHelper.GenerateSlug2(request.NumberDTO.numberSlug);
                 await _unitOfWork.number.Add(mappedNum);
                 await _unitOfWork.Save();
                 return new CommandsResponse<NumberDTO>

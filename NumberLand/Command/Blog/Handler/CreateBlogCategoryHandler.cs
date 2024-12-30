@@ -22,7 +22,7 @@ namespace NumberLand.Command.Blog.Handler
             try
             {
                 var mappedCat = _mapper.Map<BlogCategoryModel>(request.BlogCatDTO);
-                mappedCat.slug = SlugHelper.GenerateSlug(request.BlogCatDTO.blogCategorySlug);
+                mappedCat.slug = SlugHelper.GenerateSlug2(request.BlogCatDTO.blogCategorySlug);
                 await _unitOfWork.blogCategory.Add(mappedCat);
                 await _unitOfWork.Save();
 

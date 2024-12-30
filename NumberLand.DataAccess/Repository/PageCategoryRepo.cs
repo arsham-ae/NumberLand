@@ -22,7 +22,7 @@ namespace NumberLand.DataAccess.Repository
             if (pageCategory != null && patchDoc != null)
             {
                 patchDoc.ApplyTo(pageCategory);
-                pageCategory.slug = SlugHelper.GenerateSlug(pageCategory.name);
+                pageCategory.slug = SlugHelper.GenerateSlug2(pageCategory.name);
                 await _context.SaveChangesAsync();
             }
         }

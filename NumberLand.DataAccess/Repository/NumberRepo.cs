@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Numbers;
+using NumberLand.Utility;
 
 namespace NumberLand.DataAccess.Repository
 {
@@ -21,6 +23,7 @@ namespace NumberLand.DataAccess.Repository
             if (number != null && patchDoc != null)
             {
                 patchDoc.ApplyTo(number);
+                number.slug = SlugHelper.GenerateSlug2(number.slug);
                 await _context.SaveChangesAsync();
             }
         }

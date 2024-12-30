@@ -39,6 +39,7 @@ namespace NumberLand.Command.Application.Handler
                     app.appIcon = await _saveImageHelper.SaveImage(request.File, "apps");
                 }
                 request.PatchDoc.ApplyTo(app);
+                app.slug = SlugHelper.GenerateSlug2(app.slug);
                 app.content = Markdown.ToHtml(app.content, pipeLine);
                 await _unitOfWork.Save();
 

@@ -39,6 +39,7 @@ namespace NumberLand.Command.Blog.Handler
                     blog.featuredImagePath = await _saveImageHelper.SaveImage(request.File, "blogs");
                 }
                 request.PatchDoc.ApplyTo(blog);
+                blog.slug = SlugHelper.GenerateSlug(blog.slug);
                 blog.content = Markdown.ToHtml(blog.content, pipeLine);
                 await _unitOfWork.Save();
                 return new CommandsResponse<BlogDTO>

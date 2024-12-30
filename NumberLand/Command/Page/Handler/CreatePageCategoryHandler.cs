@@ -24,7 +24,7 @@ namespace NumberLand.Command.Page.Handler
             try
             {
                 var mappedCat = _mapper.Map<PageCategoryModel>(request.PageCategory);
-                mappedCat.slug = SlugHelper.GenerateSlug(mappedCat.slug);
+                mappedCat.slug = SlugHelper.GenerateSlug2(mappedCat.slug);
                 await _unitOfWork.pageCategory.Add(mappedCat);
                 await _unitOfWork.Save();
                 return new CommandsResponse<PageCategoryDTO>

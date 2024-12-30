@@ -31,7 +31,7 @@ namespace NumberLand.Command.Application.Handler
                     var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
                     mappedApp.content = Markdown.ToHtml(request.Application.appContent, pipeLine);
                 }
-                mappedApp.slug = SlugHelper.GenerateSlug(request.Application.appSlug);
+                mappedApp.slug = SlugHelper.GenerateSlug2(request.Application.appSlug);
                 await _unitOfWork.application.Add(mappedApp);
                 await _unitOfWork.Save();
                 return new CommandsResponse<ApplicationDTO>()

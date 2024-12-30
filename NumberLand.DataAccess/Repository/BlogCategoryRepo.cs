@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
+using NumberLand.Utility;
+using System.Reflection.Metadata;
 
 namespace NumberLand.DataAccess.Repository
 {
@@ -21,6 +23,7 @@ namespace NumberLand.DataAccess.Repository
             if (blogCategory != null && patchDoc != null)
             {
                 patchDoc.ApplyTo(blogCategory);
+                blogCategory.slug = SlugHelper.GenerateSlug2(blogCategory.slug);
                 await _context.SaveChangesAsync();
             }
             if (blogCategory != null || patchDoc == null)

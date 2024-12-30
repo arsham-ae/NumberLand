@@ -24,7 +24,7 @@ namespace NumberLand.DataAccess.Repository
             {
                 patchDoc.ApplyTo(page);
                 page.content = Markdown.ToHtml(page.content, pipeLine);
-                page.slug = SlugHelper.GenerateSlug(page.title);
+                page.slug = SlugHelper.GenerateSlug2(page.title);
                 await _context.SaveChangesAsync();
             }
         }
