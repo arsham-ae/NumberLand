@@ -39,6 +39,7 @@ namespace NumberLand.Command.Country.Handler
                     country.flagIcon = await _saveImageHelper.SaveImage(request.File, "flags");
                 }
                 request.PatchDoc.ApplyTo(country);
+                country.slug = SlugHelper.GenerateSlug2(country.slug);
                 await _unitOfWork.Save();
                 country.content = Markdown.ToHtml(country.content, pipeLine);
                 return new CommandsResponse<CountryDTO>

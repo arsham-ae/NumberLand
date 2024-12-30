@@ -21,7 +21,7 @@ namespace NumberLand.DataAccess.Repository
             if (nOperator != null && patchDoc != null)
             {
                 patchDoc.ApplyTo(nOperator);
-                nOperator.slug = SlugHelper.GenerateSlug(nOperator.operatorCode);
+                nOperator.slug = SlugHelper.GenerateSlug2(nOperator.operatorCode);
                 await _context.SaveChangesAsync();
             }
         }

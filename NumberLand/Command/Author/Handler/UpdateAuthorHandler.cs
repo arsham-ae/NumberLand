@@ -40,6 +40,7 @@ namespace NumberLand.Command.Author.Handler
                 }
 
                 request.JsonPatch.ApplyTo(author);
+                author.slug = SlugHelper.GenerateAuthorSlug(author.slug);
                 await _unitOfWork.Save();
 
                 return new CommandsResponse<AuthorDTO>

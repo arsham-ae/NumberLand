@@ -23,7 +23,7 @@ namespace NumberLand.Command.Operator.Handler
             try
             {
                 var mappedOperator = _mapper.Map<OperatorModel>(request.OperatorModel);
-                mappedOperator.slug = SlugHelper.GenerateSlug(request.OperatorModel.slug);
+                mappedOperator.slug = SlugHelper.GenerateSlug2(request.OperatorModel.slug);
                 await _unitOfWork.nOperator.Add(mappedOperator);
                 await _unitOfWork.Save();
                 return new CommandsResponse<OperatorDTO>

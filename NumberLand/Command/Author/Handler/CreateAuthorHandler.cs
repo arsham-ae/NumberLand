@@ -28,7 +28,7 @@ namespace NumberLand.Command.Author.Handler
             {
                 var mappedAuthor = _mapper.Map<AuthorModel>(request.authorDTO);
                 mappedAuthor.imagePath = await _saveImageHelper.SaveImage(request.imageFile, "authors");
-                mappedAuthor.slug = SlugHelper.GenerateSlug(request.authorDTO.authorSlug);
+                mappedAuthor.slug = SlugHelper.GenerateAuthorSlug(request.authorDTO.authorSlug);
                 await _unitOfWork.author.Add(mappedAuthor);
                 await _unitOfWork.Save();
 

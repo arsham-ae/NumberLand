@@ -32,7 +32,7 @@ namespace NumberLand.Command.Country.Handler
                     var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
                     mappedCountry.content = Markdown.ToHtml(request.Country.countryContent, pipeLine);
                 }
-                mappedCountry.slug = SlugHelper.GenerateSlug(request.Country.countrySlug);
+                mappedCountry.slug = SlugHelper.GenerateSlug2(request.Country.countrySlug);
                 await _unitOfWork.country.Add(mappedCountry);
                 await _unitOfWork.Save();
                 return new CommandsResponse<CountryDTO>()
