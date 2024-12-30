@@ -51,6 +51,24 @@ namespace NumberLand.Controllers
             }
             return Ok(result);
         }
+        [HttpGet("SearchBySlug/{slug}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetBySlug(string slug)
+        {
+            if (String.IsNullOrEmpty(slug))
+            {
+                return BadRequest("Invalid Slug!");
+            }
+            var query = new GetBlogBySlugQuery(slug);
+            var result = await _mediator.Send(query);
+            if (result == null)
+            {
+                return NotFound($"Blog With Slug \"{slug}\" Not Found");
+            }
+            return Ok(result);
+        }
         [HttpGet("SearchByCategory/{Catid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -190,7 +208,24 @@ namespace NumberLand.Controllers
 
             return Ok(result);
         }
-
+        [HttpGet("Category/SearchBySlug/{slug}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetCatBySlug(string slug)
+        {
+            if (String.IsNullOrEmpty(slug))
+            {
+                return BadRequest("Invalid Slug!");
+            }
+            var query = new GetBlogCategoryBySlugQuery(slug);
+            var result = await _mediator.Send(query);
+            if (result == null)
+            {
+                return NotFound($"BlogCategory With Slug \"{slug}\" Not Found");
+            }
+            return Ok(result);
+        }
         [HttpPost("Category")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

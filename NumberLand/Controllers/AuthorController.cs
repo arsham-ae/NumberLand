@@ -7,6 +7,7 @@ using NumberLand.Command.Author.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Blogs;
 using NumberLand.Query.Author.Query;
+using NumberLand.Query.Blog.Query;
 
 namespace NumberLand.Controllers
 {
@@ -48,6 +49,25 @@ namespace NumberLand.Controllers
             if (result == null)
             {
                 return NotFound($"Author with id {id} Not Found!");
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("SearchBySlug/{slug}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetBySlug(string slug)
+        {
+            if (String.IsNullOrEmpty(slug))
+            {
+                return BadRequest("Invalid Id!");
+            }
+            var query = new GetAuthorBySlugQuery(slug);
+            var result = await _mediator.Send(query);
+            if (result == null)
+            {
+                return NotFound($"Author With Slug \"{slug}\" Not Found");
             }
             return Ok(result);
         }

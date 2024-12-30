@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using NumberLand.Command.Page.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Pages;
+using NumberLand.Query.Blog.Query;
 using NumberLand.Query.Page.Query;
 
 namespace NumberLand.Controllers
@@ -45,6 +46,25 @@ namespace NumberLand.Controllers
             if (result == null)
             {
                 return NotFound($"Page With Id {id} Not Found.");
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("SearchBySlug/{slug}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetBySlug(string slug)
+        {
+            if (String.IsNullOrEmpty(slug))
+            {
+                return BadRequest("Invalid Slug!");
+            }
+            var query = new GetPageBySlugQuery(slug);
+            var result = await _mediator.Send(query);
+            if (result == null)
+            {
+                return NotFound($"Page With Slug \"{slug}\" Not Found");
             }
             return Ok(result);
         }
@@ -131,6 +151,25 @@ namespace NumberLand.Controllers
             if (result == null)
             {
                 return NotFound($"PageCategory With Id {id} Not Found.");
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("Category/SearchBySlug/{slug}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetCatBySlug(string slug)
+        {
+            if (String.IsNullOrEmpty(slug))
+            {
+                return BadRequest("Invalid Slug!");
+            }
+            var query = new GetPageCategoryBySlugQuery(slug);
+            var result = await _mediator.Send(query);
+            if (result == null)
+            {
+                return NotFound($"PageCategory With Slug \"{slug}\" Not Found");
             }
             return Ok(result);
         }

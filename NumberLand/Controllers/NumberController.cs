@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using NumberLand.Command.Number.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Numbers;
+using NumberLand.Query.Blog.Query;
 using NumberLand.Query.Number.Query;
 
 namespace NumberLand.Controllers
@@ -46,6 +47,25 @@ namespace NumberLand.Controllers
             if (result == null)
             {
                 return NotFound($"Number With Id {id} Not Found!");
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("SearchBySlug/{slug}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetBySlug(string slug)
+        {
+            if (String.IsNullOrEmpty(slug))
+            {
+                return BadRequest("Invalid Slug!");
+            }
+            var query = new GetNumberBySlugQuery(slug);
+            var result = await _mediator.Send(query);
+            if (result == null)
+            {
+                return NotFound($"Number With Slug \"{slug}\" Not Found");
             }
             return Ok(result);
         }

@@ -8,6 +8,7 @@ using NumberLand.Command.Application.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Numbers;
 using NumberLand.Query.Application.Query;
+using NumberLand.Query.Blog.Query;
 
 namespace NumberLand.Controllers
 {
@@ -49,6 +50,25 @@ namespace NumberLand.Controllers
             if (result == null)
             {
                 return NotFound($"Application With Id {id} Not Found.");
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("SearchBySlug/{slug}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetBySlug(string slug)
+        {
+            if (String.IsNullOrEmpty(slug))
+            {
+                return BadRequest("Invalid Slug!");
+            }
+            var query = new GetApplicationBySlugQuery(slug);
+            var result = await _mediator.Send(query);
+            if (result == null)
+            {
+                return NotFound($"Application With Slug \"{slug}\" Not Found");
             }
             return Ok(result);
         }
