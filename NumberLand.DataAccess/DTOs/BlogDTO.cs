@@ -38,6 +38,8 @@ namespace NumberLand.DataAccess.DTOs
         public string blogCategorySlug { get; set; }
         public string blogCategoryName { get; set; }
         public string blogCategoryDescription { get; set; }
+        public string colorCode { get; set; }
+        public string icon { get; set; }
     }
     public class CreateBlogCategoryDTO
     {
@@ -45,6 +47,7 @@ namespace NumberLand.DataAccess.DTOs
         public string blogCategorySlug { get; set; }
         public string blogCategoryName { get; set; }
         public string blogCategoryDescription { get; set; }
+        public string colorCode { get; set; }
     }
 
 }

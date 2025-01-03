@@ -12,10 +12,12 @@ namespace NumberLand.Command.Blog.Handler
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public CreateBlogCategoryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly SaveImageHelper _saveImageHelper;
+        public CreateBlogCategoryHandler(IUnitOfWork unitOfWork, IMapper mapper, SaveImageHelper saveImageHelper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _saveImageHelper = saveImageHelper;
         }
         public async Task<CommandsResponse<BlogCategoryDTO>> Handle(CreateBlogCategoryCommand request, CancellationToken cancellationToken)
         {
@@ -23,6 +25,7 @@ namespace NumberLand.Command.Blog.Handler
             {
                 var mappedCat = _mapper.Map<BlogCategoryModel>(request.BlogCatDTO);
                 mappedCat.slug = SlugHelper.GenerateSlug2(request.BlogCatDTO.blogCategorySlug);
+                mappedCat.icon = await _saveImageHelper.SaveImage(request.File, "blogCategories");
                 await _unitOfWork.blogCategory.Add(mappedCat);
                 await _unitOfWork.Save();
 

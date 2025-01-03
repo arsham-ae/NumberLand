@@ -9,6 +9,8 @@ namespace NumberLand.Models.Blogs
         public string slug { get; set; }
         public string name { get; set; }
         public string description { get; set; }
+        public string colorCode { get; set; }
+        public string icon { get; set; }
         public ICollection<BlogCategoryJoinModel> blogCategories { get; set; }
     }
 }

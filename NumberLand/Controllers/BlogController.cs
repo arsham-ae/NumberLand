@@ -7,6 +7,7 @@ using NumberLand.Command.Blog.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.Models.Blogs;
 using NumberLand.Query.Blog.Query;
+using System.Reflection.Metadata;
 
 namespace NumberLand.Controllers
 {
@@ -128,47 +129,40 @@ namespace NumberLand.Controllers
         [HttpPatch("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Patch(int id, [FromForm] string jsonPatch, IFormFile? file)
+        public async Task<IActionResult> Patch(int id, [FromForm] string? jsonPatch, IFormFile? file)
         {
-            if (string.IsNullOrEmpty(jsonPatch))
+            if (string.IsNullOrEmpty(jsonPatch) && file == null)
             {
-                return BadRequest("Patch document cannot be null or empty.");
+                return BadRequest("Patch Document or File must be imported.");
             }
-            JsonPatchDocument<BlogModel> patchDoc;
-            try
+            if (!string.IsNullOrEmpty(jsonPatch))
             {
-                patchDoc = JsonConvert.DeserializeObject<JsonPatchDocument<BlogModel>>(jsonPatch);
-                if (patchDoc == null)
+                JsonPatchDocument<BlogModel> patchDoc;
+                try
                 {
-                    return BadRequest("Invalid patch document.");
+                    patchDoc = JsonConvert.DeserializeObject<JsonPatchDocument<BlogModel>>(jsonPatch);
+                    if (patchDoc == null)
+                    {
+                        return BadRequest("Invalid patch document.");
+                    }
                 }
+                catch (JsonException)
+                {
+                    return BadRequest("Error parsing patch document.");
+                }
+                var command = new UpdateBlogCommand(id, patchDoc, file);
+                var result = await _mediator.Send(command);
+                return Ok(result);
             }
-            catch (JsonException)
+            if (file != null)
             {
-                return BadRequest("Error parsing patch document.");
+                var command = new UpdateBlogCommand(id, null, file);
+                var result = await _mediator.Send(command);
+                return Ok(result);
             }
+            return BadRequest("Unexpected error occurred.");
+        }
 
-            var command = new UpdateBlogCommand(id, patchDoc, file);
-            var result = await _mediator.Send(command);
-            return Ok(result);
-        }
-        [HttpPatch("UpdateImage/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateImage(int id, IFormFile file)
-        {
-            if (id == null || id == 0)
-            {
-                return BadRequest("Invalid Id!");
-            }
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("Image file cannot be null or empty.");
-            }
-            var command = new UpdateBlogImageCommand(id, file);
-            var result = await _mediator.Send(command);
-            return Ok(result);
-        }
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -248,13 +242,17 @@ namespace NumberLand.Controllers
         [HttpPost("Category")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CatCreate([FromForm] CreateBlogCategoryDTO blogCategory)
+        public async Task<IActionResult> CatCreate([FromForm] CreateBlogCategoryDTO blogCategory, IFormFile file)
         {
             if (blogCategory == null || blogCategory.blogCategoryId != 0)
             {
                 return BadRequest();
             }
-            var command = new CreateBlogCategoryCommand(blogCategory);
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file was uploaded.");
+            }
+            var command = new CreateBlogCategoryCommand(blogCategory, file);
             var result = await _mediator.Send(command);
             return Ok(result);
 
@@ -263,15 +261,38 @@ namespace NumberLand.Controllers
         [HttpPatch("Category/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CatPatch(int id, [FromBody] JsonPatchDocument<BlogCategoryModel> patchDoc)
+        public async Task<IActionResult> CatPatch(int id, [FromForm] string? jsonPatch, IFormFile? file)
         {
-            if (id == 0 || patchDoc == null)
+            if (string.IsNullOrEmpty(jsonPatch) && file == null)
             {
-                return BadRequest("Invalid Data!");
+                return BadRequest("Patch Document or File must be imported.");
             }
-            var command = new UpdateBlogCategoryCommand(id, patchDoc);
-            var result = await _mediator.Send(command);
-            return Ok(patchDoc);
+            if (!string.IsNullOrEmpty(jsonPatch))
+            {
+                JsonPatchDocument<BlogCategoryModel> patchDoc;
+                try
+                {
+                    patchDoc = JsonConvert.DeserializeObject<JsonPatchDocument<BlogCategoryModel>>(jsonPatch);
+                    if (patchDoc == null)
+                    {
+                        return BadRequest("Invalid patch document.");
+                    }
+                }
+                catch (JsonException)
+                {
+                    return BadRequest("Error parsing patch document.");
+                }
+                var command = new UpdateBlogCategoryCommand(id, patchDoc, file);
+                var result = await _mediator.Send(command);
+                return Ok(result);
+            }
+            if (file != null)
+            {
+                var command = new UpdateBlogCategoryCommand(id, null, file);
+                var result = await _mediator.Send(command);
+                return Ok(result);
+            }
+            return BadRequest("Unexpected error occurred.");
         }
 
         [HttpDelete("Category/{id}")]
