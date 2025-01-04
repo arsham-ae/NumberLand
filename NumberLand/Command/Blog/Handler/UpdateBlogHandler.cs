@@ -35,6 +35,7 @@ namespace NumberLand.Command.Blog.Handler
                     };
                 }
                 var blogSlug = blog.slug;
+                var blogContent = blog.content;
                 if (request.File != null && request.File.Length > 0)
                 {
                     blog.featuredImagePath = await _saveImageHelper.SaveImage(request.File, "blogs");
@@ -46,7 +47,10 @@ namespace NumberLand.Command.Blog.Handler
                     {
                         blog.slug = SlugHelper.GenerateSlug(blog.slug);
                     }
-                    blog.content = Markdown.ToHtml(blog.content, pipeLine);
+                    if (blog.content != blogContent)
+                    {
+                        blog.content = Markdown.ToHtml(blog.content, pipeLine).Replace("\\n", "").Replace("\n", ""); ;
+                    }
                 }
                 await _unitOfWork.Save();
                 return new CommandsResponse<BlogDTO>
