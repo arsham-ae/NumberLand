@@ -44,7 +44,9 @@ namespace NumberLand.MappingProfile
                     blogCategoryId = bc.category.id,
                     blogCategoryName = bc.category.name,
                     blogCategorySlug = bc.category.slug,
-                    blogCategoryDescription = bc.category.description
+                    blogCategoryDescription = bc.category.description,
+                    colorCode = bc.category.colorCode,
+                    icon = bc.category.icon
                 })))
                 .ForMember(dest => dest.blogFeaturedImagePath, opt => opt.MapFrom(src => src.featuredImagePath))
                 .ForMember(dest => dest.createAt, opt => opt.MapFrom(src => src.createAt))

@@ -8,9 +8,9 @@ namespace NumberLand.Command.Application.Command
     public class UpdateApplicationCommand : IRequest<CommandsResponse<ApplicationDTO>>
     {
         public int Id { get; set; }
-        public JsonPatchDocument<ApplicationModel> PatchDoc { get; set; }
+        public JsonPatchDocument<ApplicationModel>? PatchDoc { get; set; }
         public IFormFile File { get; set; }
-        public UpdateApplicationCommand(int id, JsonPatchDocument<ApplicationModel> patchDoc, IFormFile file)
+        public UpdateApplicationCommand(int id, JsonPatchDocument<ApplicationModel>? patchDoc, IFormFile file)
         {
             Id = id;
             PatchDoc = patchDoc;

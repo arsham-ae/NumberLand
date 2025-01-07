@@ -8,13 +8,13 @@ namespace NumberLand.Command.Author.Command
     public class UpdateAuthorCommand : IRequest<CommandsResponse<AuthorDTO>>
     {
         public int Id { get; set; }
-        public JsonPatchDocument<AuthorModel> JsonPatch { get; set; }
-        public IFormFile File { get; set; }
+        public JsonPatchDocument<AuthorModel>? PatchDoc { get; set; }
+        public IFormFile? File { get; set; }
 
-        public UpdateAuthorCommand(int id, JsonPatchDocument<AuthorModel> jsonPatch, IFormFile file)
+        public UpdateAuthorCommand(int id, JsonPatchDocument<AuthorModel>? patchDoc, IFormFile? file)
         {
             Id = id;
-            JsonPatch = jsonPatch;
+            PatchDoc = patchDoc;
             File = file;
         }
     }

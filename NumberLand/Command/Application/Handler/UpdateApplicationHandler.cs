@@ -24,7 +24,6 @@ namespace NumberLand.Command.Application.Handler
         {
             try
             {
-                var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
                 var app = await _unitOfWork.application.Get(app => app.id == request.Id);
                 if (app == null)
                 {
@@ -34,13 +33,19 @@ namespace NumberLand.Command.Application.Handler
                         message = $"Application With Id {request.Id} Not Found!"
                     };
                 }
+                var appSlug = app.slug;
                 if (request.File != null && request.File.Length > 0)
                 {
                     app.appIcon = await _saveImageHelper.SaveImage(request.File, "apps");
                 }
-                request.PatchDoc.ApplyTo(app);
-                app.slug = SlugHelper.GenerateSlug2(app.slug);
-                app.content = Markdown.ToHtml(app.content, pipeLine);
+                if (request.PatchDoc != null)
+                {
+                    request.PatchDoc.ApplyTo(app);
+                    if (appSlug != app.slug)
+                    {
+                        app.slug = SlugHelper.GenerateSlug2(app.slug);
+                    }
+                }
                 await _unitOfWork.Save();
 
                 return new CommandsResponse<ApplicationDTO>

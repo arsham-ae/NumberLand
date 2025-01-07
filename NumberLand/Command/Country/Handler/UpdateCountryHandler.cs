@@ -24,7 +24,6 @@ namespace NumberLand.Command.Country.Handler
         {
             try
             {
-                var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
                 var country = await _unitOfWork.country.Get(c => c.id == request.Id);
                 if (country == null)
                 {
@@ -34,14 +33,20 @@ namespace NumberLand.Command.Country.Handler
                         message = $"Country With Id {request.Id} Not Found!"
                     };
                 }
+                var countrySlug = country.slug;
                 if (request.File != null && request.File.Length > 0)
                 {
                     country.flagIcon = await _saveImageHelper.SaveImage(request.File, "flags");
                 }
-                request.PatchDoc.ApplyTo(country);
-                country.slug = SlugHelper.GenerateSlug2(country.slug);
+                if (request.PatchDoc != null)
+                {
+                    request.PatchDoc.ApplyTo(country);
+                    if (countrySlug != country.slug)
+                    {
+                        country.slug = SlugHelper.GenerateSlug2(country.slug);
+                    }
+                }
                 await _unitOfWork.Save();
-                country.content = Markdown.ToHtml(country.content, pipeLine);
                 return new CommandsResponse<CountryDTO>
                 {
                     status = "Success",

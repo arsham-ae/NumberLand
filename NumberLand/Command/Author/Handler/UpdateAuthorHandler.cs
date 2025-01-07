@@ -4,6 +4,7 @@ using NumberLand.Command.Author.Command;
 using NumberLand.DataAccess.DTOs;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Utility;
+using System.Reflection.Metadata;
 
 namespace NumberLand.Command.Author.Handler
 {
@@ -33,14 +34,19 @@ namespace NumberLand.Command.Author.Handler
                         message = $"Author With Id {request.Id} Not Found!"
                     };
                 }
-
+                var authorSlug = author.slug;
                 if (request.File != null && request.File.Length > 0)
                 {
                     author.imagePath = await _saveImageHelper.SaveImage(request.File, "authors");
                 }
-
-                request.JsonPatch.ApplyTo(author);
-                author.slug = SlugHelper.GenerateAuthorSlug(author.slug);
+                if (request.PatchDoc != null)
+                {
+                    request.PatchDoc.ApplyTo(author);
+                    if (author.slug != authorSlug)
+                    {
+                        author.slug = SlugHelper.GenerateAuthorSlug(author.slug);
+                    }
+                }
                 await _unitOfWork.Save();
 
                 return new CommandsResponse<AuthorDTO>

@@ -14,7 +14,7 @@ namespace NumberLand.Utility
         {
             try
             {
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg" };
                 var fileExtension = Path.GetExtension(file.FileName);
                 if (!allowedExtensions.Contains(fileExtension, StringComparer.OrdinalIgnoreCase))
                 {

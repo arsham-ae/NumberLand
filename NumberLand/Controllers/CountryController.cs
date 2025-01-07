@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using NumberLand.Command.Author.Command;
 using NumberLand.Command.Country.Command;
 using NumberLand.DataAccess.DTOs;
+using NumberLand.Models.Blogs;
 using NumberLand.Models.Numbers;
 using NumberLand.Query.Blog.Query;
 using NumberLand.Query.Country.Query;
@@ -87,46 +89,38 @@ namespace NumberLand.Controllers
         [HttpPatch("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Patch(int id, [FromForm] string jsonPatch, IFormFile? file)
+        public async Task<IActionResult> Patch(int id, [FromForm] string? jsonPatch, IFormFile? file)
         {
-            if (string.IsNullOrEmpty(jsonPatch))
+            if (string.IsNullOrEmpty(jsonPatch) && file == null)
             {
-                return BadRequest("Patch document cannot be null or empty.");
+                return BadRequest("Patch Document or File must be imported.");
             }
-            JsonPatchDocument<CountryModel> patchDoc;
-            try
+            if (!string.IsNullOrEmpty(jsonPatch))
             {
-                patchDoc = JsonConvert.DeserializeObject<JsonPatchDocument<CountryModel>>(jsonPatch);
-                if (patchDoc == null)
+                JsonPatchDocument<CountryModel> patchDoc;
+                try
                 {
-                    return BadRequest("Invalid patch document.");
+                    patchDoc = JsonConvert.DeserializeObject<JsonPatchDocument<CountryModel>>(jsonPatch);
+                    if (patchDoc == null)
+                    {
+                        return BadRequest("Invalid patch document.");
+                    }
                 }
+                catch (JsonException)
+                {
+                    return BadRequest("Error parsing patch document.");
+                }
+                var command = new UpdateCountryCommand(id, patchDoc, file);
+                var result = await _mediator.Send(command);
+                return Ok(result);
             }
-            catch (JsonException)
+            if (file != null)
             {
-                return BadRequest("Error parsing patch document.");
+                var command = new UpdateCountryCommand(id, null, file);
+                var result = await _mediator.Send(command);
+                return Ok(result);
             }
-            var command = new UpdateCountryCommand(id, patchDoc, file);
-            var result = await _mediator.Send(command);
-            return Ok(result);
-        }
-
-        [HttpPatch("UpdateImage/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdadteImage(int id, IFormFile file)
-        {
-            if (id == null || id == 0)
-            {
-                return BadRequest("Invalid Id!");
-            }
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("Image file cannot be null or empty.");
-            }
-            var command = new UpdateCountryImageCommand(id, file);
-            var result = await _mediator.Send(command);
-            return Ok(result);
+            return BadRequest("Unexpected error occurred.");
         }
 
         [HttpDelete("{id}")]
