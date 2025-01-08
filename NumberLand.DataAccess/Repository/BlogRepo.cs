@@ -1,8 +1,11 @@
-﻿using Markdig;
+﻿using AutoMapper;
+using Markdig;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NumberLand.DataAccess.Data;
+using NumberLand.DataAccess.DTOs;
+using NumberLand.DataAccess.Helper;
 using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
 
@@ -14,6 +17,34 @@ namespace NumberLand.DataAccess.Repository
         public BlogRepo(myDbContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<IEnumerable<BlogModel>> GetAllBlogs(QueryObject query, string? includeProp = null)
+        {
+            var blogs = _context.Blog.AsQueryable();
+            if (!string.IsNullOrEmpty(includeProp))
+            {
+                foreach (var prop in includeProp
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    blogs = blogs.Include(prop.Trim());
+                }
+            }
+            if (!string.IsNullOrWhiteSpace(query.author))
+            {
+                blogs = blogs.Where(b => b.author.slug == query.author);
+            }
+            if (!string.IsNullOrWhiteSpace(query.blogCategory))
+            {
+                blogs = blogs.Where(b => b.blogCategories.Any(bc => bc.category.slug == query.blogCategory));
+            }
+            if (!string.IsNullOrWhiteSpace(query.blogSlug))
+            {
+                blogs = blogs.Where(b => b.slug == query.blogSlug);
+            }
+
+            var skipNumber = (query.pageNumber - 1) * query.limit;
+            return await blogs.Skip(skipNumber).Take(query.limit).ToListAsync();
         }
 
         public async Task Patch(int id, [FromBody] JsonPatchDocument<BlogModel> patchDoc)

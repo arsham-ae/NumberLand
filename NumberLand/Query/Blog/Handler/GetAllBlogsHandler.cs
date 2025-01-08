@@ -19,7 +19,7 @@ namespace NumberLand.Query.Blog.Handler
 
         public async Task<IEnumerable<BlogDTO>> Handle(GetAllBlogsQuery request, CancellationToken cancellationToken)
         {
-            var getall = _mapper.Map<IEnumerable<BlogDTO>>(await _unitOfWork.blog.GetAll(includeProp: "author, blogCategories.category"));
+            var getall = _mapper.Map<IEnumerable<BlogDTO>>(await _unitOfWork.blog.GetAllBlogs(request.Query, includeProp: "author, blogCategories.category"));
             return getall == null ? null : getall;
         }
     }

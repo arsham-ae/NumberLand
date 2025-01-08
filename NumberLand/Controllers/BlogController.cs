@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NumberLand.Command.Blog.Command;
 using NumberLand.DataAccess.DTOs;
+using NumberLand.DataAccess.Helper;
 using NumberLand.Models.Blogs;
 using NumberLand.Query.Blog.Query;
 using System.Reflection.Metadata;
@@ -24,9 +25,9 @@ namespace NumberLand.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] QueryObject qry)
         {
-            var query = new GetAllBlogsQuery();
+            var query = new GetAllBlogsQuery(qry);
             var result = await _mediator.Send(query);
             if (result.IsNullOrEmpty())
             {
