@@ -18,12 +18,10 @@ namespace NumberLand.DataAccess.Repository
         }
         public async Task Patch(int id, [FromBody] JsonPatchDocument<PageeModel> patchDoc)
         {
-            var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             var page = await _context.Page.FirstOrDefaultAsync(p => p.id == id);
             if (page != null && patchDoc != null)
             {
                 patchDoc.ApplyTo(page);
-                page.content = Markdown.ToHtml(page.content, pipeLine);
                 page.slug = SlugHelper.GenerateSlug2(page.title);
                 await _context.SaveChangesAsync();
             }

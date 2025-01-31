@@ -27,11 +27,6 @@ namespace NumberLand.Command.Country.Handler
             {
                 var mappedCountry = _mapper.Map<CountryModel>(request.Country);
                 mappedCountry.flagIcon = await _saveImageHelper.SaveImage(request.File, "flags");
-                if (request.Country.countryContent != null)
-                {
-                    var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-                    mappedCountry.content = Markdown.ToHtml(request.Country.countryContent, pipeLine);
-                }
                 mappedCountry.slug = SlugHelper.GenerateSlug2(request.Country.countrySlug);
                 await _unitOfWork.country.Add(mappedCountry);
                 await _unitOfWork.Save();

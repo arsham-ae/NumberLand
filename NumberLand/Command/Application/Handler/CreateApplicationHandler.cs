@@ -26,11 +26,6 @@ namespace NumberLand.Command.Application.Handler
             {
                 var mappedApp = _mapper.Map<ApplicationModel>(request.Application);
                 mappedApp.appIcon = await _saveImageHelper.SaveImage(request.File, "apps");
-                if (request.Application.appContent != null)
-                {
-                    var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-                    mappedApp.content = Markdown.ToHtml(request.Application.appContent, pipeLine);
-                }
                 mappedApp.slug = SlugHelper.GenerateSlug2(request.Application.appSlug);
                 await _unitOfWork.application.Add(mappedApp);
                 await _unitOfWork.Save();

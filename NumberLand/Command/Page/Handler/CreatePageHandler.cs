@@ -24,8 +24,6 @@ namespace NumberLand.Command.Page.Handler
             try
             {
                 var mappedPage = _mapper.Map<PageeModel>(request.PageDto);
-                var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-                mappedPage.content = Markdown.ToHtml(mappedPage.content, pipeLine);
                 mappedPage.slug = SlugHelper.GenerateSlug2(mappedPage.slug);
                 await _unitOfWork.page.Add(mappedPage);
                 await _unitOfWork.Save();

@@ -24,8 +24,6 @@ namespace NumberLand.Command.Blog.Handler
         {
             try
             {
-                var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-                request.BlogDTO.blogContent = Markdown.ToHtml(request.BlogDTO.blogContent, pipeLine).Replace("\\n", "").Replace("\n", "");
                 var mappedBlog = _mapper.Map<BlogModel>(request.BlogDTO);
                 mappedBlog.featuredImagePath = await _saveImageHelper.SaveImage(request.File, "blogs");
                 mappedBlog.slug = SlugHelper.GenerateSlug(request.BlogDTO.blogSlug);

@@ -24,7 +24,6 @@ namespace NumberLand.Command.Blog.Handler
         {
             try
             {
-                var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
                 var blogCategory = await _unitOfWork.blogCategory.Get(p => p.id == request.Id);
                 if (blogCategory == null)
                 {

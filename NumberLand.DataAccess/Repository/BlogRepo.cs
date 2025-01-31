@@ -49,19 +49,16 @@ namespace NumberLand.DataAccess.Repository
 
         public async Task Patch(int id, [FromBody] JsonPatchDocument<BlogModel> patchDoc)
         {
-            var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             var blog = await _context.Blog.FirstOrDefaultAsync(p => p.id == id);
             if (blog != null || patchDoc != null)
             {
                 patchDoc.ApplyTo(blog);
-                blog.content = Markdown.ToHtml(blog.content, pipeLine);
                 await _context.SaveChangesAsync();
             }
         }
 
         public async Task Update(BlogModel blog)
         {
-            var pipeLine = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             var existingBlog = await _context.Blog
             .Include(b => b.blogCategories)
             .FirstOrDefaultAsync(b => b.id == blog.id);
@@ -72,7 +69,6 @@ namespace NumberLand.DataAccess.Repository
             }
 
             existingBlog.title = blog.title;
-            blog.content = Markdown.ToHtml(blog.content, pipeLine);
             existingBlog.content = blog.content;
             existingBlog.featuredImagePath = blog.featuredImagePath;
             existingBlog.updateAt = DateTime.Now;
