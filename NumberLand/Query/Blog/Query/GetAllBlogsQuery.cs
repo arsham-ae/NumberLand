@@ -4,7 +4,7 @@ using NumberLand.DataAccess.Helper;
 
 namespace NumberLand.Query.Blog.Query
 {
-    public class GetAllBlogsQuery : IRequest<IEnumerable<BlogDTO>>
+    public class GetAllBlogsQuery : IRequest<PaginatedResponse<BlogDTO>>
     {
         public QueryObject Query { get; set; }
         public GetAllBlogsQuery(QueryObject query)

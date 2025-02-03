@@ -29,7 +29,7 @@ namespace NumberLand.Controllers
         {
             var query = new GetAllBlogsQuery(qry);
             var result = await _mediator.Send(query);
-            if (result.IsNullOrEmpty())
+            if (result.Data == null || !result.Data.Any())
             {
                 return NotFound("There isn't Any Blogs");
             }
