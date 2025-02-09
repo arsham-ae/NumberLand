@@ -23,8 +23,21 @@ namespace NumberLand.Query.Blog.Handler
 
             var query = (await _unitOfWork.blog.GetAll(includeProp: "author,blogCategories.category")).AsQueryable();
 
-            var totalItems = query.Count();
 
+            if (!string.IsNullOrWhiteSpace(request.Query.author))
+            {
+                query = query.Where(b => b.author.slug == request.Query.author);
+            }
+            if (!string.IsNullOrWhiteSpace(request.Query.blogCategory))
+            {
+                query = query.Where(b => b.blogCategories.Any(bc => bc.category.slug == request.Query.blogCategory));
+            }
+            if (!string.IsNullOrWhiteSpace(request.Query.blogSlug))
+            {
+                query = query.Where(b => b.slug == request.Query.blogSlug);
+            }
+
+            var totalItems = query.Count();
             var paginatedBlogs = query
            .Skip((queryObject.pageNumber - 1) * queryObject.limit)
            .Take(queryObject.limit)
