@@ -34,6 +34,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddScoped<ITranslationService, TranslationService>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<SaveImageHelper>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDbContext<myDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

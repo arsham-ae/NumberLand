@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NumberLand.Models.Blogs;
 using NumberLand.Models.Numbers;
 using NumberLand.Models.Pages;
+using NumberLand.Models.Translation;
 
 namespace NumberLand.DataAccess.Data
 {
@@ -24,6 +25,7 @@ namespace NumberLand.DataAccess.Data
         public DbSet<AuthorModel> Author { get; set; }
         public DbSet<CountryModel> Country { get; set; }
         public DbSet<ApplicationModel> Application { get; set; }
+        public DbSet<TranslationModel> Translation { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using NumberLand.Command.Application.Command;
 using NumberLand.Command.Author.Command;
 using NumberLand.DataAccess.DTOs;
+using NumberLand.DataAccess.Helper;
+using NumberLand.DataAccess.Repository.IRepository;
 using NumberLand.Models.Blogs;
 using NumberLand.Models.Numbers;
 using NumberLand.Query.Application.Query;
@@ -19,10 +21,14 @@ namespace NumberLand.Controllers
     public class ApplicationController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ITranslationService _translationService;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public ApplicationController(IMediator mediator)
+        public ApplicationController(IMediator mediator, ITranslationService translationService, IHttpContextAccessor contextAccessor)
         {
             _mediator = mediator;
+            _translationService = translationService;
+            _contextAccessor = contextAccessor;
         }
 
         [HttpGet]
@@ -30,12 +36,22 @@ namespace NumberLand.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAll()
         {
+            var lang = LanguageHelper.GetLanguage(_contextAccessor.HttpContext);
             var result = await _mediator.Send(new GetAllApplicationsQuery());
             if (result.IsNullOrEmpty())
             {
                 return NotFound("There isn't Any Applications.");
             }
-            return Ok(result);
+            //return Ok(result);
+            var res = result.Select(app => new
+            {
+                app.appId,
+                app.appSlug,
+                appName = _translationService.GetTranslation(app.appName, lang),
+                app.appContent,
+                app.appIcon
+            }).ToList();
+            return Ok(res);
         }
 
         [HttpGet("{id}")]
